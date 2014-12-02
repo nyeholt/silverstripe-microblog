@@ -1,0 +1,24 @@
+---
+Name: microblog_extensions
+---
+SilverStripeAustralia\Profiles\MemberProfile:
+  extensions:
+    - PublicProfile
+Member:
+  extensions:
+    - MicroBlogMember
+
+---
+Name: microblog_config
+---
+Injector:
+  MicroPostActivityFilter:
+    properties:
+      microBlogService: %$MicroBlogService
+  RequestProcessor:
+    properties:
+      filters:
+        - %$MicroPostActivityFilter
+
+BBCodeParser:
+  allow_smilies: 1

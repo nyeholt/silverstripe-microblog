@@ -1,0 +1,141 @@
+
+#StatusFeed {
+	padding: 5px;
+	background-color: #fafafa;
+}
+
+div.postForm > form {
+	padding: 10px;
+}
+
+div.postForm textarea {
+	display: block;
+}
+
+div.TimelineDashlet .dashlet-content textarea[name=Content], textarea[name=Content] {
+	width: 100%;
+	min-height: 2em;
+}
+
+textarea[name=Content].expanded-content {
+	height: 10em;
+	width: 100%;
+	display: block;
+}
+
+#dropZone {
+	box-shadow: inset 0 0 8px #ccc;
+	height: 50px;
+}
+
+div.microPost {
+	padding: 10px;
+	padding-right: 0px;
+	margin-bottom: 10px;
+	background-color: #fff;
+}
+
+div.microPost.toplevel {
+	padding-right: 10px;
+	border: 1px outset #ccc;
+}
+
+div.microPost.hasparent {
+	padding: 10px 0px 10px 10px;
+	margin-left: 10px;
+	/*border: 1px solid #ddd;*/
+	border-top: 1px dashed #dfdfdf;
+}
+
+div.postImage {
+	float: right; 
+	margin: 5px 5px 0px 0px;
+}
+
+div.microPostContent {
+	background: transparent;
+}
+
+div.microPostContent img {
+	max-width: 90%;
+}
+
+div.postOptions {
+	float: right;
+}
+
+div.postText, div.postPreview {
+	background: #fff;
+	padding: 10px;
+}
+
+form.replyForm {
+	margin-left: 10px;
+	margin-bottom: 10px;
+}
+
+form.replyForm {
+	display: none;
+	margin-left: 10px;
+	margin-bottom: 10px;
+}
+
+div.uploadForm {
+	padding: 10px;
+	display: none;
+	position: fixed;
+	width: 280px;
+	top: 80px;
+	right: 40px;
+	background: #fff;
+	z-index:2000;
+	
+}
+
+abbr.postTime {
+	margin-left: 20px;
+}
+
+.upCount {
+	margin-right: 10px;
+}
+
+.downCount {
+	margin-left: 10px;
+}
+
+div.openGraphPost {
+	overflow: auto;
+}
+
+div.openGraphPostContent {
+	margin-left: 120px;
+}
+
+div.openGraphPost .openGraphImage {
+	float: left;
+	padding: 5px;
+	background-color: #eee;
+	
+}
+
+.openGraphImage img {
+	max-width: 100px;
+	max-height: 100px;
+}
+
+div.microPost.unread {
+	box-shadow: 2px 2px 5px #111;
+}
+
+span.edited-mark {
+	font-weight: bold;
+	cursor: pointer;
+	font-size: 120%;
+}
+
+@media screen and (max-width: 640px) {
+	div.postOptions {
+		font-size: 10px;
+	}
+}
