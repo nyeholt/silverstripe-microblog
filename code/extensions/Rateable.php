@@ -30,5 +30,10 @@ class Rateable extends DataExtension {
                    '(Up + Down)) / (1 + 3.8416 / (Up + Down))  / SQRT(HOUR(TIMEDIFF(NOW(), '.$base.'.Created)) + 1)';
 	
 		$query->selectField($bound, 'WilsonRating');
+
+		$query->selectField('(Up + Down)', 'ActiveRating');
+		
+		$query->selectField('(Up - Down)', 'PositiveRating');
+		
 	}
 }

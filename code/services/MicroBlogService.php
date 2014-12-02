@@ -34,6 +34,13 @@ class MicroBlogService {
 	public $postProcess = false;
 	
 	/**
+	 * The items that we can sort things by
+	 *
+	 * @var array
+	 */
+	public $canSort = array('WilsonRating', 'ID', 'Created', 'Up', 'Down', 'ActiveRating', 'PositiveRating');
+	
+	/**
 	 * A request length list of actions that users have taken
 	 *
 	 * @var array
@@ -341,11 +348,11 @@ class MicroBlogService {
 			$filter['ID:LessThan'] = $before;
 		} 
 
-		$canSort = array('WilsonRating', 'ID', 'Created');
+		
 		$sort = array();
 		
 		if (is_string($sortBy)) {
-			if (in_array($sortBy, $canSort)) {
+			if (in_array($sortBy, $this->canSort)) {
 				$sort[$sortBy] = 'DESC';
 			} 
 

@@ -150,6 +150,12 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		if ($field == 'WilsonRating') {
 			return "Double";
 		}
+		if ($field == 'ActiveRating') {
+			return "Int";
+		}
+		if ($field == 'PositiveRating') {
+			return "Int";
+		}
 		return parent::hasOwnTableDatabaseField($field);
 	}
 
