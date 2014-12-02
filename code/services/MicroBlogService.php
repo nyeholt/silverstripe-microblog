@@ -347,7 +347,8 @@ class MicroBlogService {
 			// final sort if none other specified
 			$sort['ID'] = 'DESC';
 		} else {
-			$sort = $sortBy;
+			// $sort = $sortBy;
+			$sort = array('ID' => 'DESC');
 		}
 
 		$limit = $number ? '0, ' . (int) $number : '';

@@ -14,10 +14,12 @@ class TimelineController extends ContentController {
 	private static $jquery_ui_lib = 'framework/thirdparty/jquery-ui/jquery-ui.js';
 	
 	private static $options = array(
-		'Threaded'			=> true,
+		'Threaded'			=> false,
 		'Replies'			=> true,
 		'Voting'			=> true,
-		'Edits'				=> true
+//		'Edits'				=> true,
+		'ShowReply'			=> true,
+		'Sorting'			=> false,
 	);
 
 	private static $allowed_actions = array(
@@ -389,9 +391,21 @@ class TimelineController extends ContentController {
 		} else {
 			$tags = array();
 		}
+		
+		$sort = $this->request->getVar('sort');
+		if (!$sort) {
+			$sort = 'ID';
+		}
 
-		$timeline = $this->owner->microBlogService->getStatusUpdates(null, null, $since, $offset, !$replies, $tags);
-		return trim($this->owner->customise(array('Posts' => $timeline, 'Options' => $this->Options()))->renderWith('Timeline'));
+		$timeline = $this->owner->microBlogService->getStatusUpdates(null, $sort, $since, $offset, !$replies, $tags);
+		
+		$props = array(
+			'Posts' => $timeline, 
+			'Options' => $this->Options(),
+			'QueryOffset'	=> $timeline->QueryOffset,
+			'SortBy'		=> $sort
+		);
+		return trim($this->owner->customise($props)->renderWith('Timeline'));
 	}
 	
 	/**
@@ -418,10 +432,22 @@ class TimelineController extends ContentController {
 		} else {
 			$tags = array();
 		}
+		
+		$sort = $this->request->getVar('sort');
+		if (!$sort) {
+			$sort = 'ID';
+		}
 
-		$data = $this->owner->microBlogService->getStatusUpdates(null, 'ID', $since, $offset, $toplevel = true, $tags);
+		$data = $this->owner->microBlogService->getStatusUpdates(null, $sort, $since, $offset, $toplevel = true, $tags);
+		
+		$props = array(
+			'Posts' => $data, 
+			'Options' => $this->Options(),
+			'QueryOffset'	=> $data->QueryOffset,
+			'SortBy'		=> $sort
+		);
 
-		return trim($this->owner->customise(array('Posts' => $data, 'Options' => $this->Options()))->renderWith('Timeline'));
+		return trim($this->owner->customise($props)->renderWith('Timeline'));
 	}
 	
 	public function UserTimeline() {
@@ -447,7 +473,15 @@ class TimelineController extends ContentController {
 		}
 
 		$timeline = $this->microBlogService->getTimeline($this->securityContext->getMember(), $sort, $since, $offset, !$replies, $tags);
-		return trim($this->customise(array('Posts' => $timeline, 'Options' => $this->Options()))->renderWith('Timeline'));
+		
+		$props = array(
+			'Posts'			=> $timeline, 
+			'Options'		=> $this->Options(),
+			'QueryOffset'	=> $timeline->QueryOffset,
+			'SortBy'		=> $sort
+		);
+		
+		return trim($this->customise($props)->renderWith('Timeline'));
 	}
 
 	public function OwnerFeed() {
@@ -463,7 +497,14 @@ class TimelineController extends ContentController {
 			$data = $this->microBlogService->getStatusUpdates($owner, null, $since, $offset, !$replies);
 		}
 
-		return trim($this->customise(array('Posts' => $data, 'Options' => $this->Options()))->renderWith('Timeline'));
+		$props = array(
+			'Posts'			=> $data, 
+			'Options'		=> $this->Options(),
+			'QueryOffset'	=> $data->QueryOffset,
+			'SortBy'		=> 'ID',
+		);
+
+		return trim($this->customise($props)->renderWith('Timeline'));
 	}
 
 	/**

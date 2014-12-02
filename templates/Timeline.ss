@@ -1,7 +1,15 @@
 <% if Posts %>
+
+<% if $QueryOffset %>
+<input type="hidden" value="$QueryOffset.ATT" name="postOffset" />
+<% end_if %>
+<% if SortBy %>
+<input type="hidden" value="$SortBy.ATT" name="timelineSort" />
+<% end_if %>
+
 <% loop Posts %>
 	<div class="microPost <% if $ParentID > 0 %>hasparent<% else %>toplevel<% end_if %> <% if $isUnreadByUser %>unread<% end_if %>" 
-		 data-id="$ID" data-owner="$Owner.ID" data-parent="$ParentID" id="post$ID" data-rating="$WilsonRating" data-sortby="$Top.SortBy" data-editable="1">
+		 data-id="$ID" data-owner="$Owner.ID" data-parent="$ParentID" id="post$ID" data-rating="$WilsonRating" data-sortby="$Top.SortBy.ATT" data-editable="1">
 		<div class="microPostContent">
 			<div class="postOptions">
 				<% if $Top.Options.Voting %>
@@ -15,17 +23,11 @@
 				&middot;
 				<% end_if %>
 
-				<% if $Top.Options.Replies %>
-					<a href="#" class="replyToPost">reply</a>
-					<% if Deleted %>
-					<% else %>
-						<% if checkPerm('Delete') %>
-						&middot;
-						<a href="#" class="deletePost">delete</a>
-						<% end_if %>
-					<% end_if %>
+				<% if not $Top.Options.ShowReply %>
+				<a href="#" class="replyToPost">reply</a>
+				&middot;
 				<% end_if %>
-				
+
 				<abbr class="timeago postTime" title="$Created" data-created="$Created">$Created.Nice</abbr> 
 				<% if $isEdited %><span class="edited-mark" title="Edited at $LastEdited">*</span><% end_if %>
 				
@@ -53,7 +55,7 @@
 			<% if $ParentID == 0 || $Top.Options.Threaded %>
 			<!-- note that the action is left blank and filled in with JS because otherwise the
 				recursive template loses context of what to fill in, so we use our top level form -->
-			<form method="POST" action="" class="replyForm">
+			<form method="POST" action="" class="replyForm <% if not $Top.Options.ShowReply %>hiddenreplies<% end_if %>" >
 				<input type="hidden" value="$SecurityID" name="SecurityID" />
 				<input type="hidden" name="ParentID" value="$ID" />
 				<textarea placeholder="Add reply..." name="Content" class="expandable postContent"></textarea>

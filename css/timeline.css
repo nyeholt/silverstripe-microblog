@@ -75,9 +75,12 @@ form.replyForm {
 }
 
 form.replyForm {
-	display: none;
 	margin-left: 10px;
 	margin-bottom: 10px;
+}
+
+form.replyForm.hiddenreplies {
+	display: none;
 }
 
 div.uploadForm {

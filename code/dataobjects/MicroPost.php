@@ -39,7 +39,6 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		'Rateable',
 		'Restrictable',
 		'TaggableExtension',
-//		'SyncroableExtension',
 	);
 
 	private static $summary_fields = array(
