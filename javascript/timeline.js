@@ -17,7 +17,14 @@ window.Microblog = window.Microblog || {}
 		
 		var maxId = 0, lastId = 0;
 		
+		var currentOffset = null;
+		
 		var calcMaxMinPosts = function () {
+			
+			if (!currentOffset) {
+				currentOffset = $('input[name=postOffset]').val();
+			}
+			
 			$('div.microPost').each(function (index) {
 				var postId = parseInt($(this).attr('data-id'));
 				if (postId > maxId) {
@@ -70,8 +77,17 @@ window.Microblog = window.Microblog || {}
 			}
 
 			if (lastId > 0) {
+				// see what we're sorting by
+				var sortBy = $('input[name=timelineSort]').val();
+				var params = {};
+				if (sortBy) {
+					params.sort = sortBy;
+				}
+				if (currentOffset) {
+					params.offset = currentOffset;
+				}
 				var restrict = {before: lastId};
-				pendingLoad = getPosts(restrict, true).done(function () {
+				pendingLoad = getPosts(params, true).done(function () {
 					pendingLoad = null;
 				});
 				return pendingLoad;
@@ -87,6 +103,8 @@ window.Microblog = window.Microblog || {}
 				postContainer.empty();
 				if (data && data.length > 0) {
 					postContainer.append(data);
+					
+					currentOffset = postContainer.find('input[name=postOffset]').val();
 					
 					postContainer.find('div.microPost').each (function () {
 						var me = $(this);

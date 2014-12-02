@@ -379,9 +379,9 @@ class TimelineController extends ContentController {
 		$replies = (bool) $this->owner->getRequest()->getVar('replies');
 		
 		$since = $this->owner->getRequest()->getVar('since');
-		$offset = (int) $this->owner->getRequest()->getVar('before');
-		if (!$offset) {
-			$offset = false;
+		$before = (int) $this->owner->getRequest()->getVar('before');
+		if (!$before) {
+			$before = false;
 		}
 		
 		$tags = $this->owner->getRequest()->getVar('tags') ? $this->owner->getRequest()->getVar('tags') : '';
@@ -396,8 +396,10 @@ class TimelineController extends ContentController {
 		if (!$sort) {
 			$sort = 'ID';
 		}
-
-		$timeline = $this->owner->microBlogService->getStatusUpdates(null, $sort, $since, $offset, !$replies, $tags);
+		
+		$offset = $this->request->getVar('offset');
+		
+		$timeline = $this->owner->microBlogService->getStatusUpdates(null, $sort, $since, $before, !$replies, $tags, $offset);
 		
 		$props = array(
 			'Posts' => $timeline, 

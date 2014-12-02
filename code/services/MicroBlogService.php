@@ -246,19 +246,18 @@ class MicroBlogService {
 	 * @param type $beforeTime
 	 * @param type $number 
 	 */
-	public function getStatusUpdates(DataObject $member, $sortBy = 'ID', $since = 0, $before = false, $topLevelOnly = true, $tags = array(), $number = 10) {
-	
+	public function getStatusUpdates(DataObject $member, $sortBy = 'ID', $since = 0, $before = false, $topLevelOnly = true, $tags = array(), $offset = 0, $number = 10) {
 		if ($member && $member->ID) {
 			$number = (int) $number;
 			$userIds[] = $member->ProfileID;
 			$filter = array(
 				'ThreadOwnerID'		=> $userIds, 
 			);
-			return $this->microPostList($filter, $sortBy, $since, $before, $topLevelOnly, $tags, $number);
+			return $this->microPostList($filter, $sortBy, $since, $before, $topLevelOnly, $tags, $offset, $number);
 		} else {
 			// otherwise, we're implying that we ONLY want 'public' updates
 			$filter = array(); // array('PublicAccess'	=> 1);
-			return $this->microPostList($filter, $sortBy, $since, $before, $topLevelOnly, $tags, $number);
+			return $this->microPostList($filter, $sortBy, $since, $before, $topLevelOnly, $tags, $offset, $number);
 		}
 	}
 
@@ -270,7 +269,7 @@ class MicroBlogService {
 	 * @param type $beforeTime
 	 * @param type $number 
 	 */
-	public function getTimeline(DataObject $member, $sortBy = 'ID',  $since = 0, $before = false, $topLevelOnly = true, $tags = array(), $number = 10) {
+	public function getTimeline(DataObject $member, $sortBy = 'ID',  $since = 0, $before = false, $topLevelOnly = true, $tags = array(), $offset = 0, $number = 10) {
 		$following = $this->friendsList($member);
 
 		// TODO Following points to a list of Profile IDs, NOT user ids.
@@ -287,7 +286,7 @@ class MicroBlogService {
 			'OwnerProfileID' => $userIds, 
 		);
 		
-		return $this->microPostList($filter, $sortBy, $since, $before, $topLevelOnly, $tags, $number);
+		return $this->microPostList($filter, $sortBy, $since, $before, $topLevelOnly, $tags, $offset, $number);
 	}
 	
 	/**
@@ -301,25 +300,31 @@ class MicroBlogService {
 	 * 
 	 * @return DataList
 	 */
-	public function getRepliesTo(DataObject $to, $sortBy = 'ID', $since = 0, $before = false, $topLevelOnly = false, $tags = array(), $number = 100) {
+	public function getRepliesTo(DataObject $to, $sortBy = 'ID', $since = 0, $before = false, $topLevelOnly = false, $tags = array(), $offset = 0, $number = 100) {
 		$filter = array(
 			'ParentID'			=> $to->ID, 
 		);
-		return $this->microPostList($filter, $sortBy, $since, $before, $topLevelOnly, $tags, $number);
+		return $this->microPostList($filter, $sortBy, $since, $before, $topLevelOnly, $tags, $offset, $number);
 	}
 	
 	/**
 	 * Create a list of posts depending on a filter and time range
 	 * 
-	 * @param type $filter
-	 * @param type $since
-	 * @param type $beforePost
+	 * @param array $filter
+	 *			
+	 * @param int $since
+	 *				The ID after which to get posts 
+	 * @param int $before
+	 *				The ID or pagination offset from which to get posts before. If $sortBy is
+	 *              ID, then this is assumed to be the offset to pass into limit, otherwise it's the 
+	 *              ID which posts must be less than. 
 	 * @param type $topLevelOnly
+	 *              Only retrieve the top level of posts. 
 	 * @param type $number
 	 * 
 	 * @return DataList 
 	 */
-	protected function microPostList($filter, $sortBy = 'ID', $since = 0, $before = false, $topLevelOnly = true, $tags = array(), $number = 10) {
+	protected function microPostList($filter, $sortBy = 'ID', $since = 0, $before = false, $topLevelOnly = true, $tags = array(), $offset = 0, $number = 10) {
 		if ($topLevelOnly) {
 			$filter['ParentID'] = '0';
 		}
@@ -334,7 +339,7 @@ class MicroBlogService {
 		if ($before !== false) {
 			$before = (int) $before;
 			$filter['ID:LessThan'] = $before;
-		}
+		} 
 
 		$canSort = array('WilsonRating', 'ID', 'Created');
 		$sort = array();
@@ -342,16 +347,17 @@ class MicroBlogService {
 		if (is_string($sortBy)) {
 			if (in_array($sortBy, $canSort)) {
 				$sort[$sortBy] = 'DESC';
-			}
+			} 
 
-			// final sort if none other specified
+			// final sort as a tie breaker
 			$sort['ID'] = 'DESC';
 		} else {
 			// $sort = $sortBy;
 			$sort = array('ID' => 'DESC');
 		}
 
-		$limit = $number ? '0, ' . (int) $number : '';
+		$offset = (int) $offset;
+		$limit = $number ? $offset . ', ' . (int) $number : '';
 
 		if (count($tags)) {
 			$filter['Tags.Title'] = $tags;

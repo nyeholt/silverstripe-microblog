@@ -9,7 +9,7 @@
 
 <% loop Posts %>
 	<div class="microPost <% if $ParentID > 0 %>hasparent<% else %>toplevel<% end_if %> <% if $isUnreadByUser %>unread<% end_if %>" 
-		 data-id="$ID" data-owner="$Owner.ID" data-parent="$ParentID" id="post$ID" data-rating="$WilsonRating" data-sortby="$Top.SortBy.ATT" data-editable="1">
+		 data-id="$ID" data-owner="$Owner.ID" data-parent="$ParentID" id="post$ID" data-rating="$WilsonRating" data-editable="1">
 		<div class="microPostContent">
 			<div class="postOptions">
 				<% if $Top.Options.Voting %>
