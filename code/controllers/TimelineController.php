@@ -171,7 +171,7 @@ class TimelineController extends ContentController {
 				
 			}
 			
-			$posts = $this->microBlogService->getStatusUpdates(Member::create(), array('ID' => 'ASC'), $since, false, false, array(), 1);
+			$posts = $this->microBlogService->getStatusUpdates(Member::create(), array('ID' => 'ASC'), $since, false, false, array(), 0, 1);
 			$post = $posts->first();
 
 			$this->Options()->Replies = true;
