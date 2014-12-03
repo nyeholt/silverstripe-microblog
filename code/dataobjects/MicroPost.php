@@ -17,8 +17,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 	);
 
 	private static $has_one = array(
-		'ThreadOwner'	=> 'SilverStripeAustralia\Profiles\MemberProfile',			// owner of the thread this is in
-		'OwnerProfile'	=> 'SilverStripeAustralia\Profiles\MemberProfile',			// owner of the actual post itself
+		'ThreadOwner'	=> 'Member',			// owner of the thread this is in
 		'Parent'		=> 'MicroPost',
 		'Thread'		=> 'MicroPost',
 		'Attachment'	=> 'File',
@@ -95,12 +94,11 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 			if ($this->ParentID) {
 				$this->ThreadOwnerID = $this->Parent()->ThreadOwnerID;
 			} else {
-				$this->ThreadOwnerID = $member->ProfileID;
+				$this->ThreadOwnerID = $member->ID;
 			}
 		}
 
-		if (!$this->OwnerProfileID) {
-			$this->OwnerProfileID = $member->ProfileID;
+		if (!$this->Author) {
 			$this->Author = $this->securityContext->getMember()->getTitle();
 		}
 		
@@ -284,7 +282,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		unset($props['PermSourceID']);
 		
 		$props['Post_ThreadEmail'] = $this->ThreadOwner()->Email;
-		$props['Post_OwnerEmail'] = $this->OwnerProfile()->Email;
+		$props['Post_OwnerEmail'] = $this->Owner()->Email;
 		
 		return $props;
 	}
@@ -294,16 +292,16 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		
 		// now make sure the other things are aligned
 		if (isset($properties->Post_ThreadEmail)) {
-			$profile = DataList::create('PublicProfile')->filter(array('Email' => $properties->Post_ThreadEmail))->first();
-			if ($profile) {
-				$this->ThreadOwnerID = $profile->ID;
+			$member = DataList::create('Member')->filter(array('Email' => $properties->Post_ThreadEmail))->first();
+			if ($member) {
+				$this->ThreadOwnerID = $member->ID;
 			}
 		}
 
 		if (isset($properties->Post_OwnerEmail)) {
-			$profile = DataList::create('PublicProfile')->filter(array('Email' => $properties->Post_OwnerEmail))->first();
-			if ($profile) {
-				$this->OwnerProfileID = $profile->ID;
+			$member = DataList::create('Member')->filter(array('Email' => $properties->Post_OwnerEmail))->first();
+			if ($member) {
+				$this->OwnerID = $member->ID;
 			}
 		}
 

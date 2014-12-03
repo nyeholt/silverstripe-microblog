@@ -140,12 +140,10 @@ class TimelineController extends ContentController {
 	public function MemberDetails() {
 		$m = $this->securityContext->getMember();
 		if ($m) {
-			$m = $m->publicProfile();
 			return Varchar::create_field('Varchar', Convert::raw2json(array(
 				'Title'			=> $m->getTitle(),
 				'FirstName'		=> $m->FirstName,
 				'Surname'		=> $m->Surname,
-				'ProfileID'		=> $m->ID,
 				'MemberID'		=> $m->MemberID,
 			)));
 		}

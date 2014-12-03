@@ -42,7 +42,7 @@ POST;
 
 		$svc = singleton('MicroBlogService');
 		
-		$svc->addFriendship($memberOne->Profile(), $memberTwo->Profile());
+		$svc->addFriendship($memberOne, $memberTwo);
 		
 		// gah - ss3's testing setup needs to be better sorted to be able to do this bit...
 	}

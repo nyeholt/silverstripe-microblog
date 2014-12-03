@@ -141,13 +141,11 @@ class MicroBlogMember extends DataExtension {
 
 		$changed = $this->owner->isChanged('Username') || $this->owner->isChanged('FirstName') || $this->owner->isChanged('Surname') || $this->owner->isChanged('Email');
 
-		if ($this->owner->ID && !$this->owner->ProfileID) {
-			$profile = \SilverStripeAustralia\Profiles\MemberProfile::create();
-			$this->syncProfile($profile);
-			$this->owner->ProfileID = $profile->ID;
-		} else if ($this->owner->ProfileID && $changed) {
-			$this->syncProfile($this->owner->Profile());
-		}
+//		if ($this->owner->ID) {
+//			$this->syncProfile($profile);
+//		} else if ($this->owner->ProfileID && $changed) {
+//			$this->syncProfile($this->owner->Profile());
+//		}
 		
 		$this->getGroupFor(self::FRIENDS);
 		$this->getGroupFor(self::FOLLOWERS);
@@ -161,29 +159,12 @@ class MicroBlogMember extends DataExtension {
 		parent::onAfterWrite();
 	}
 
-	protected function syncProfile($profile) {
-		$profile->Username = $this->owner->Username;
-		$profile->Email = $this->owner->Email;
-		$profile->MemberID = $this->owner->ID;
-		$profile->Votes = $this->owner->VotesToGive;
-		$profile->write();
-	}
-
-	public function publicProfile() {
-		if ($this->owner->ID && !$this->owner->ProfileID) {
-			$profile = \SilverStripeAustralia\Profiles\MemberProfile::create();
-			$this->syncProfile($profile);
-			$this->owner->ProfileID = $profile->ID;
-		}
-		return $this->owner->Profile();
-	}
-
 	public function canView() {
 		return true;
 	}
 	
 	public function canVote() {
-		return $this->VotesToGive > 0;
+		return $this->owner->VotesToGive > 0;
 	}
 	
 	/**

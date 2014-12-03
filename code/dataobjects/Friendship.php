@@ -13,8 +13,8 @@ class Friendship extends DataObject {
 	);
 	
 	private static $has_one = array(
-		'Initiator'			=> 'PublicProfile',
-		'Other'				=> 'PublicProfile',
+		'Initiator'			=> 'Member',
+		'Other'				=> 'Member',
 	);
 	
 	private static $defaults = array(
@@ -25,7 +25,7 @@ class Friendship extends DataObject {
 	 * get the 'other' view of this friendship 
 	 */
 	public function reciprocal() {
-		return DataList::create('Friendship')->filter(array(
+		return Friendship::get()->filter(array(
 			'InitiatorID'		=> $this->OtherID,
 			'OtherID'			=> $this->InitiatorID
 		))->first();
@@ -39,7 +39,7 @@ class Friendship extends DataObject {
 		if (!$member) {
 			$member = Member::currentUser();
 		}
-		return $member->ProfileID == $this->InitiatorID;
+		return $member->ID == $this->InitiatorID;
 	}
 	
 	public function canDelete($member = null) {
