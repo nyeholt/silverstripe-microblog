@@ -31,9 +31,10 @@ class ProfileDashlet_Controller extends Dashlet_Controller {
 		$fields = array(
 			'PostPermission'
 		);
-		$form->saveInto(Member::currentUser(), $fields);
-		Member::currentUser()->write();
-		Member::currentUser()->updatePostPermissions();
+		$member = Member::currentUser();
+		$form->saveInto($member, $fields);
+		$member->write();
+		$member->updatePostPermissions();
 		return $this->SettingsForm()->forAjaxTemplate();
 	}
 }

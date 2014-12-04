@@ -287,10 +287,10 @@ class MicroBlogService {
 			$userIds = $userIds->toArray();
 		}
 
-		$userIds[] = $member->ProfileID;
+		$userIds[] = $member->ID;
 		
 		$filter = array(
-			'OwnerProfileID' => $userIds, 
+			'OwnerID' => $userIds, 
 		);
 		
 		return $this->microPostList($filter, $sortBy, $since, $before, $topLevelOnly, $tags, $offset, $number);
@@ -396,7 +396,7 @@ class MicroBlogService {
 		$current = (int) $this->securityContext->getMember()->ID;
 		$filter = '("Username" LIKE \'%' . $term .'%\' OR "FirstName" LIKE \'%' . $term .'%\' OR "Surname" LIKE \'%' . $term . '%\') AND "ID" <> ' . $current;
 
-		$items = DataList::create('SilverStripeAustralia\Profiles\MemberProfile')->where($filter)->restrict();
+		$items = DataList::create('Member')->where($filter)->restrict();
 		
 		return $items;
 	}
@@ -416,11 +416,11 @@ class MicroBlogService {
 			throw new PermissionDeniedException('Read', 'Cannot read those users');
 		}
 
-		if ($member->MemberID != $this->securityContext->getMember()->ID) {
+		if ($member->ID != $this->securityContext->getMember()->ID) {
 			throw new PermissionDeniedException('Write', 'Cannot create a friendship for that user');
 		}
 
-		$existing = DataList::create('Friendship')->filter(array(
+		$existing = Friendship::get()->filter(array(
 			'InitiatorID'		=> $member->ID,
 			'OtherID'			=> $followed->ID,
 		))->first();
@@ -440,8 +440,8 @@ class MicroBlogService {
 		$reciprocal = $friendship->reciprocal();
 
 		// so we definitely add the 'member' to the 'followers' group of $followed
-		$followers = $followed->member()->getGroupFor(MicroBlogMember::FOLLOWERS);
-		$member->member()->Groups()->add($followers);
+		$followers = $followed->getGroupFor(MicroBlogMember::FOLLOWERS);
+		$member->Groups()->add($followers);
 
 		if ($reciprocal) {
 			$reciprocal->Status = 'Approved';
@@ -450,11 +450,11 @@ class MicroBlogService {
 			$friendship->Status = 'Approved';
 			
 			// add to each other's friends groups
-			$friends = $followed->member()->getGroupFor(MicroBlogMember::FRIENDS);
-			$member->member()->Groups()->add($friends);
+			$friends = $followed->getGroupFor(MicroBlogMember::FRIENDS);
+			$member->Groups()->add($friends);
 			
-			$friends = $member->member()->getGroupFor(MicroBlogMember::FRIENDS);
-			$followed->member()->Groups()->add($friends);
+			$friends = $member->getGroupFor(MicroBlogMember::FRIENDS);
+			$followed->Groups()->add($friends);
 		}
 
 		$friendship->write();
@@ -478,15 +478,15 @@ class MicroBlogService {
 					$reciprocal->write();
 				}
 				
-				$friends = $relationship->Other()->member()->getGroupFor(MicroBlogMember::FRIENDS);
-				$relationship->Initiator()->member()->Groups()->remove($friends);
+				$friends = $relationship->Other()->getGroupFor(MicroBlogMember::FRIENDS);
+				$relationship->Initiator()->Groups()->remove($friends);
 				
-				$friends = $relationship->Initiator()->member()->getGroupFor(MicroBlogMember::FRIENDS);
-				$relationship->Other()->member()->Groups()->remove($friends);
+				$friends = $relationship->Initiator()->getGroupFor(MicroBlogMember::FRIENDS);
+				$relationship->Other()->Groups()->remove($friends);
 			}
 			
-			$followers = $relationship->Other()->member()->getGroupFor(MicroBlogMember::FOLLOWERS);
-			$relationship->Initiator()->member()->Groups()->remove($followers);
+			$followers = $relationship->Other()->getGroupFor(MicroBlogMember::FOLLOWERS);
+			$relationship->Initiator()->Groups()->remove($followers);
 			
 			$relationship->delete();
 			return $relationship;
@@ -503,7 +503,7 @@ class MicroBlogService {
 		if (!$member) {
 			return;
 		}
-		$list = DataList::create('Friendship')->filter(array('InitiatorID' => $member->Profile()->ID));
+		$list = DataList::create('Friendship')->filter(array('InitiatorID' => $member->ID));
 		return $list;
 	}
 	

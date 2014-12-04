@@ -14,9 +14,9 @@
 		$('input.addFriendButton').entwine({
 			onclick: function () {
 				var params = {
-					'memberType': 'PublicProfile',
+					'memberType': 'Member',
 					'memberID': $(this).parents('div.FriendsDashlet').find('input[name=MemberID]').val(),
-					'followedType': 'PublicProfile',
+					'followedType': 'Member',
 					'followedID': $(this).attr('data-id')
 				};
 

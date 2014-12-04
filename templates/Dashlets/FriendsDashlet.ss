@@ -1,5 +1,5 @@
-<% if CurrentMember %>
-	<input type="hidden" value="$Owner.Profile.ID" name="MemberID" />
+<% if $ContextUser %>
+	<input type="hidden" value="$Owner.ID" name="MemberID" />
 	<% if $CurrentMember.ID != $OwnerID %>
 		<!-- add the user we're looking at as a friend -->
 		
