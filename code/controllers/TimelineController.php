@@ -144,7 +144,7 @@ class TimelineController extends ContentController {
 				'Title'			=> $m->getTitle(),
 				'FirstName'		=> $m->FirstName,
 				'Surname'		=> $m->Surname,
-				'MemberID'		=> $m->MemberID,
+				'MemberID'		=> $m->ID,
 			)));
 		}
 	}
