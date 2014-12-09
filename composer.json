@@ -16,7 +16,6 @@
 		"silverstripe/multivaluefield": "dev-master",
 		"silverstripe/queuedjobs": "dev-master",
 		"silverstripe/restrictedobjects": "dev-master",
-		"silverstripe/webservices": "dev-master",
-		"silverstripe/enhancedprofiles": "dev-master"
+		"silverstripe/webservices": "dev-master"
 	}
 }
