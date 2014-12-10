@@ -103,10 +103,6 @@ class MicroBlogMember extends DataExtension {
 
 		if (!strlen($this->owner->Username)) {
 			
-			if ($this->owner->FirstName == 'Default Admin') {
-				$this->owner->Email = 'defaultadmin';
-			}
-
 			if ($this->owner->Email) {
 				$name = strpos($this->owner->Email, '@') !== false ? substr($this->owner->Email, 0, strpos($this->owner->Email, '@')) : $this->owner->Email;
 				$name = preg_replace('/[^a-zA-Z]/i', '', $name);
