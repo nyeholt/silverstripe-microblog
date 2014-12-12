@@ -13,9 +13,9 @@
 	"require":
 	{
 		"silverstripe/cms": "~3.1",
-		"silverstripe/multivaluefield": "dev-master",
-		"silverstripe/queuedjobs": "dev-master",
-		"silverstripe/restrictedobjects": "dev-master",
-		"silverstripe/webservices": "dev-master"
+		"silverstripe/multivaluefield": "~2.0",
+		"silverstripe/queuedjobs": "~2.2",
+		"silverstripe/restrictedobjects": "~2.0",
+		"silverstripe/webservices": "~3.1"
 	}
 }
