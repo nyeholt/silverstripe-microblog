@@ -97,6 +97,9 @@ class MicroBlogMember extends DataExtension {
 	
 	public function updateCMSFields(\FieldList $fields) {
 		$fields->removeByName('UploadFolder');
+		
+		$opts = array_combine(self::$permission_options, self::$permission_options);
+		$fields->replaceField('PostPermission', DropdownField::create('PostPermission', _t('ProfileDashlet.POST_PERM', 'Post permissions'), $opts));
 	}
 	
 	public function onBeforeWrite() {
