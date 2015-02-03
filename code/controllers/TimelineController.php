@@ -239,13 +239,10 @@ class TimelineController extends ContentController {
 			$target = isset($data['PostTarget']) ? $data['PostTarget'] : null;
 			$post = $this->microBlogService->createPost($this->securityContext->getMember(), $data['Content'], $parentId, $target);
 			
-			// add any URL contributed tags
-			if ($tags = $this->getRequest()->getVar('tags')) {
-				$tags = explode(',', $tags);
-				foreach ($tags as $tag) {
-					if (strlen($tag)) {
-						$post->tag($tag);
-					}
+			$tags = $this->tagsFromRequest();
+			foreach ($tags as $tag) {
+				if (strlen($tag)) {
+					$post->tag($tag);
 				}
 			}
 		}
@@ -263,7 +260,7 @@ class TimelineController extends ContentController {
 		
 		$this->redirectBack();
 	}
-	
+
 	/**
 	 * TODO Update to match new api... 
 	 */
@@ -371,6 +368,32 @@ class TimelineController extends ContentController {
 	}
 	
 	/**
+	 * Get tags submitted in this request
+	 * 
+	 * @return array
+	 */
+	protected function tagsFromRequest() {
+		$tags = $this->owner->getRequest()->getVar('tags') ? $this->owner->getRequest()->getVar('tags') : '';
+
+		if (strlen($tags)) {
+			$tags = explode(',', $tags);
+		} else {
+			$tags = array();
+		}
+		
+		return $tags;
+	}
+	
+	/**
+	 * What tags should be used to filter the list of posts that are going to be displayed?
+	 * 
+	 * @return array
+	 */
+	public function getFilterTags() {
+		return $this->tagsFromRequest();
+	}
+	
+	/**
 	 * Retrieve a flat list of posts, regardless of specific hierarchy
 	 */
 	public function flatlist() {
@@ -382,13 +405,7 @@ class TimelineController extends ContentController {
 			$before = false;
 		}
 		
-		$tags = $this->owner->getRequest()->getVar('tags') ? $this->owner->getRequest()->getVar('tags') : '';
-
-		if (strlen($tags)) {
-			$tags = explode(',', $tags);
-		} else {
-			$tags = array();
-		}
+		$tags = $this->getFilterTags();
 		
 		$sort = $this->request->getVar('sort');
 		if (!$sort) {
@@ -397,8 +414,13 @@ class TimelineController extends ContentController {
 		
 		$offset = $this->request->getVar('offset');
 		
+		$noReplies = $this->Options()->Replies;
+		if (!$noReplies) {
+			$replies = false;
+		}
+
 		$timeline = $this->owner->microBlogService->getStatusUpdates(null, $sort, $since, $before, !$replies, $tags, $offset);
-		
+
 		$props = array(
 			'Posts' => $timeline, 
 			'Options' => $this->Options(),
@@ -420,18 +442,7 @@ class TimelineController extends ContentController {
 			$offset = false;
 		}
 		
-		$tags = $this->owner->getRequest()->getVar('tags') ? $this->owner->getRequest()->getVar('tags') : '';
-
-		$filter = null;
-		if (strlen($tags)) {
-			$tags = explode(',', $tags);
-			$filter = array(
-				'ParentID'		=> 0,
-				'Tags.Title:ExactMatchMulti' => $tags
-			);
-		} else {
-			$tags = array();
-		}
+		$tags = $this->getFilterTags();
 		
 		$sort = $this->request->getVar('sort');
 		if (!$sort) {
@@ -459,14 +470,8 @@ class TimelineController extends ContentController {
 			$offset = false;
 		}
 		
-		$tags = $this->request->getVar('tags') ? $this->request->getVar('tags') : '';
+		$tags = $this->getFilterTags();
 
-		if (strlen($tags)) {
-			$tags = explode(',', $tags);
-		} else {
-			$tags = array();
-		}
-		
 		$sort = $this->request->getVar('sort');
 		if (!$sort) {
 			$sort = 'ID';

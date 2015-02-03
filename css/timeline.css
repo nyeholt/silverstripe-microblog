@@ -137,6 +137,10 @@ span.edited-mark {
 	font-size: 120%;
 }
 
+.replyForm input[type=submit] {
+	float: none;
+}
+
 @media screen and (max-width: 640px) {
 	div.postOptions {
 		font-size: 10px;

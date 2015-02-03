@@ -49,6 +49,7 @@ window.Microblog = window.Microblog || {}
 			}
 
 			loading = true;
+
 			pendingUpdate = getPosts({since: since, replies: 1});
 			
 			if (!pendingUpdate) {
