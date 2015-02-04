@@ -53,3 +53,6 @@
 	</div>
 
 <% end_if %>
+
+
+<% include PermissionDialog %>

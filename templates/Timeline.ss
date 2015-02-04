@@ -28,6 +28,8 @@
 				&middot;
 				<% end_if %>
 
+				<a href="#" class="permissionManager" data-object='{"ID": "$ID", "Type": "MicroPost"}'>access</a>
+				
 				<abbr class="timeago postTime" title="$Created" data-created="$Created">$Created.Nice</abbr> 
 				<% if $isEdited %><span class="edited-mark" title="Edited at $LastEdited">*</span><% end_if %>
 				
