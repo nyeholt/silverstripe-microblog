@@ -26,8 +26,8 @@ class MicroBlogMember extends DataExtension {
 		'UploadFolder'			=> 'Folder',
 
 		// where all our friends get added 
-		'FriendsGroup'			=> 'Group',
-		'FollowersGroup'		=> 'Group',
+		'FriendsGroup'			=> 'SimpleMemberList',
+		'FollowersGroup'		=> 'SimpleMemberList',
 		
 		'MyPermSource'			=> 'PermissionParent',
 	);
@@ -107,8 +107,8 @@ class MicroBlogMember extends DataExtension {
 		if (!strlen($this->owner->Username)) {
 			
 			if ($this->owner->Email) {
-				$name = strpos($this->owner->Email, '@') !== false ? substr($this->owner->Email, 0, strpos($this->owner->Email, '@')) : $this->owner->Email;
-				$name = preg_replace('/[^a-zA-Z]/i', '', $name);
+				$name = $this->owner->Email;
+				$name = preg_replace("/[^[:alnum:][:space:]]/ui", '_', $name);
 				$this->owner->Username = $name;
 			} else {
 				throw new ValidationException("Cannot create user without a username");
@@ -231,7 +231,7 @@ class MicroBlogMember extends DataExtension {
 				$this->permissionService->grant($source, 'View', $this->getGroupFor(self::FRIENDS));
 				break;
 			}
-			
+
 			case 'Public': {
 				$source->PublicAccess = true;
 				break;
@@ -276,24 +276,18 @@ class MicroBlogMember extends DataExtension {
 		}
 
 		$title = $this->owner->Email . ' ' . $type;
-		$group = DataList::create('Group')->filter(array('Title' => $title))->first();
+		$group = SimpleMemberList::get()->filter(array('Title' => $title))->first();
 		if ($group && $group->exists()) {
 			$this->owner->$groupTypeID = $group->ID;
 			return $group;
 		} else {
 			$group = $this->transactionManager->runAsAdmin(function () use ($title) {
-				$grouping = Group::get()->filter('Title', Config::inst()->get('MicroBlogMember', 'microblog_group_name'))->first();
-				if (!$grouping) {
-					$grouping = Group::create(array('Title', Config::inst()->get('MicroBlogMember', 'microblog_group_name')));
-					$grouping->write();
-				}
-
-				$group = Group::create();
+				$group = SimpleMemberList::create();
 				$group->Title = $title;
-				$group->ParentID = $grouping->ID;
 				$group->write();
 				return $group;
 			});
+
 			if ($group) {
 				$this->owner->$groupTypeID = $group->ID;
 			}
