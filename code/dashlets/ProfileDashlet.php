@@ -1,5 +1,5 @@
 <?php
-
+if (class_exists('Dashlet')) {
 /**
  * @author marcus@silverstripe.com.au
  * @license BSD License http://silverstripe.org/bsd-license/
@@ -37,4 +37,5 @@ class ProfileDashlet_Controller extends Dashlet_Controller {
 		$member->updatePostPermissions();
 		return $this->SettingsForm()->forAjaxTemplate();
 	}
+}
 }

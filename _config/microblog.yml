@@ -22,3 +22,11 @@ Injector:
 
 BBCodeParser:
   allow_smilies: 1
+
+---
+Name: dashboard_integration
+Only:
+  moduleexists: 'frontend-dashboards'
+---
+TimelineController:
+  jquery_lib: 'frontend-dashboards/javascript/jquery-1.10.2.min.js'

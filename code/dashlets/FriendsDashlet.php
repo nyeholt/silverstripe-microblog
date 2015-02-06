@@ -1,5 +1,5 @@
 <?php
-
+if (class_exists('Dashlet')) {
 /**
  * @author marcus@silverstripe.com.au
  * @license BSD License http://silverstripe.org/bsd-license/
@@ -59,4 +59,5 @@ class FriendsDashlet_Controller extends Dashlet_Controller {
 		
 		return '';
 	}
+}
 }

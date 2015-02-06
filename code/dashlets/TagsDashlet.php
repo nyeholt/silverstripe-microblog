@@ -1,5 +1,5 @@
 <?php
-
+if (class_exists('Dashlet')) {
 /**
  * Displays the list of tags in the system
  *
@@ -47,4 +47,5 @@ class TagsDashlet_Controller extends Dashlet_Controller {
 		}
 		return $tags;
 	}
+}
 }
