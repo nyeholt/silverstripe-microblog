@@ -105,9 +105,9 @@ class MicroBlogMember extends DataExtension {
 	public function onBeforeWrite() {
 
 		if (!strlen($this->owner->Username)) {
-			
-			if ($this->owner->Email) {
-				$name = $this->owner->Email;
+			$field = $this->owner->Email ? 'Email' : 'FirstName';
+			if ($this->owner->$field) {
+				$name = $this->owner->$field;
 				$name = preg_replace("/[^[:alnum:][:space:]]/ui", '_', $name);
 				$this->owner->Username = $name;
 			} else {
