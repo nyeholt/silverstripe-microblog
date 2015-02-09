@@ -100,12 +100,13 @@ class MicroBlogService {
 	 *			The "target" of this post; may be a data object (ie context of the post) or a user/group
 	 * @return MicroPost 
 	 */
-	public function createPost(DataObject $member, $content, $parentId = 0, $target = null) {
+	public function createPost(DataObject $member, $content, $title = null, $parentId = 0, $target = null) {
 		if (!$member) {
 			$member = $this->securityContext->getMember();
 		}
 		$post = MicroPost::create();
 		$post->Content = $content;
+		$post->Title = $title;
 		$post->OwnerID = $member->ID;
 		if ($parentId) {
 			$parent = MicroPost::get()->restrictedByID($parentId);

@@ -31,6 +31,12 @@ $Content
 		<% with PostForm %>
 		<form $FormAttributes >
 			<% with FieldMap %>
+
+			<% if $Top.Options.UserTitle %>
+			<label class="postform-label" for="Form_PostForm_Title">Title</label>
+			$Title
+			<% end_if %>
+			<label class="postform-label" for="Form_PostForm_Content">Post content</label>
 			$Content
 			<input type="hidden" name="SecurityID" value="$SecurityID" />
 			$Up.Actions

@@ -8,6 +8,19 @@ div.postForm > form {
 	padding: 10px;
 }
 
+div.postForm {
+	overflow: auto;
+}
+
+.postform-label {
+position:absolute;
+left:-10000px;
+top:auto;
+width:1px;
+height:1px;
+overflow:hidden;
+}
+
 div.postForm textarea {
 	display: block;
 }
@@ -28,6 +41,11 @@ textarea[name=Content].expanded-content {
 	height: 50px;
 }
 
+h3.micro-post-title {
+	font-weight: bold;
+	font-size: 120%;
+}
+
 div.microPost {
 	padding: 10px;
 	padding-right: 0px;
@@ -45,6 +63,10 @@ div.microPost.hasparent {
 	margin-left: 10px;
 	/*border: 1px solid #ddd;*/
 	border-top: 1px dashed #dfdfdf;
+}
+
+div.microPost .collapsed-post {
+	display: none;
 }
 
 div.postImage {

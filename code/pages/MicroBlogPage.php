@@ -43,10 +43,7 @@ class MicroBlogPage extends Page {
 	}
 }
 
-
 class MicroBlogPage_Controller extends TimelineController {
-	
-	
 	public $microBlogService;
 	public $securityContext;
 

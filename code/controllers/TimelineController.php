@@ -19,8 +19,12 @@ class TimelineController extends ContentController {
 		'Replies'			=> true,
 		'Voting'			=> true,
 //		'Edits'				=> true,
+		
 		'ShowReply'			=> true,
 		'Sorting'			=> false,
+		'UserTitle'			=> false,
+		'ShowTitlesOnly'	=> false,
+		'ShowTitlesInPost'	=> false,
 	);
 
 	private static $allowed_actions = array(
@@ -173,9 +177,11 @@ class TimelineController extends ContentController {
 			$posts = $this->microBlogService->getStatusUpdates(Member::create(), array('ID' => 'ASC'), $since, false, false, array(), 0, 1);
 			$post = $posts->first();
 
-			$this->Options()->Replies = true;
+			$options = $this->Options();
+			$options->Replies = true;
+			$options->ShowTitlesOnly = false;
 			
-			$timeline = trim($this->customise(array('Posts' => $posts, 'Options' => $this->Options()))->renderWith('Timeline'));
+			$timeline = trim($this->customise(array('Post' => $id, 'ForceContent' => true, 'Posts' => $posts, 'Options' => $options))->renderWith('Timeline'));
 			
 			if (Director::is_ajax()) {
 				return $timeline;
@@ -238,8 +244,9 @@ class TimelineController extends ContentController {
 		if (isset($data['Content']) && strlen($data['Content'])) {
 			$parentId = isset($data['ParentID']) ? $data['ParentID'] : 0;
 			$target = isset($data['PostTarget']) ? $data['PostTarget'] : null;
-			$post = $this->microBlogService->createPost($this->securityContext->getMember(), $data['Content'], $parentId, $target);
-			
+			$title = isset($data['Title']) ? $data['Title'] : null;
+			$post = $this->microBlogService->createPost($this->securityContext->getMember(), $data['Content'], $title, $parentId, $target);
+
 			$tags = $this->tagsFromRequest();
 			foreach ($tags as $tag) {
 				if (strlen($tag)) {
@@ -303,9 +310,16 @@ class TimelineController extends ContentController {
 
 	
 	public function PostForm () {
-		$fields = new FieldList(
-			$taf = new TextareaField('Content', _t('MicroBlog.POST', 'Post'))
-		);
+		$fields = FieldList::create();
+		
+		if ($this->Options()->UserTitle) {
+			$fields->push($title = TextField::create('Title', _t('MicroBlog.TITLE', 'Title')));
+			$title->setAttribute('placeholder', _t('MicroBlog.TITLE_PLACEHOLDER', 'Title (optional)'));
+		}
+		
+		$fields->push($taf = new TextareaField('Content', _t('MicroBlog.POST', 'Post')));
+		
+		$taf->setAttribute('placeholder', _t('MicroBlog.CONTENT_PLACEHOLDER', 'Add content here, eg text or a link'));
 		$taf->setRows(3);
 		$taf->addExtraClass('expandable');
 		$taf->addExtraClass('postContent');
@@ -426,7 +440,8 @@ class TimelineController extends ContentController {
 			'Posts' => $timeline, 
 			'Options' => $this->Options(),
 			'QueryOffset'	=> $timeline->QueryOffset,
-			'SortBy'		=> $sort
+			'SortBy'		=> $sort,
+			'ForceContent'		=> true
 		);
 		return trim($this->owner->customise($props)->renderWith('Timeline'));
 	}

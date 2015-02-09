@@ -47,15 +47,25 @@
 					<% end_if %>
 				<% end_if %>
 			</div>
+
+			<% if $Top.Options.ShowTitlesInPost && $ParentID == 0 %>
+			<h3 class="micro-post-title">
+				<% if $Top.Options.ShowTitlesOnly %>
+				<a class="post-expander" data-id="post$ID" href="$Link" title="Link to view the full text of $Title.ATT">$Title</a>
+				<% else %>
+				$Title
+				<% end_if %>
+			</h3>
+			<% end_if %>
 			
-			<div class="postText">
+			<div class="postText <% if $Top.Options.ShowTitlesOnly %>collapsed-post<% end_if %>">
 			<% include PostContent %>
 			</div>
 			
 			<% if $ParentID == 0 || $Top.Options.Threaded %>
 			<!-- note that the action is left blank and filled in with JS because otherwise the
 				recursive template loses context of what to fill in, so we use our top level form -->
-			<form method="POST" action="" class="replyForm <% if not $Top.Options.ShowReply %>hiddenreplies<% end_if %>" >
+			<form method="POST" action="" class="replyForm <% if not $Top.Options.ShowReply %>hiddenreplies<% end_if %> <% if $Top.Options.ShowTitlesOnly %>collapsed-post<% end_if %>" >
 				<input type="hidden" value="$SecurityID" name="SecurityID" />
 				<input type="hidden" name="ParentID" value="$ID" />
 				<textarea placeholder="Add reply..." name="Content" class="expandable postContent"></textarea>
@@ -63,7 +73,7 @@
 			</form>
 			<% end_if %>
 
-			<div class="postReplies">
+			<div class="postReplies  <% if $Top.Options.ShowTitlesOnly %>collapsed-post<% end_if %>" data-collapsed="">
 				<% if $Top.Options.Replies %>
 				<% if Posts %>
 				<% include Timeline Options=$Top.Options %>
