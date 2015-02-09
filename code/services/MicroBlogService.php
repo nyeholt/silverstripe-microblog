@@ -441,7 +441,7 @@ class MicroBlogService {
 
 		// so we definitely add the 'member' to the 'followers' group of $followed
 		$followers = $followed->getGroupFor(MicroBlogMember::FOLLOWERS);
-		$member->Groups()->add($followers);
+		$followers->Members()->add($member);
 
 		if ($reciprocal) {
 			$reciprocal->Status = 'Approved';
@@ -451,10 +451,11 @@ class MicroBlogService {
 			
 			// add to each other's friends groups
 			$friends = $followed->getGroupFor(MicroBlogMember::FRIENDS);
-			$member->Groups()->add($friends);
+			$friends->Members()->add($member);
+			
 			
 			$friends = $member->getGroupFor(MicroBlogMember::FRIENDS);
-			$followed->Groups()->add($friends);
+			$friends->Members()->add($followed);
 		}
 
 		$friendship->write();
