@@ -283,10 +283,10 @@ window.Microblog = window.Microblog || {}
 				var postId = $(this).attr('data-id');
 				if ($(this).data('toggled')) {
 					$(this).data('toggled', 0);
-					$('#' + postId).find('.expanded-post').addClass('collapsed-post').removeClass('expanded-post');
+					$('#' + postId).addClass('collapsed-post').removeClass('expanded-post');
 				} else {
 					$(this).data('toggled', 1);
-					$('#' + postId).find('.collapsed-post').addClass('expanded-post').removeClass('collapsed-post');
+					$('#' + postId).addClass('expanded-post').removeClass('collapsed-post');
 				}
 				
 				return false;

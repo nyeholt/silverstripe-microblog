@@ -8,7 +8,7 @@
 <% end_if %>
 
 <% loop Posts %>
-	<div class="microPost <% if $ParentID > 0 %>hasparent<% else %>toplevel<% end_if %> <% if $isUnreadByUser %>unread<% end_if %>" 
+	<div class="microPost <% if $ParentID > 0 %>hasparent<% else %>toplevel  <% if $Top.Options.ShowTitlesOnly %>collapsed-post<% end_if %> <% end_if %> <% if $isUnreadByUser %>unread<% end_if %>" 
 		 data-id="$ID" data-owner="$Owner.ID" data-parent="$ParentID" id="post$ID" data-rating="$WilsonRating" data-editable="1">
 		<div class="microPostContent">
 			<div class="postOptions">
@@ -58,14 +58,14 @@
 			</h3>
 			<% end_if %>
 			
-			<div class="postText <% if $Top.Options.ShowTitlesOnly %>collapsed-post<% end_if %>">
+			<div class="postText">
 			<% include PostContent %>
 			</div>
 			
 			<% if $ParentID == 0 || $Top.Options.Threaded %>
 			<!-- note that the action is left blank and filled in with JS because otherwise the
 				recursive template loses context of what to fill in, so we use our top level form -->
-			<form method="POST" action="" class="replyForm <% if not $Top.Options.ShowReply %>hiddenreplies<% end_if %> <% if $Top.Options.ShowTitlesOnly %>collapsed-post<% end_if %>" >
+			<form method="POST" action="" class="replyForm <% if not $Top.Options.ShowReply %>hiddenreplies<% end_if %>" >
 				<input type="hidden" value="$SecurityID" name="SecurityID" />
 				<input type="hidden" name="ParentID" value="$ID" />
 				<textarea placeholder="Add reply..." name="Content" class="expandable postContent"></textarea>
@@ -73,7 +73,7 @@
 			</form>
 			<% end_if %>
 
-			<div class="postReplies  <% if $Top.Options.ShowTitlesOnly %>collapsed-post<% end_if %>" data-collapsed="">
+			<div class="postReplies">
 				<% if $Top.Options.Replies %>
 				<% if Posts %>
 				<% include Timeline Options=$Top.Options %>

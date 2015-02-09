@@ -65,7 +65,7 @@ div.microPost.hasparent {
 	border-top: 1px dashed #dfdfdf;
 }
 
-div.microPost .collapsed-post {
+div.microPost.collapsed-post .postText, div.microPost.collapsed-post .replyForm, div.microPost.collapsed-post .postReplies {
 	display: none;
 }
 
