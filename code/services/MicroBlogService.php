@@ -358,8 +358,14 @@ class MicroBlogService {
 
 			// final sort as a tie breaker
 			$sort['ID'] = 'DESC';
-		} else {
+		} else if (is_array($sortBy)) {
 			// $sort = $sortBy;
+			foreach ($sortBy as $sortKey => $sortDir) {
+				if (in_array($sortKey, $this->canSort)) {
+					$sort[$sortKey] = $sortDir;
+				} 
+			}
+		} else {
 			$sort = array('ID' => 'DESC');
 		}
 
