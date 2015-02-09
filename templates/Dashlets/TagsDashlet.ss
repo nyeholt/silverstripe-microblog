@@ -1,8 +1,8 @@
 
-<h2>Tags</h2>
-
 <% if Tags %>
+<ul class="post-tag-list">
 <% loop Tags %>
-<p><a href="$Link">$Title</a> ($Number)</p>
+<li><a href="$Link">$Title</a> ($Number)</li>
 <% end_loop %>
+</ul>
 <% end_if %>

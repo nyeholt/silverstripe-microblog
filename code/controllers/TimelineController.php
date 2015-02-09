@@ -7,6 +7,7 @@
  * @license BSD License http://silverstripe.org/bsd-license/
  */
 class TimelineController extends ContentController {
+	const URL_SEGMENT = 'timeline';
 	
 	const POOR_USER_THRESHOLD = -100;
 	

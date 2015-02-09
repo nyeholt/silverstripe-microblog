@@ -26,22 +26,18 @@ class TagsDashlet_Controller extends Dashlet_Controller {
 		
 		$date = date('Y-m-d H:i:s', strtotime('-1 month'));
 		$query->addWhere("MicroPost_Tags.Tagged > '$date'");
-		
+		$query->addWhere('"PostTag"."Title" NOT LIKE \'SELF_TAG%\'');
 		$query->addGroupBy('PostTag.ID');
-		
+
 		$query->setLimit(20);
 		
 		$rows = $query->execute();
 		
 		$tags = ArrayList::create();
 		
-		$home = PostAggregatorPage::get()->first();
-		
 		foreach ($rows as $row) {
 			$data = new ArrayData($row);
-			if ($home) {
-				$data->Link = $home->Link('tag/' . $data->Title);
-			}
+			$data->Link = Controller::join_links(TimelineController::URL_SEGMENT, '?tags=' . urlencode($data->Title));
 			
 			$tags->push($data);
 		}
