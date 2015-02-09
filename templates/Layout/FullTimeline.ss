@@ -1,4 +1,6 @@
 
+$Content
+
 <input type="hidden" id="MemberDetails" data-member='$MemberDetails.ATT' />
 <input type="hidden" value="$PostForm.FormAction" id="PostFormUrl" />
 
