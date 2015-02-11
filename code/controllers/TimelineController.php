@@ -15,16 +15,16 @@ class TimelineController extends ContentController {
 	private static $jquery_ui_lib = 'framework/thirdparty/jquery-ui/jquery-ui.js';
 	
 	private static $options = array(
-		'Threaded'			=> false,
-		'Replies'			=> true,
-		'Voting'			=> true,
+		'Threaded'			=> false,			// should we show a threaded view?
+		'Replies'			=> true,			// allow replies?
+		'Voting'			=> true,			// allow voting?
 //		'Edits'				=> true,
 		
-		'ShowReply'			=> true,
-		'Sorting'			=> false,
-		'UserTitle'			=> false,
-		'ShowTitlesOnly'	=> false,
-		'ShowTitlesInPost'	=> false,
+		'ShowReply'			=> true,			// show the reply box all the time?
+		'Sorting'			=> false,			// allow sorting? (not exposed at present, a few bugs exist)
+		'UserTitle'			=> false,			// should users be allowed to set titles?
+		'ShowTitlesOnly'	=> false,			// Should we only show the titles when listing posts? (more forum like)
+		'ShowTitlesInPost'	=> false,			// Should titles be displayed within post content?
 	);
 
 	private static $allowed_actions = array(
