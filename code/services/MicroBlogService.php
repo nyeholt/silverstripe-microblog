@@ -98,9 +98,11 @@ class MicroBlogService {
 	 *			The ID of a micropost that is considered the 'parent' of this post
 	 * @param mixed $target
 	 *			The "target" of this post; may be a data object (ie context of the post) or a user/group
+	 * @param array $to
+	 *			The people/groups this post is being sent to. Doubles up with $target in a way, and will _soon_ replace it.
 	 * @return MicroPost 
 	 */
-	public function createPost(DataObject $member, $content, $title = null, $parentId = 0, $target = null) {
+	public function createPost(DataObject $member, $content, $title = null, $parentId = 0, $target = null, $to = null) {
 		if (!$member) {
 			$member = $this->securityContext->getMember();
 		}
@@ -144,6 +146,41 @@ class MicroBlogService {
 		}
 
 		$this->rewardMember($member, 2);
+		
+		if ($to) {
+			$grantTo = array();
+			if (isset($to['logged_in']) && $to['logged_in']) {
+				// find the 'logged in' group, and grant to that.
+				$groups = null;
+				if (class_exists('Multisites')) {
+					$groups = Multisites::inst()->getCurrentSite()->LoggedInGroups()->toArray();
+				} else {
+					$groups = SiteConfig::current_site_config()->LoggedInGroups()->toArray();
+				}
+				if ($groups) {
+					$grantTo = array_merge($grantTo, $groups);
+				}
+			}
+			// todo evaluate security implication of posting to arbitrary members...
+			// do we need to check 'friends' status here?
+			if (isset($to['members']) && count($to['members'])) {
+				foreach ($to['members'] as $memberId) {
+					$grantTo[] = Member::get()->byID($memberId);
+				}
+			}
+			
+			if (isset($to['groups']) && count($to['groups'])) {
+				foreach ($to['groups'] as $groupId) {
+					$grantTo[] = Group::get()->byID($groupId);
+				}
+			}
+			
+			if (count($grantTo)) {
+				foreach ($grantTo as $grantee) {
+					$this->permissionService->grant($post, 'View', $grantee);
+				}
+			}
+		}
 		
 		// we stick this in here so the UI can update...
 		$post->RemainingVotes = $member->VotesToGive;
@@ -401,7 +438,7 @@ class MicroBlogService {
 	public function findMember($searchTerm) {
 		$term = Convert::raw2sql($searchTerm);
 		$current = (int) $this->securityContext->getMember()->ID;
-		$filter = '("Username" LIKE \'%' . $term .'%\' OR "FirstName" LIKE \'%' . $term .'%\' OR "Surname" LIKE \'%' . $term . '%\') AND "ID" <> ' . $current;
+		$filter = '("Username" LIKE \'' . $term .'%\' OR "FirstName" LIKE \'' . $term .'%\' OR "Surname" LIKE \'' . $term . '%\') AND "ID" <> ' . $current;
 
 		$items = DataList::create('Member')->where($filter)->restrict();
 		

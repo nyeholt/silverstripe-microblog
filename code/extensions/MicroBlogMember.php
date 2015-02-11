@@ -33,7 +33,7 @@ class MicroBlogMember extends DataExtension {
 	);
 	
 	private static $defaults = array(
-		'PostPermission'		=> 'Public'
+		'PostPermission'		=> 'Hidden'
 	);
 
 	private static $dependencies = array(
@@ -41,14 +41,15 @@ class MicroBlogMember extends DataExtension {
 		'permissionService'		=> '%$PermissionService',
 		'transactionManager'	=> '%$TransactionManager',
 	);
-	
+
 	static $permission_options = array(
 		'Hidden',
 		'Friends only',
 		'Friends and followers',
+		'Logged In',
 		'Public'
 	);
-	
+
 	static $summary_fields = array(
 		'Username',
 		'Up',
@@ -168,6 +169,9 @@ class MicroBlogMember extends DataExtension {
 	
 	/**
 	 * Retrieve the container permission source for all this user's posts 
+	 * 
+	 * @TODO This is currently not being actively used anywhere. Currently, posts for a 
+	 * particular user must have permissions assigned individually. 
 	 */
 	public function postPermissionSource() {
 		if ($this->owner->MyPermSourceID) {
@@ -224,6 +228,15 @@ class MicroBlogMember extends DataExtension {
 			}
 			
 			case 'Friends and followers': {
+				$source->InheritPerms = false;
+				$source->PublicAccess = false;
+
+				$this->permissionService->grant($source, 'View', $this->getGroupFor(self::FOLLOWERS));
+				$this->permissionService->grant($source, 'View', $this->getGroupFor(self::FRIENDS));
+				break;
+			}
+			
+			case 'Logged In': {
 				$source->InheritPerms = false;
 				$source->PublicAccess = false;
 

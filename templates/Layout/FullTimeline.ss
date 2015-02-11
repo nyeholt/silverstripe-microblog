@@ -29,26 +29,7 @@ $Content
 	<% if $ContextUser %>
 		<div class="postForm span8">
 		<% with PostForm %>
-		<form $FormAttributes >
-			<% with FieldMap %>
-
-			<% if $Top.Options.UserTitle %>
-			<label class="postform-label" for="Form_PostForm_Title">Title</label>
-			$Title
-			<% end_if %>
-			<label class="postform-label" for="Form_PostForm_Content">Post content</label>
-			$Content
-			<input type="hidden" name="SecurityID" value="$SecurityID" />
-			$Up.Actions
-			<input type="button" name="uploadTrigger" value="Upload" />
-
-			<% if $PostTarget %>
-			<p>Include</p>
-			$PostTarget
-			<% end_if %>
-
-			<% end_with %>
-		</form>
+		<% include PostForm %>
 		<% end_with %>
 		</div>
 	<% end_if %>

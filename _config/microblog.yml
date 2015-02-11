@@ -33,3 +33,21 @@ TimelineController:
 UserProfileDashlet_Controller:
   extensions:
     - UserProfileMicroblogDashletExtension
+    
+---
+Name: multisite_settings
+Only:
+  moduleexists: 'multisites'
+---
+Site:
+  extensions:
+    - MicroBlogSystemSettings
+---
+Name: system_settings
+Except:
+  moduleexists: 'multisites'
+---
+SystemConfig:
+  extensions:
+    - MicroBlogSystemSettings
+

@@ -88,6 +88,9 @@ class TimelineController extends ContentController {
 		}
 
 		Requirements::block(THIRDPARTY_DIR . '/prototype/prototype.js');
+		if (self::config()->jquery_lib != THIRDPARTY_DIR . '/jquery/jquery.js') {
+			Requirements::block(THIRDPARTY_DIR . '/jquery/jquery.js');
+		}
 
 		Requirements::javascript(self::config()->jquery_lib);
 		Requirements::javascript(self::config()->jquery_ui_lib);
@@ -245,7 +248,14 @@ class TimelineController extends ContentController {
 			$parentId = isset($data['ParentID']) ? $data['ParentID'] : 0;
 			$target = isset($data['PostTarget']) ? $data['PostTarget'] : null;
 			$title = isset($data['Title']) ? $data['Title'] : null;
-			$post = $this->microBlogService->createPost($this->securityContext->getMember(), $data['Content'], $title, $parentId, $target);
+			
+			$to = array(
+				'logged_in'	=> isset($data['LoggedInUsers']) ? $data['LoggedInUsers'] : null,
+				'members'	=> isset($data['Members']) ? $data['Members'] : null,
+				'groups'	=> isset($data['Groups']) ? $data['Groups'] : null,
+			);
+			
+			$post = $this->microBlogService->createPost($this->securityContext->getMember(), $data['Content'], $title, $parentId, $target, $to);
 
 			$tags = $this->tagsFromRequest();
 			foreach ($tags as $tag) {
@@ -316,14 +326,22 @@ class TimelineController extends ContentController {
 			$fields->push($title = TextField::create('Title', _t('MicroBlog.TITLE', 'Title')));
 			$title->setAttribute('placeholder', _t('MicroBlog.TITLE_PLACEHOLDER', 'Title (optional)'));
 		}
-		
+
 		$fields->push($taf = new TextareaField('Content', _t('MicroBlog.POST', 'Post')));
-		
+
 		$taf->setAttribute('placeholder', _t('MicroBlog.CONTENT_PLACEHOLDER', 'Add content here, eg text or a link'));
 		$taf->setRows(3);
 		$taf->addExtraClass('expandable');
 		$taf->addExtraClass('postContent');
 		$taf->addExtraClass('preview');
+		
+		$loggedIn = CheckboxField::create('LoggedInUsers', "Logged in users", true);
+		$member = MultiSelect2Field::create('Members', "To", Member::get()->map()->toArray())->setMultiple(true);
+		$group = MultiSelect2Field::create("Groups", "To Groups", Group::get()->filter("ParentID", 0)->map()->toArray())->setMultiple(true);
+		
+		$fields->push($loggedIn);
+		$fields->push($member);
+		$fields->push($group);
 		
 		$actions = new FieldList(
 			new FormAction('savepost', _t('MicroBlog.SAVE', 'Add'))
