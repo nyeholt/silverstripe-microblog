@@ -30,3 +30,6 @@ Only:
 ---
 TimelineController:
   jquery_lib: 'frontend-dashboards/javascript/jquery-1.10.2.min.js'
+UserProfileDashlet_Controller:
+  extensions:
+    - UserProfileMicroblogDashletExtension
