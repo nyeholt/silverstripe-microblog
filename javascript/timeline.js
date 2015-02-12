@@ -310,12 +310,10 @@ window.Microblog = window.Microblog || {}
 				$(this).removeClass('unread');
 			})
 
-			$('a.deletePost').entwine({
-				onclick:function () {
-					var postId = $(this).parents('.microPost').attr('data-id');
-					Microblog.Timeline.deletePost(postId);
-					return false;
-				}
+			$(document).on('click', 'a.deletePost', function (e) {
+				var postId = $(this).parents('.microPost').attr('data-id');
+				Microblog.Timeline.deletePost(postId);
+				return false;
 			})
 			
 			$(document).on('click', 'a.vote', function (e) {
