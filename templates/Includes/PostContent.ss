@@ -15,7 +15,7 @@
 		<% else_if IsImage %>
 		<img src="$Content" />
 		<% else %>
-		$Content.Parse(RestrictedMarkdown)
+		$UntaggedContent.Parse(RestrictedMarkdown)
 		<% end_if %>
 	<% else %>
 		<% if OwnerID == $CurrentMember.ID %>

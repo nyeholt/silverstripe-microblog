@@ -243,7 +243,7 @@ class MicroBlogService {
 				$object->tag($tag);
 			}
 		}
-
+		
 		return $object->Tags();
 	}
 

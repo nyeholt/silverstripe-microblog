@@ -570,7 +570,7 @@ class TimelineController extends ContentController {
 	
 	public function Link($action = '') {
 		if ($this->parentController) {
-			$link = $this->parentController->Link('timeline');
+			$link = $this->parentController->Link(self::URL_SEGMENT);
 		} else {
 			$link = 'timeline';
 		}

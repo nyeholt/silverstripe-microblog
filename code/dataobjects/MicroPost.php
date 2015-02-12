@@ -107,7 +107,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 			if ($this->AttachmentID) {
 				$this->Title = basename($this->Attachment()->Filename);
 			} else {
-				$this->Title = $this->socialGraphService->extractTitle($this->Content);
+				$this->Title = str_replace("\n", " ", $this->socialGraphService->extractTitle($this->Content));
 			}
 		}
 		parent::onBeforeWrite();
@@ -137,6 +137,18 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 	
 	public function PostTitle() {
 		return $this->obj('Title')->LimitCharacters(40, 'afwef');
+	}
+	
+	public function UntaggedContent() {
+		$content = $this->Content;
+		if (preg_match_all('/#([a-z0-9_-]+)/is', $content, $matches)) {
+			
+			foreach ($matches[1] as $tag) {
+				$link = Controller::join_links(TimelineController::URL_SEGMENT, '?tags=' . urlencode($tag));
+				$content = str_replace('#' . $tag, "[\\#$tag]($link)", $content);
+			}
+		}
+		return DBField::create_field('Text', $content);
 	}
 	
 	/**
