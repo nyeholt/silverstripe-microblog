@@ -405,10 +405,9 @@ window.Microblog = window.Microblog || {}
 				}
 			})
 
-			$('div.postForm form').entwine({
+			$('form#Form_PostForm').entwine({
 				onmatch: function () {
 					$(this).find('textarea.expandable').autogrow();
-
 					$(this).ajaxForm(function (data) {
 						$('#Form_PostForm').find('textarea').removeClass('expanded-content').val('');
 						$('#Form_PostForm').find('input[type=text]').removeClass('expanded-content').val('');
