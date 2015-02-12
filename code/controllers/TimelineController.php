@@ -237,58 +237,6 @@ class TimelineController extends ContentController {
 		return new Form($this, 'UnFollowForm', $fields, $actions);
 	}
 	
-	
-	public function savepost($data, Form $form) {
-		if (!$this->securityContext->getMember()) {
-			return Security::permissionFailure($this);
-		}
-		$post = null;
-
-		if (isset($data['Content']) && strlen($data['Content'])) {
-			$parentId = isset($data['ParentID']) ? $data['ParentID'] : 0;
-			$target = isset($data['PostTarget']) ? $data['PostTarget'] : null;
-			$title = isset($data['Title']) ? $data['Title'] : null;
-			
-			$to = array(
-				'logged_in'	=> isset($data['LoggedInUsers']) ? $data['LoggedInUsers'] : null,
-				'members'	=> isset($data['Members']) ? $data['Members'] : null,
-				'groups'	=> isset($data['Groups']) ? $data['Groups'] : null,
-			);
-			
-			$post = $this->microBlogService->createPost($this->securityContext->getMember(), $data['Content'], $title, $parentId, $target, $to);
-
-			$tags = $this->tagsFromRequest();
-			foreach ($tags as $tag) {
-				if (strlen($tag)) {
-					$post->tag($tag);
-				}
-			}
-			
-			$this->afterPostCreated($post);
-		}
-
-		if (Director::is_ajax() && $post && $post->ID) {
-			$result = array(
-				'response'		=> $post->toMap(),
-			);
-			$this->response->addHeader('Content-type', 'application/json');
-			return Convert::raw2json($result);
-		}
-		if (Director::is_ajax()) {
-			return '{"message": "invalid"}';
-		}
-		
-		$this->redirectBack();
-	}
-	
-	/**
-	 * Called after a post is created prior, allowing other controllers to do things with the post
-	 * 
-	 */
-	protected function afterPostCreated(MicroPost $post) {
-		
-	}
-
 	/**
 	 * TODO Update to match new api... 
 	 */
@@ -364,6 +312,38 @@ class TimelineController extends ContentController {
 		return $form;
 	}
 	
+	public function savepost($data, Form $form) {
+		if (!$this->securityContext->getMember()) {
+			return Security::permissionFailure($this);
+		}
+		$post = null;
+
+		if (isset($data['Content']) && strlen($data['Content'])) {
+			$post = $this->savePostFromForm($data, $form);
+		}
+
+		if (Director::is_ajax() && $post && $post->ID) {
+			$result = array(
+				'response'		=> $post->toMap(),
+			);
+			$this->response->addHeader('Content-type', 'application/json');
+			return Convert::raw2json($result);
+		}
+		if (Director::is_ajax()) {
+			return '{"message": "invalid"}';
+		}
+		
+		$this->redirectBack();
+	}
+	
+	/**
+	 * Called after a post is created prior, allowing other controllers to do things with the post
+	 * 
+	 */
+	protected function afterPostCreated(MicroPost $post) {
+		
+	}
+	
 	public function UploadForm() {
 		Requirements::combine_files('minimal_uploadfield.js', array(
 			THIRDPARTY_DIR . '/jquery-fileupload/jquery.iframe-transport.js',
@@ -391,23 +371,47 @@ class TimelineController extends ContentController {
 			throw new PermissionDeniedException('Write');
 		}
 		if (isset($data['Attachment'])) {
-			$post = MicroPost::create();
+			$post = $this->savePostFromForm($data, $form);
+			// need to do it this way to trigger the upload field doing its thing. 
 			$form->saveInto($post);
-			
 			// get the file field back, grab the file, and set it as the attachement id of the post
 			$field = $form->Fields()->dataFieldByName('Attachment');
 			$post->AttachmentID = $field->getUpload()->getFile()->ID;
 			
 			if ($post->AttachmentID) {
-				if (isset($data['ParentID'])) {
-					$post->ParentID = $data['ParentID'];
-				}
 				$post->write();
-				// @todo clean this up for NON js browsers
+				$this->afterPostCreated($post);
 				
+				// @todo clean this up for NON js browsers
 				return Convert::raw2json($post->toMap());
 			}
 		}
+	}
+	
+	protected function savePostFromForm($data, $form) {
+		$content = $data['Content'] ? $data['Content'] : '';
+		$parentId = isset($data['ParentID']) ? $data['ParentID'] : 0;
+		$target = isset($data['PostTarget']) ? $data['PostTarget'] : null;
+		$title = isset($data['Title']) ? $data['Title'] : null;
+
+		$to = array(
+			'logged_in'	=> isset($data['LoggedInUsers']) ? $data['LoggedInUsers'] : null,
+			'members'	=> isset($data['Members']) ? $data['Members'] : null,
+			'groups'	=> isset($data['Groups']) ? $data['Groups'] : null,
+		);
+
+		$post = $this->microBlogService->createPost($this->securityContext->getMember(), $content, $title, $parentId, $target, $to);
+
+		$tags = $this->tagsFromRequest();
+		foreach ($tags as $tag) {
+			if (strlen($tag)) {
+				$post->tag($tag);
+			}
+		}
+
+		$this->afterPostCreated($post);
+		
+		return $post;
 	}
 	
 	/**

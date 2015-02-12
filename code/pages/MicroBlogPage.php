@@ -57,7 +57,8 @@ class MicroBlogPage_Controller extends TimelineController {
 	);
 	
 	private static $allowed_actions = array(
-		'PostForm'
+		'PostForm',
+		'UploadForm'
 	);
 	
 	public function __construct($dataRecord = null) {
@@ -85,7 +86,13 @@ class MicroBlogPage_Controller extends TimelineController {
 		$form->Fields()->push(HiddenField::create('PostTarget', '', get_class($this->data()) . ',' . $this->data()->ID));
 		return $form;
 	}
-	
+
+	public function UploadForm() {
+		$form = parent::UploadForm();
+		$form->Fields()->push(HiddenField::create('PostTarget', '', get_class($this->data()) . ',' . $this->data()->ID));
+		return $form;
+	}
+
 	public function getFilterTags() {
 		$tags = parent::tagsFromRequest();
 
@@ -104,8 +111,8 @@ class MicroBlogPage_Controller extends TimelineController {
 	/**
 	 * What tags are present in the request (ie that should filter and be applied to posts
 	 */
-	protected function tagsFromRequest() {
-		$tags = parent::tagsFromRequest();
+	protected function afterPostCreated(MicroPost $post) {
+		$tags = array();
 		
 		if ($this->data()->SelfTagPosts) {
 			$tags[] = $this->data()->selfTag();
@@ -115,7 +122,12 @@ class MicroBlogPage_Controller extends TimelineController {
 		if (count($add)) {
 			$tags = array_merge($tags, $add);
 		}
-		return $tags;
+
+		foreach ($tags as $tag) {
+			if (strlen($tag)) {
+				$post->tag($tag);
+			}
+		}
 	}
 
 

@@ -9,10 +9,10 @@ $Content
 		<% with $UploadForm %>
 		<form $FormAttributes>
 			<% with FieldMap %>
-			<input type="hidden" name="SecurityID" value="$SecurityID" />
 			$Attachment
 			<% end_with %>
 			<ul id="uploadedFiles"></ul>
+			$HiddenFields
 		</form>
 		<% end_with %>
 	</div>
