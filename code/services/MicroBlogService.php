@@ -369,7 +369,7 @@ class MicroBlogService {
 	 * 
 	 * @return DataList 
 	 */
-	protected function microPostList($filter, $sortBy = 'ID', $since = 0, $before = false, $topLevelOnly = true, $tags = array(), $offset = 0, $number = 10) {
+	public function microPostList($filter, $sortBy = 'ID', $since = 0, $before = false, $topLevelOnly = true, $tags = array(), $offset = 0, $number = 10) {
 		if ($topLevelOnly) {
 			$filter['ParentID'] = '0';
 		}
