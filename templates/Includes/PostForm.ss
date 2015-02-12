@@ -1,4 +1,5 @@
 <form $FormAttributes >
+	$HiddenFields
 	<% with FieldMap %>
 
 	<% if $Top.Options.UserTitle %>
@@ -7,7 +8,7 @@
 	<% end_if %>
 	<label class="postform-label" for="Form_PostForm_Content">Post content</label>
 	$Content
-	<input type="hidden" name="SecurityID" value="$SecurityID" />
+	
 	$Up.Actions
 	<input type="button" name="uploadTrigger" value="Upload" />
 

@@ -16,6 +16,10 @@ class MicroBlogPage extends Page {
 		return 'SELF_TAG_' . $this->ID;
 	}
 	
+	public function canAddChildren($member = null) {
+		return Member::currentUserID() > 0;
+	}
+	
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 		
@@ -52,6 +56,10 @@ class MicroBlogPage_Controller extends TimelineController {
 		'securityContext'		=> '%$SecurityContext',
 	);
 	
+	private static $allowed_actions = array(
+		'PostForm'
+	);
+	
 	public function __construct($dataRecord = null) {
 		parent::__construct($dataRecord);
 	}
@@ -72,6 +80,12 @@ class MicroBlogPage_Controller extends TimelineController {
 		return parent::Options();
 	}
 	
+	public function PostForm() {
+		$form = parent::PostForm();
+		$form->Fields()->push(HiddenField::create('PostTarget', '', get_class($this->data()) . ',' . $this->data()->ID));
+		return $form;
+	}
+	
 	public function getFilterTags() {
 		$tags = parent::tagsFromRequest();
 
@@ -86,7 +100,7 @@ class MicroBlogPage_Controller extends TimelineController {
 		
 		return $tags;
 	}
-	
+
 	/**
 	 * What tags are present in the request (ie that should filter and be applied to posts
 	 */

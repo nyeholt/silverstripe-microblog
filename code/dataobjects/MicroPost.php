@@ -262,6 +262,14 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 			return $this->PermSource();
 		}
 		
+		if ($this->Target && strpos($this->Target, ',')) {
+			list($type, $id) = explode(',', $this->Target);
+			$item = DataList::create($type)->byID($id);
+			if ($item) {
+				return $item;
+			}
+		}
+		
 		// @TODO Move this to an extension that can be enabled per-project instead of by default. 
 		// otherwise, find a post by this user and use the shared parent
 //		$owner = $this->Owner();
