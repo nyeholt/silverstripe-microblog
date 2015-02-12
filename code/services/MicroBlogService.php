@@ -110,6 +110,8 @@ class MicroBlogService {
 		$post->Content = $content;
 		$post->Title = $title;
 		$post->OwnerID = $member->ID;
+		$post->Target = $target;
+
 		if ($parentId) {
 			$parent = MicroPost::get()->restrictedByID($parentId);
 			if ($parent) {
