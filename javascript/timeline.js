@@ -125,7 +125,7 @@ window.Microblog = window.Microblog || {}
 						} else {
 							var target = $('#post' + parentId);
 							if (target.length) {
-								var targetReplies = target.find('>.microPostContent>.postReplies');
+								var targetReplies = target.find('.postReplies:first');
 								wrapper.prependTo(targetReplies);
 							}
 						}
