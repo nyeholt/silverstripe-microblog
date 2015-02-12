@@ -43,6 +43,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 
 	private static $summary_fields = array(
 		'PostTitle', 
+		'Author',
 		'PostSummary',
 		'Created'
 	);
