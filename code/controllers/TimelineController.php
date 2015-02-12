@@ -389,7 +389,7 @@ class TimelineController extends ContentController {
 	}
 	
 	protected function savePostFromForm($data, $form) {
-		$content = $data['Content'] ? $data['Content'] : '';
+		$content = isset($data['Content']) ? $data['Content'] : '';
 		$parentId = isset($data['ParentID']) ? $data['ParentID'] : 0;
 		$target = isset($data['PostTarget']) ? $data['PostTarget'] : null;
 		$title = isset($data['Title']) ? $data['Title'] : null;
