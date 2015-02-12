@@ -318,20 +318,18 @@ window.Microblog = window.Microblog || {}
 				}
 			})
 			
-			$('a.vote').entwine({
-				onclick: function () {
-					var _this = $(this);
-					var dir = $(this).attr('data-dir'); 
-					Microblog.Timeline.vote($(this).attr('data-id'), dir).done(function (object) {
-						if (object.response) {
-							_this.siblings('.upCount').text(object.response.Up);
-							_this.siblings('.downCount').text(object.response.Down);
-						}
-					})
-					
-					return false;
-				}
-			})
+			$(document).on('click', 'a.vote', function (e) {
+				e.preventDefault();
+				var _this = $(this);
+				var dir = $(this).attr('data-dir'); 
+				Microblog.Timeline.vote($(this).attr('data-id'), dir).done(function (object) {
+					if (object.response) {
+						_this.siblings('.upCount').text(object.response.Up);
+						_this.siblings('.downCount').text(object.response.Down);
+					}
+				});
+				return false;
+			});
 
 			$('div.microPost').entwine({
 				onmatch: function () {
@@ -382,7 +380,6 @@ window.Microblog = window.Microblog || {}
 			$('form.replyForm').entwine({
 				onmatch: function () {
 					$(this).attr('action', $('#PostFormUrl').val());
-					
 					$(this).find('textarea.expandable').autogrow();
 					
 					this.ajaxForm(function (data) {
@@ -398,7 +395,9 @@ window.Microblog = window.Microblog || {}
 
 						$('form.replyForm').find('input[name=action_savepost]').removeAttr('disabled');
 						$('form.replyForm').find('input[name=action_savepost]').attr('value', 'Reply');
-						
+					}).fail(function () {
+						$('form.replyForm').find('input[name=action_savepost]').removeAttr('disabled');
+						$('form.replyForm').find('input[name=action_savepost]').attr('value', 'Reply');
 					})
 				},
 				onsubmit: function () {
@@ -434,10 +433,15 @@ window.Microblog = window.Microblog || {}
 				}
 			});
 
-			$('a.replyToPost').entwine({
+			$('a.replyToPost, button.replyToPost').entwine({
 				onclick: function (e) {
 					e.preventDefault();
-					$(this).parent().siblings('form.replyForm').show().find('textarea').focus();
+					var postId = $(this).closest('div.microPost').attr('data-id');
+					var replyForm = $('#replyTo' + postId);
+					if (replyForm.length == 0) {
+						replyForm = $(this).parent().siblings('form.replyForm');
+					}
+					replyForm.show().removeClass('visually-hidden').find('textarea').focus();
 				}
 			});
 			
