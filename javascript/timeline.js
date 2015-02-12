@@ -443,6 +443,14 @@ window.Microblog = window.Microblog || {}
 				}
 			});
 			
+			$(document).on('click', 'input.specific-users', function () {
+				if ($('.post-specific-users').is(':visible')) {
+					$('.post-specific-users').slideUp();
+				} else {
+					$('.post-specific-users').slideDown();
+				}
+			});
+			
 			$('input[name=uploadTrigger]').entwine({
 				onclick: function () {
 					$('div.uploadForm').show().find(':file').click();
