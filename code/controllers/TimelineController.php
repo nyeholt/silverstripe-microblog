@@ -263,6 +263,8 @@ class TimelineController extends ContentController {
 					$post->tag($tag);
 				}
 			}
+			
+			$this->afterPostCreated($post);
 		}
 
 		if (Director::is_ajax() && $post && $post->ID) {
@@ -277,6 +279,14 @@ class TimelineController extends ContentController {
 		}
 		
 		$this->redirectBack();
+	}
+	
+	/**
+	 * Called after a post is created prior, allowing other controllers to do things with the post
+	 * 
+	 */
+	protected function afterPostCreated(MicroPost $post) {
+		
 	}
 
 	/**
