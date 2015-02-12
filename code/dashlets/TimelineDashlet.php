@@ -7,12 +7,23 @@ if (class_exists('Dashlet')) {
 	 */
 	class TimelineDashlet extends Dashlet {
 		public static $title = 'Timeline';
+		
+		private static $db = array(
+			'FilterTags'		=> 'MultiValueField',
+		);
 
 		public function canCreate($member = null) {
 			if (!$member) {
 				$member = Member::currentUser();
 			}
 			return $member->ID > 0;
+		}
+		
+		public function getDashletFields() {
+			$fields = parent::getDashletFields();
+			$all = PostTag::get()->map('Title', 'Title')->toArray();
+			$fields->insertAfter(MultiValueTextField::create('FilterTags', 'Tags to filter by', $all), 'Title');
+			return $fields;
 		}
 	}
 
@@ -44,7 +55,12 @@ if (class_exists('Dashlet')) {
 
 
 		public function TimelineUrl() {
-			return 'timeline';
+			$tags = $this->widget->FilterTags->getValues();
+			$extra = '';
+			if (count($tags)) {
+				$extra = '?tags=' . urlencode(implode(',', $tags));
+			}
+			return 'timeline' . $extra;
 		}
 
 		public function ShowDashlet() {
