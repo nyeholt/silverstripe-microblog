@@ -450,11 +450,9 @@ window.Microblog = window.Microblog || {}
 				}
 			});
 			
-			$('input[name=uploadTrigger]').entwine({
-				onclick: function () {
-					$('div.uploadForm').show().find(':file').click();
-					return false;
-				}
+			$(document).on('click', 'input[name=uploadTrigger]', function () {
+				$('div.uploadForm').show().find(':file').click();
+				return false;
 			})
 			
 			if (typeof(Showdown) != 'undefined') {
@@ -489,6 +487,11 @@ window.Microblog = window.Microblog || {}
 							if (uploadParent > 0) {
 								formData.push({name: 'ParentID', value: uploadParent})
 							}
+							
+							formData.push({name: 'LoggedInUsers', value: $('input[name=LoggedInUsers]').val()});
+							formData.push({name: 'Members', value: $('select#Form_PostForm_Members').val()});
+							formData.push({name: 'Groups', value: $('select#Form_PostForm_Groups').val()});
+							
 							return formData;
 						},
 						drop: function (e, data) {

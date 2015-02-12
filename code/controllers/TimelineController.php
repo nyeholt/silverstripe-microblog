@@ -360,6 +360,16 @@ class TimelineController extends ContentController {
 		$field->relationAutoSetting = false;
 		$field->setFolderName($folderName);
 		
+		// these values will be copied across from the post form at post time
+		$loggedIn = CheckboxField::create('LoggedInUsers', "Logged in users", true);
+		$member = MultiSelect2Field::create('Members', "To", Member::get()->map()->toArray())->setMultiple(true);
+		$group = MultiSelect2Field::create("Groups", "To Groups", Group::get()->filter("ParentID", 0)->map()->toArray())->setMultiple(true);
+		
+		$fields->push($loggedIn);
+		$fields->push($member);
+		$fields->push($group);
+		
+		
 		$form = new Form($this, 'UploadForm', $fields, $actions);
 		$form->addExtraClass('fileUploadForm');
 		return $form;

@@ -166,12 +166,18 @@ class MicroBlogService {
 			// todo evaluate security implication of posting to arbitrary members...
 			// do we need to check 'friends' status here?
 			if (isset($to['members']) && count($to['members'])) {
+				if (!is_array($to['members'])) {
+					$to['members'] = explode(',', $to['members']);
+				}
 				foreach ($to['members'] as $memberId) {
 					$grantTo[] = Member::get()->byID($memberId);
 				}
 			}
 			
 			if (isset($to['groups']) && count($to['groups'])) {
+				if (!is_array($to['groups'])) {
+					$to['groups'] = explode(',', $to['groups']);
+				}
 				foreach ($to['groups'] as $groupId) {
 					$grantTo[] = Group::get()->byID($groupId);
 				}
