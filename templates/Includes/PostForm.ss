@@ -16,14 +16,21 @@
 	
 	<input type="button" class="specific-users" value="Post to" />
 	<div class="post-specific-users" style="display:none">
+		<% if $LoggedInUsers %>
 		$LoggedInUsers
 		<label for="Form_PostForm_LoggedInUsers">Logged in users</label>
+		<% end_if %>
 	
+		<% if $Members %>
 		<label for="s2id_Form_PostForm_Members">Specific users</label>
 		$Members
-	
+		<% end_if %>
+		
+		<% if $Groups %>
 		<label for="s2id_Form_PostForm_Groups">Groups</label>
 		$Groups
+		<% end_if %>
+		
 	</div>
 	<% end_if %>
 
