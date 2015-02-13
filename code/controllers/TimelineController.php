@@ -413,12 +413,7 @@ class TimelineController extends ContentController {
 		$post = $this->microBlogService->createPost($this->securityContext->getMember(), $content, $title, $parentId, $target, $to);
 
 		$tags = $this->tagsFromRequest();
-		foreach ($tags as $tag) {
-			if (strlen($tag)) {
-				$post->tag($tag);
-			}
-		}
-
+		$post->tag($tags);
 		$this->afterPostCreated($post);
 		
 		return $post;

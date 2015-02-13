@@ -189,18 +189,28 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 	 * 
 	 * @param string $tag
 	 */
-	public function tag($tag) {
-		if (!preg_match('/[a-z0-9_-]/i', $tag)) {
-			return;
+	public function tag($tags, $clearExisting = false) {
+		if (!is_array($tags)) {
+			$tags = array($tags);
+		}
+		
+		if ($clearExisting) {
+			$this->Tags()->removeAll();
 		}
 
-		$existing = PostTag::get()->filter(array('Title' => $tag))->first();
-		if (!$existing) {
-			$existing = PostTag::create();
-			$existing->Title = $tag;
-			$existing->write();
+		foreach ($tags as $tag) {
+			if (!preg_match('/[a-z0-9_-]/i', $tag)) {
+				continue;
+			}
+			$existing = PostTag::get()->filter(array('Title' => $tag))->first();
+			if (!$existing) {
+				$existing = PostTag::create();
+				$existing->Title = $tag;
+				$existing->write();
+			}
+			$this->Tags()->add($existing, array('Tagged' => date('Y-m-d H:i:s')));
 		}
-		$this->Tags()->add($existing, array('Tagged' => date('Y-m-d H:i:s')));
+
 		return $existing;
 	}
 

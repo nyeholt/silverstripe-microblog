@@ -123,11 +123,7 @@ class MicroBlogPage_Controller extends TimelineController {
 			$tags = array_merge($tags, $add);
 		}
 
-		foreach ($tags as $tag) {
-			if (strlen($tag)) {
-				$post->tag($tag);
-			}
-		}
+		$post->tag($tags);
 	}
 
 

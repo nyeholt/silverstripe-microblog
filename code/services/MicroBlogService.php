@@ -244,10 +244,7 @@ class MicroBlogService {
 		$content = $object->$field;
 
 		if (preg_match_all('/#([a-z0-9_-]+)/is', $content, $matches)) {
-			$object->Tags()->removeAll();
-			foreach ($matches[1] as $tag) {
-				$object->tag($tag);
-			}
+			$object->tag($matches[1], true);
 		}
 		
 		return $object->Tags();
