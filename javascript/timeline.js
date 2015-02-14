@@ -391,11 +391,11 @@ window.Microblog = window.Microblog || {}
 							})
 						}
 
-						$('form.replyForm').find('input[name=action_savepost]').removeAttr('disabled');
-						$('form.replyForm').find('input[name=action_savepost]').attr('value', 'Reply');
+						$('input[name=action_savepost]').removeAttr('disabled');
+						$('input[name=action_savepost]').attr('value', 'Reply');
 					}).fail(function () {
-						$('form.replyForm').find('input[name=action_savepost]').removeAttr('disabled');
-						$('form.replyForm').find('input[name=action_savepost]').attr('value', 'Reply');
+						$('input[name=action_savepost]').removeAttr('disabled');
+						$('input[name=action_savepost]').attr('value', 'Reply');
 					})
 				},
 				onsubmit: function () {
@@ -411,8 +411,8 @@ window.Microblog = window.Microblog || {}
 					$(this).ajaxForm(function (data) {
 						$('#Form_PostForm').find('textarea').removeClass('expanded-content').val('');
 						$('#Form_PostForm').find('input[type=text]').removeClass('expanded-content').val('');
-						$('#Form_PostForm').find('input[name=action_savepost]').removeAttr('disabled');
-						$('#Form_PostForm').find('input[name=action_savepost]').attr('value', 'Add');
+						$('input[name=action_savepost]').removeAttr('disabled');
+						$('input[name=action_savepost]').attr('value', 'Add');
 						Microblog.Timeline.refresh();
 						if (data && data.response) {
 							$('span.ownerVotes').each(function () {
@@ -421,7 +421,10 @@ window.Microblog = window.Microblog || {}
 								}
 							})
 						}
-					});
+					}).fail(function () {
+						$('input[name=action_savepost]').removeAttr('disabled');
+						$('input[name=action_savepost]').attr('value', 'Add');
+					})
 				},
 				onsubmit: function () {
 					$(this).find('input[name=action_savepost]').attr('disabled', 'disabled');
