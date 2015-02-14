@@ -198,6 +198,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 			$this->Tags()->removeAll();
 		}
 
+		$created = array();
 		foreach ($tags as $tag) {
 			if (!preg_match('/[a-z0-9_-]/i', $tag)) {
 				continue;
@@ -209,9 +210,9 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 				$existing->write();
 			}
 			$this->Tags()->add($existing, array('Tagged' => date('Y-m-d H:i:s')));
+			$created[] = $existing;
 		}
-
-		return $existing;
+		return $created;
 	}
 
 	/**
