@@ -80,17 +80,9 @@ class MicroBlogPage_Controller extends TimelineController {
 		
 		return parent::Options();
 	}
-	
-	public function PostForm() {
-		$form = parent::PostForm();
-		$form->Fields()->push(HiddenField::create('PostTarget', '', get_class($this->data()) . ',' . $this->data()->ID));
-		return $form;
-	}
 
-	public function UploadForm() {
-		$form = parent::UploadForm();
-		$form->Fields()->push(HiddenField::create('PostTarget', '', get_class($this->data()) . ',' . $this->data()->ID));
-		return $form;
+	public function getTargetFilter() {
+		return get_class($this->data()) . ',' . $this->data()->ID;
 	}
 
 	public function getFilterTags() {

@@ -494,6 +494,7 @@ window.Microblog = window.Microblog || {}
 							formData.push({name: 'LoggedInUsers', value: $('input[name=LoggedInUsers]').val()});
 							formData.push({name: 'Members', value: $('select#Form_PostForm_Members').val()});
 							formData.push({name: 'Groups', value: $('select#Form_PostForm_Groups').val()});
+							formData.push({name: 'PostTarget', value: $('input[name=PostTarget]').val()});
 							
 							return formData;
 						},

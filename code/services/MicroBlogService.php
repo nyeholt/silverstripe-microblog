@@ -292,23 +292,35 @@ class MicroBlogService {
 	/**
 	 * Gets all the status updates for a particular user before a given time
 	 * 
-	 * @param type $member
-	 * @param type $beforeTime
-	 * @param type $number 
+	 * @param array $filter
+	 *			The specific member to get status updates from
+	 * @param type $sortBy
+	 *			The order in which the items should be sorted
+	 * @param type $since
+	 *			The ID after which to retrieve 
+	 * @param boolean $before
+	 *			The ID before which to retrieve
+	 * @param boolean $topLevelOnly
+	 *			Whether to retrieve top-level posts only
+	 * @param array $tags
+	 *			A set of tags to filter posts by
+	 * @param int $offset
+	 *			Offset to start returning results by
+	 * @param int $number
+	 *			How many results to return
+	 *			
 	 */
-	public function getStatusUpdates(DataObject $member, $sortBy = 'ID', $since = 0, $before = false, $topLevelOnly = true, $tags = array(), $offset = 0, $number = 10) {
-		if ($member && $member->ID) {
-			$number = (int) $number;
-			$userIds[] = $member->ProfileID;
+	public function getStatusUpdates($filter = array(), $sortBy = 'ID', $since = 0, $before = false, $topLevelOnly = true, $tags = array(), $offset = 0, $number = 10) {
+		if ($filter instanceof Member) {
+			$userIds[] = $filter->ProfileID;
 			$filter = array(
 				'ThreadOwnerID'		=> $userIds, 
 			);
-			return $this->microPostList($filter, $sortBy, $since, $before, $topLevelOnly, $tags, $offset, $number);
-		} else {
-			// otherwise, we're implying that we ONLY want 'public' updates
-			$filter = array(); // array('PublicAccess'	=> 1);
-			return $this->microPostList($filter, $sortBy, $since, $before, $topLevelOnly, $tags, $offset, $number);
 		}
+		if (!$filter) {
+			$filter = array();
+		}
+		return $this->microPostList($filter, $sortBy, $since, $before, $topLevelOnly, $tags, $offset, $number);
 	}
 
 	/**
@@ -365,12 +377,15 @@ class MicroBlogService {
 	 * @param int $since
 	 *				The ID after which to get posts 
 	 * @param int $before
-	 *				The ID or pagination offset from which to get posts before. If $sortBy is
-	 *              ID, then this is assumed to be the offset to pass into limit, otherwise it's the 
-	 *              ID which posts must be less than. 
+	 *				The ID or pagination offset from which to get posts before. 
 	 * @param type $topLevelOnly
 	 *              Only retrieve the top level of posts. 
-	 * @param type $number
+	 * @param array $tags
+	 *			A set of tags to filter posts by
+	 * @param int $offset
+	 *			Offset to start returning results by
+	 * @param int $number
+	 *			How many results to return
 	 * 
 	 * @return DataList 
 	 */
@@ -391,9 +406,8 @@ class MicroBlogService {
 			$filter['ID:LessThan'] = $before;
 		} 
 
-		
 		$sort = array();
-		
+
 		if (is_string($sortBy)) {
 			if (in_array($sortBy, $this->canSort)) {
 				$sort[$sortBy] = 'DESC';

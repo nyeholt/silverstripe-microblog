@@ -176,8 +176,8 @@ class TimelineController extends ContentController {
 			} else {
 				
 			}
-			
-			$posts = $this->microBlogService->getStatusUpdates(Member::create(), array('ID' => 'ASC'), $since, false, false, array(), 0, 1);
+
+			$posts = $this->microBlogService->getStatusUpdates(null, array('ID' => 'ASC'), $since, false, false, array(), 0, 1);
 			$post = $posts->first();
 
 			$options = $this->Options();
@@ -301,6 +301,11 @@ class TimelineController extends ContentController {
 		$fields->push($member);
 		$fields->push($group);
 		
+		$target = $this->getTargetFilter();
+		if ($target) {
+			$fields->push(HiddenField::create('PostTarget', '', $target));
+		}
+		
 		$actions = new FieldList(
 			new FormAction('savepost', _t('MicroBlog.SAVE', 'Add'))
 		);
@@ -369,6 +374,10 @@ class TimelineController extends ContentController {
 		$fields->push($member);
 		$fields->push($group);
 		
+		$target = $this->getTargetFilter();
+		if ($target) {
+			$fields->push(HiddenField::create('PostTarget', '', $target));
+		}
 		
 		$form = new Form($this, 'UploadForm', $fields, $actions);
 		$form->addExtraClass('fileUploadForm');
@@ -446,6 +455,23 @@ class TimelineController extends ContentController {
 	}
 	
 	/**
+	 * What was the target of this post? 
+	 * 
+	 * @return string
+	 */
+	public function getTargetFilter() {
+		$target = $this->getRequest()->getVar('target');
+		if ($target) {
+			// verify it's a class/ID
+			list($targetType, $targetId) = explode(',', $target);
+			$targetId = (int) $targetId;
+			if (class_exists($targetType) && $targetId > 0) {
+				return "$targetType,$targetId";
+			}
+		}
+	}
+	
+	/**
 	 * Retrieve a flat list of posts, regardless of specific hierarchy
 	 */
 	public function flatlist() {
@@ -453,11 +479,19 @@ class TimelineController extends ContentController {
 		
 		$since = $this->owner->getRequest()->getVar('since');
 		$before = (int) $this->owner->getRequest()->getVar('before');
+		
 		if (!$before) {
 			$before = false;
 		}
 		
+		$filter = array();
+		
 		$tags = $this->getFilterTags();
+		
+		$target = $this->getTargetFilter();
+		if ($target) {
+			$filter['Target'] = $target;
+		}
 		
 		$sort = $this->request->getVar('sort');
 		if (!$sort) {
@@ -471,13 +505,14 @@ class TimelineController extends ContentController {
 			$replies = false;
 		}
 
-		$timeline = $this->owner->microBlogService->getStatusUpdates(null, $sort, $since, $before, !$replies, $tags, $offset);
+		$timeline = $this->owner->microBlogService->getStatusUpdates($filter, $sort, $since, $before, !$replies, $tags, $offset);
 
 		$props = array(
 			'Posts' => $timeline, 
 			'Options' => $this->Options(),
 			'QueryOffset'	=> $timeline->QueryOffset,
 			'SortBy'		=> $sort,
+			'Target'		=> $target,
 			'ForceContent'		=> true
 		);
 		return trim($this->owner->customise($props)->renderWith('Timeline'));
@@ -494,20 +529,25 @@ class TimelineController extends ContentController {
 		if (!$offset) {
 			$offset = false;
 		}
-		
+		$filter = array();
 		$tags = $this->getFilterTags();
+		$target = $this->getTargetFilter();
+		if ($target) {
+			$filter['Target'] = $target;
+		}
 		
 		$sort = $this->request->getVar('sort');
 		if (!$sort) {
 			$sort = 'ID';
 		}
 
-		$data = $this->owner->microBlogService->getStatusUpdates(null, $sort, $since, $offset, $toplevel = true, $tags);
+		$data = $this->owner->microBlogService->getStatusUpdates($filter, $sort, $since, $offset, $toplevel = true, $tags);
 		
 		$props = array(
 			'Posts' => $data, 
 			'Options' => $this->Options(),
 			'QueryOffset'	=> $data->QueryOffset,
+			'Target'		=> $target,
 			'SortBy'		=> $sort
 		);
 
