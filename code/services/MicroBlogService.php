@@ -72,6 +72,7 @@ class MicroBlogService {
 			'removeFriendship'	=> 'POST',
 			'rawPost'			=> 'GET',
 			'savePost'			=> 'POST',
+			'findMember'		=> 'GET',
 		);
 	}
 	

@@ -312,7 +312,7 @@ class MicroBlogMember extends DataExtension {
 		$allowed = array(
 			'FirstName',
 			'Surname',
-			'Email',
+			'Username',
 		);
 
 		$map = array();
