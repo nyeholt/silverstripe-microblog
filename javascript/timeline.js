@@ -114,23 +114,23 @@ window.Microblog = window.Microblog || {}
 							return;
 						}
 
-						var wrapper = $('<div class="newposts">');
+//						var wrapper = $('<div class="newposts">');
 						var parentId = parseInt(me.attr('data-parent'));
 						if (!parentId) {
 							if (append) {
-								wrapper.appendTo(feed);
+								me.appendTo(feed);
 							} else {
-								wrapper.prependTo(feed);
+								me.prependTo(feed);
 							}
 						} else {
 							var target = $('#post' + parentId);
 							if (target.length) {
 								var targetReplies = target.find('.postReplies:first');
-								wrapper.prependTo(targetReplies);
+								me.prependTo(targetReplies);
 							}
 						}
-						wrapper.append(me);
-						wrapper.effect("highlight", {}, 3000);
+//						wrapper.append(me);
+						me.effect("highlight", {}, 3000);
 						// done here because we've just removed and re-added to the dom?
 //						wrapper.find('textarea.expandable').autogrow();
 					})
