@@ -259,21 +259,36 @@ window.Microblog = window.Microblog || {}
 			
 			textinput.textcomplete([
 				{ // html
-					mentions: ['yuku_t'],
+					// mentions: ['yuku_t'],
 					match: /\B@(\w*)$/,
 					search: function (term, callback) {
-						callback($.map(this.mentions, function (mention) {
-							return mention.indexOf(term) === 0 ? mention : null;
-						}));
+						if (term && term.length > 2) {
+							Microblog.log("Search for " + term);
+							SSWebServices.get('microBlog', 'findMember', {searchTerm: term}, function (data) {
+								if (data && data.response) {
+									var items = [];
+									for (var i in data.response.items) {
+										var member = data.response.items[i];
+										items.push('@' + member.Title + ':' + member.ID);
+									}
+									callback(items);
+								}
+							});
+						} else {
+							Microblog.log('no length search for ');
+							callback([]);
+							return false;
+						}
+						
 					},
 					index: 1,
 					replace: function (mention) {
-						return '@' + mention + ' ';
+						return '' + mention + ' ';
 					}
 				}
 			]).overlay([
 				{
-					match: /\B@\w+/g,
+					match: /\B@(.*?):\d+/g,
 					css: {
 						'background-color': '#d8dfea'
 					}

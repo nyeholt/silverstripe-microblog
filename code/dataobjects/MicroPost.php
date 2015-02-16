@@ -103,7 +103,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		if (!$this->Author) {
 			$this->Author = $this->securityContext->getMember()->getTitle();
 		}
-		
+
 		if (!$this->Title) {
 			if ($this->AttachmentID) {
 				$this->Title = basename($this->Attachment()->Filename);
@@ -140,7 +140,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		return $this->obj('Title')->LimitCharacters(40, 'afwef');
 	}
 	
-	public function UntaggedContent() {
+	public function ConvertedContent() {
 		$content = $this->Content;
 		if (preg_match_all('/#([a-z0-9_-]+)/is', $content, $matches)) {
 			

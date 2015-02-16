@@ -7,6 +7,11 @@ SilverStripeAustralia\Profiles\MemberProfile:
 Member:
   extensions:
     - MicroBlogMember
+  title_format:
+    columns:
+      - FirstName
+      - Surname
+    sep: ' '
 
 ---
 Name: microblog_config

@@ -313,12 +313,15 @@ class MicroBlogMember extends DataExtension {
 			'FirstName',
 			'Surname',
 			'Username',
+			'ID',
 		);
 
 		$map = array();
 		foreach ($allowed as $prop) {
 			$map[$prop] = $this->owner->$prop;
 		}
+		
+		$map['Title'] = $this->owner->getTitle();
 		
 		return $map;
 	}
