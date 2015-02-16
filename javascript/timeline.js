@@ -324,10 +324,6 @@ window.Microblog = window.Microblog || {}
 				}
 			});
 			
-			
-			
-			
-
 			$(document).on('click', 'a.post-expander', function (e) {
 				e.preventDefault()
 				var postId = $(this).attr('data-id');
@@ -431,8 +427,8 @@ window.Microblog = window.Microblog || {}
 //					$(this).find('textarea.expandable').autogrow();
 					Microblog.Timeline.mentionify($(this).find('textarea'));
 					
-					this.ajaxForm(function (data) {
-						$('form.replyForm').find('textarea').val('');
+					this.ajaxForm(function (data, status, xhr, form) {
+						$('form.replyForm').find('textarea').val('').trigger('keydown');
 						Microblog.Timeline.refresh();
 						if (data && data.response) {
 							$('span.ownerVotes').each(function () {
@@ -466,7 +462,7 @@ window.Microblog = window.Microblog || {}
 							
 						},
 						success: function (data) {
-							$('#Form_PostForm').find('textarea').removeClass('expanded-content').val('');
+							$('#Form_PostForm').find('textarea').removeClass('expanded-content').val('').trigger('keydown');
 							$('#Form_PostForm').find('input[type=text]').removeClass('expanded-content').val('');
 							$('input[name=action_savepost]').removeAttr('disabled');
 							$('input[name=action_savepost]').attr('value', 'Add');
