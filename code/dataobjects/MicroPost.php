@@ -286,7 +286,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 			return $this->PermSource();
 		}
 		
-		if ($this->Target && strpos($this->Target, ',')) {
+		if ($this->ID && $this->Target && strpos($this->Target, ',')) {
 			list($type, $id) = explode(',', $this->Target);
 			$item = DataList::create($type)->byID($id);
 			if ($item) {
