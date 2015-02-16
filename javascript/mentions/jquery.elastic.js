@@ -55,7 +55,7 @@
 					'word-wrap'		: 'break-word',
 					'white-space'	:'pre-wrap'
 				}),
-				lineHeight	= parseInt($textarea.css('line-height'),10) || parseInt($textarea.css('font-size'),'10'),
+				lineHeight	= (parseInt($textarea.css('line-height'),10) || parseInt($textarea.css('font-size'),'10')) + parseInt($textarea.css('paddingTop')),
 				minheight	= parseInt($textarea.css('height'),10) || lineHeight*3,
 				maxheight	= parseInt($textarea.css('max-height'),10) || Number.MAX_VALUE,
 				goalheight	= 0;
