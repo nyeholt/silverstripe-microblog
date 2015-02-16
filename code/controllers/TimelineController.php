@@ -651,7 +651,48 @@ class TimelineController extends ContentController {
 	 * View a particular user's feed
 	 */
 	public function user() {
-		return array();
+		$user = (int) $this->request->param('ID');
+		
+		$since = $this->owner->getRequest()->getVar('since');
+		$offset = (int) $this->owner->getRequest()->getVar('before');
+		if (!$offset) {
+			$offset = false;
+		}
+		$filter = array('OwnerID' => $user);
+		$tags = $this->getFilterTags();
+		$target = $this->getTargetFilter();
+		if ($target) {
+			$filter['Target'] = $target;
+		}
+		
+		$sort = $this->request->getVar('sort');
+		if (!$sort) {
+			$sort = 'ID';
+		}
+		
+		
+		$data = $this->owner->microBlogService->getStatusUpdates($filter, $sort, $since, $offset, $toplevel = true, $tags);
+		
+		$props = array(
+			'Posts' => $data, 
+			'Options' => $this->Options(),
+			'QueryOffset'	=> $data->QueryOffset,
+			'Target'		=> $target,
+			'SortBy'		=> $sort
+		);
+		
+		$timeline = trim($this->customise($props)->renderWith('Timeline'));
+
+		if (Director::is_ajax()) {
+			return $timeline;
+		}
+
+		$data = array(
+			'Timeline'		=> '<strong>WARNING: USER VIEWS ARE IN ALPHA </strong>' . $timeline,
+			'OwnerFeed'		=> $timeline,
+		);
+
+		return $this->customise($data)->renderWith(array('FullTimeline', 'Page'));
 	}
 	
 	public function UserFeed() {
