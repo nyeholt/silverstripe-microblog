@@ -208,13 +208,14 @@ window.Microblog = window.Microblog || {}
 				if (post && post.response) {
 					$('.postEditorField').remove();
 					var editorField = $('<textarea name="Content" class="postContent expandable postEditorField">');
-					editorField.val(post.response.OriginalContent ? post.response.OriginalContent : post.response.Content);
-					editorField.autogrow();
 					
 					var postId = 'post' + id;
 					var postContent = $($('#' + postId).find('.postText')[0]);
 					postContent.append(editorField);
-
+					mentionify(editorField);
+					
+					editorField.val(post.response.OriginalContent ? post.response.OriginalContent : post.response.Content);
+					
 					var save = $('<input type="button" value="Save" class="postEditorField">');
 					save.insertAfter(editorField);
 					
@@ -251,6 +252,50 @@ window.Microblog = window.Microblog || {}
 					
 					*/
 			})
+		};
+		
+		var mentionify = function (textinput) {
+			textinput.autogrow();
+			
+			textinput.textcomplete([
+				{ // html
+					mentions: ['yuku_t'],
+					match: /\B@(\w*)$/,
+					search: function (term, callback) {
+						callback($.map(this.mentions, function (mention) {
+							return mention.indexOf(term) === 0 ? mention : null;
+						}));
+					},
+					index: 1,
+					replace: function (mention) {
+						return '@' + mention + ' ';
+					}
+				}
+			]).overlay([
+				{
+					match: /\B@\w+/g,
+					css: {
+						'background-color': '#d8dfea'
+					}
+				}
+			]);
+//			
+//			textinput.mentionsInput({
+//				onDataRequest:function (mode, query, callback) {
+//				  var data = [
+//					{ id:1, name:'Kenneth Auchenberg', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
+//					{ id:2, name:'Jon Froda', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
+//					{ id:3, name:'Anders Pollas', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
+//					{ id:4, name:'Kasper Hulthin', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
+//					{ id:5, name:'Andreas Haugstrup', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
+//					{ id:6, name:'Pete Lacey', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' }
+//				  ];
+//
+//				  data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
+//
+//				  callback.call(this, data);
+//				}
+//			  });
 		}
 
 		return {
@@ -262,7 +307,8 @@ window.Microblog = window.Microblog || {}
 			deletePost: deletePost,
 			vote: vote,
 			setFeed: setFeed,
-			editPost: editPost
+			editPost: editPost,
+			mentionify: mentionify
 		}
 	}();
 
@@ -276,8 +322,12 @@ window.Microblog = window.Microblog || {}
 					Microblog.track('timeline', 'post_click', $(this).attr('href'));
 					this._super();
 				}
-			})
+			});
 			
+			
+			
+			
+
 			$(document).on('click', 'a.post-expander', function (e) {
 				e.preventDefault()
 				var postId = $(this).attr('data-id');
@@ -378,7 +428,8 @@ window.Microblog = window.Microblog || {}
 			$('form.replyForm').entwine({
 				onmatch: function () {
 					$(this).attr('action', $('#PostFormUrl').val());
-					$(this).find('textarea.expandable').autogrow();
+//					$(this).find('textarea.expandable').autogrow();
+					Microblog.Timeline.mentionify($(this).find('textarea'));
 					
 					this.ajaxForm(function (data) {
 						$('form.replyForm').find('textarea').val('');
@@ -407,37 +458,26 @@ window.Microblog = window.Microblog || {}
 
 			$('form#Form_PostForm').entwine({
 				onmatch: function () {
-					$(this).find('textarea.expandable').autogrow();
+//					$(this).find('textarea.expandable').autogrow();
+					Microblog.Timeline.mentionify($(this).find('textarea.expandable'));
 					
-					$(this).find('textarea').mentionsInput({
-					onDataRequest:function (mode, query, callback) {
-					  var data = [
-						{ id:1, name:'Kenneth Auchenberg', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
-						{ id:2, name:'Jon Froda', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
-						{ id:3, name:'Anders Pollas', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
-						{ id:4, name:'Kasper Hulthin', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
-						{ id:5, name:'Andreas Haugstrup', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' },
-						{ id:6, name:'Pete Lacey', 'avatar':'http://cdn0.4dots.com/i/customavatars/avatar7112_1.gif', 'type':'contact' }
-					  ];
-
-					  data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
-
-					  callback.call(this, data);
-					}
-				  })
-					
-					$(this).ajaxForm(function (data) {
-						$('#Form_PostForm').find('textarea').removeClass('expanded-content').val('');
-						$('#Form_PostForm').find('input[type=text]').removeClass('expanded-content').val('');
-						$('input[name=action_savepost]').removeAttr('disabled');
-						$('input[name=action_savepost]').attr('value', 'Add');
-						Microblog.Timeline.refresh();
-						if (data && data.response) {
-							$('span.ownerVotes').each(function () {
-								if ($(this).attr('data-id') == Microblog.Member.MemberID) {
-									$(this).text(data.response.RemainingVotes).effect("highlight", {}, 2000);
-								}
-							})
+					$(this).ajaxForm({
+						beforeSubmit: function (fields, form) {
+							
+						},
+						success: function (data) {
+							$('#Form_PostForm').find('textarea').removeClass('expanded-content').val('');
+							$('#Form_PostForm').find('input[type=text]').removeClass('expanded-content').val('');
+							$('input[name=action_savepost]').removeAttr('disabled');
+							$('input[name=action_savepost]').attr('value', 'Add');
+							Microblog.Timeline.refresh();
+							if (data && data.response) {
+								$('span.ownerVotes').each(function () {
+									if ($(this).attr('data-id') == Microblog.Member.MemberID) {
+										$(this).text(data.response.RemainingVotes).effect("highlight", {}, 2000);
+									}
+								})
+							}
 						}
 					}).fail(function () {
 						$('input[name=action_savepost]').removeAttr('disabled');
