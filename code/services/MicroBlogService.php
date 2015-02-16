@@ -117,6 +117,7 @@ class MicroBlogService {
 			if ($parent) {
 				$post->ParentID = $parentId;
 				$post->ThreadID = $parent->ThreadID;
+				$post->Target = $parent->Target;
 			}
 		}
 

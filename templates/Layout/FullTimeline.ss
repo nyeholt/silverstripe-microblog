@@ -3,6 +3,7 @@ $Content
 
 <input type="hidden" id="MemberDetails" data-member='$MemberDetails.ATT' />
 <input type="hidden" value="$PostForm.FormAction" id="PostFormUrl" />
+<input type="hidden" name="timelineUpdateUrl" value="$Link(flatlist)" />
 
 <% if $ContextUser %>
 	<div class="uploadForm">
@@ -18,7 +19,6 @@ $Content
 	</div>
 <% end_if %>
 
-<input type="hidden" name="timelineUpdateUrl" value="$Link(flatlist)" />
 
 <% if $Post %>
 	<div id="StatusFeed" class="autorefresh">

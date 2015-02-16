@@ -637,6 +637,11 @@ class TimelineController extends ContentController {
 			$params['popup'] = 1;
 		}
 		
+		$target = $this->getTargetFilter();
+		if ($target) {
+			$params['target'] = $target;
+		}
+		
 		$tagstr = count($params) ? '?' . http_build_query($params) : '';
 		return Controller::join_links($link, $action, $tagstr);
 	}
