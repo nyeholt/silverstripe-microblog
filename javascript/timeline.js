@@ -263,7 +263,6 @@ window.Microblog = window.Microblog || {}
 					match: /\B@(\w*)$/,
 					search: function (term, callback) {
 						if (term && term.length > 2) {
-							Microblog.log("Search for " + term);
 							SSWebServices.get('microBlog', 'findMember', {searchTerm: term}, function (data) {
 								if (data && data.response) {
 									var items = [];
@@ -275,7 +274,6 @@ window.Microblog = window.Microblog || {}
 								}
 							});
 						} else {
-							Microblog.log('no length search for ');
 							callback([]);
 							return false;
 						}
