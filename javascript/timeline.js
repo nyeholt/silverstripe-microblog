@@ -212,9 +212,9 @@ window.Microblog = window.Microblog || {}
 					var postId = 'post' + id;
 					var postContent = $($('#' + postId).find('.postText')[0]);
 					postContent.append(editorField);
-					mentionify(editorField);
-					
 					editorField.val(post.response.OriginalContent ? post.response.OriginalContent : post.response.Content);
+					
+					mentionify(editorField);
 					
 					var save = $('<input type="button" value="Save" class="postEditorField">');
 					save.insertAfter(editorField);

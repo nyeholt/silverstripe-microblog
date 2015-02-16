@@ -108,12 +108,7 @@ class TimelineController extends ContentController {
 		
 		Requirements::javascript('microblog/javascript/jquery-textcomplete-0.3.7/jquery.overlay.js');
 		Requirements::javascript('microblog/javascript/jquery-textcomplete-0.3.7/jquery.textcomplete.js');
-//		
-//		Requirements::javascript('microblog/javascript/mentions/underscore.js');
-//		Requirements::javascript('microblog/javascript/mentions/jquery.elastic.js');
-//		Requirements::javascript('microblog/javascript/mentions/jquery.events.input.js');
-//		Requirements::javascript('microblog/javascript/mentions/jquery.mentionsInput.js');
-//		
+
 		Requirements::javascript('microblog/javascript/showdown/showdown.min.js');
 		Requirements::javascript('microblog/javascript/date.js');
 		Requirements::javascript('microblog/javascript/microblog.js');
@@ -300,7 +295,6 @@ class TimelineController extends ContentController {
 		$taf->setAttribute('placeholder', _t('MicroBlog.CONTENT_PLACEHOLDER', 'Add content here, eg text or a link'));
 		$taf->setRows(3);
 		$taf->addExtraClass('expandable');
-		$taf->addExtraClass('mentionsText');
 		$taf->addExtraClass('postContent');
 		$taf->addExtraClass('preview');
 		
