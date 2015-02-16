@@ -105,6 +105,10 @@ class TimelineController extends ContentController {
 		Requirements::javascript('webservices/javascript/webservices.js');
 		
 		Requirements::javascript('microblog/javascript/jquery.autogrow-textarea.js');
+		Requirements::javascript('microblog/javascript/mentions/underscore.js');
+		Requirements::javascript('microblog/javascript/mentions/jquery.elastic.js');
+		Requirements::javascript('microblog/javascript/mentions/jquery.events.input.js');
+		Requirements::javascript('microblog/javascript/mentions/jquery.mentionsInput.js');
 		
 		Requirements::javascript('microblog/javascript/showdown/showdown.min.js');
 		Requirements::javascript('microblog/javascript/date.js');
@@ -116,6 +120,7 @@ class TimelineController extends ContentController {
 		Requirements::javascript('microblog/javascript/microblog-statesave.js');
 
 		Requirements::css('microblog/css/timeline.css');
+		Requirements::css('microblog/javascript/mentions/query.mentionsInput.css');
 
 		$member = $this->securityContext->getMember();
 		if ($member && $member->ID) {
