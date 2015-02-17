@@ -31,6 +31,12 @@ class MicroBlogService {
 	 */
 	public $permissionService;
 	
+	/**
+	 *
+	 * @var NotificationService
+	 */
+	public $notificationService;
+	
 	public $postProcess = false;
 	
 	/**
@@ -100,7 +106,10 @@ class MicroBlogService {
 	 * @param mixed $target
 	 *			The "target" of this post; may be a data object (ie context of the post) or a user/group
 	 * @param array $to
-	 *			The people/groups this post is being sent to. Doubles up with $target in a way, and will _soon_ replace it.
+	 *			The people/groups this post is being sent to. This is an array of
+	 *			- logged_in: boolean (logged in users; uses a system config setting to determine which group represents 'logged in'
+	 *			- members: an array, or comma separated string, of member IDs
+	 *			- groups: an array, or comma separated string, of group IDs
 	 * @return MicroPost 
 	 */
 	public function createPost(DataObject $member, $content, $title = null, $parentId = 0, $target = null, $to = null) {
@@ -196,6 +205,9 @@ class MicroBlogService {
 		$post->RemainingVotes = $member->VotesToGive;
 
 		$post->extend('onCreated', $member, $target);
+		if ($this->notificationService) {
+			
+		}
 
 		return $post;
 	}
