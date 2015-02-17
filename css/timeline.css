@@ -160,6 +160,12 @@ div.microPost.unread {
 	box-shadow: 2px 2px 5px #111;
 }
 
+div.microPost span.timeline-user-mention {
+	border: 1px solid #00A1CE;
+	background-color: #DEF2F7;
+	border-radius: 3px;
+}
+
 span.edited-mark {
 	font-weight: bold;
 	cursor: pointer;

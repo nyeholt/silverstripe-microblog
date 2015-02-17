@@ -35,10 +35,10 @@ class RestrictedMarkdownParser extends Parsedown {
 				return array(
 					'extent' => strlen($matches[0]),
 					'element' => array(
-						'name' => 'a',
+						'name' => 'span',
 						'text' => $matches[1],
 						'attributes' => array(
-							'href' => 'timeline/user/' . $matches[2],
+							'data-href' => 'timeline/user/' . $matches[2],
 							'class'		=> 'timeline-user-mention'
 						),
 					),
