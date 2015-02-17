@@ -31,12 +31,6 @@ class MicroBlogService {
 	 */
 	public $permissionService;
 	
-	/**
-	 *
-	 * @var NotificationService
-	 */
-	public $notificationService;
-	
 	public $postProcess = false;
 	
 	/**
@@ -78,7 +72,6 @@ class MicroBlogService {
 			'removeFriendship'	=> 'POST',
 			'rawPost'			=> 'GET',
 			'savePost'			=> 'POST',
-			'findMember'		=> 'GET',
 		);
 	}
 	
@@ -106,10 +99,7 @@ class MicroBlogService {
 	 * @param mixed $target
 	 *			The "target" of this post; may be a data object (ie context of the post) or a user/group
 	 * @param array $to
-	 *			The people/groups this post is being sent to. This is an array of
-	 *			- logged_in: boolean (logged in users; uses a system config setting to determine which group represents 'logged in'
-	 *			- members: an array, or comma separated string, of member IDs
-	 *			- groups: an array, or comma separated string, of group IDs
+	 *			The people/groups this post is being sent to. Doubles up with $target in a way, and will _soon_ replace it.
 	 * @return MicroPost 
 	 */
 	public function createPost(DataObject $member, $content, $title = null, $parentId = 0, $target = null, $to = null) {
@@ -127,7 +117,6 @@ class MicroBlogService {
 			if ($parent) {
 				$post->ParentID = $parentId;
 				$post->ThreadID = $parent->ThreadID;
-				$post->Target = $parent->Target;
 			}
 		}
 
@@ -181,7 +170,11 @@ class MicroBlogService {
 					$to['members'] = explode(',', $to['members']);
 				}
 				foreach ($to['members'] as $memberId) {
-					$grantTo[] = Member::get()->byID($memberId);
+					$id = (int) $memberId;
+					$toMember = Member::get()->byID($id);
+					if ($toMember) {
+						$grantTo[] = $toMember;
+					}
 				}
 			}
 			
@@ -190,7 +183,11 @@ class MicroBlogService {
 					$to['groups'] = explode(',', $to['groups']);
 				}
 				foreach ($to['groups'] as $groupId) {
-					$grantTo[] = Group::get()->byID($groupId);
+					$groupId = (int) $memberId;
+					$group = Group::get()->byID($groupId);
+					if ($group) {
+						$grantTo[] = $group;
+					}
 				}
 			}
 			
@@ -205,9 +202,6 @@ class MicroBlogService {
 		$post->RemainingVotes = $member->VotesToGive;
 
 		$post->extend('onCreated', $member, $target);
-		if ($this->notificationService) {
-			$this->notificationService->notify('MICRO_POST_CREATED', $post);
-		}
 
 		return $post;
 	}

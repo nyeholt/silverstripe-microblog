@@ -103,6 +103,19 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		if (!$this->Author) {
 			$this->Author = $this->securityContext->getMember()->getTitle();
 		}
+		
+		if ($this->AttachmentID && strlen($this->Content) == 0) {
+			$attachment = $this->Attachment();
+			$link = '';
+			if ($attachment instanceof Image) {
+				$scaled = $attachment->MaxWidth(1024);
+				$link = $scaled->Link();
+				$this->Content = '![' . $attachment->Title .'](' . $link.')';
+			} else {
+				$link = $attachment->Link();
+				$this->Content = '[' . $attachment->Title .'](' . $link.')';
+			}
+		}
 
 		if (!$this->Title) {
 			if ($this->AttachmentID) {

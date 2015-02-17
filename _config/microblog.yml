@@ -12,6 +12,9 @@ Member:
       - FirstName
       - Surname
     sep: ' '
+Image: 
+  extensions:
+    - MaximumSizeImageExtension
 
 ---
 Name: microblog_config

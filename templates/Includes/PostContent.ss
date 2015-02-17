@@ -2,13 +2,7 @@
 	<% _t('MicroPost.DELETED', '[deleted]') %>
 <% else %>
 
-	<% if Attachment %> 
-		<% if $Attachment.ClassName == 'Image' || $Attachment.ClassName == 'CdnImage' %>
-			<a href="$Attachment.getURL" target="_blank" title="Download image">$Attachment.MaxWidth(1024)</a>
-		<% else %>
-		<a href="$Attachment.getURL" title="Download attached file">$Attachment.Title</a>
-		<% end_if %>
-	<% end_if %>
+	
 	<% if Content %>
 		<% if IsOembed %>
 		$Content.Raw
@@ -21,6 +15,10 @@
 		<% if OwnerID == $CurrentMember.ID %>
 		<!-- <div class="edit-placeholder"><em>Click to update</em></div> -->
 		<% end_if %>
+	<% end_if %>
+
+	<% if Attachment %> 
+		Download original: <a href="$Attachment.getURL" title="Download attached file" class="force-link" target="_blank">$Attachment.Name</a>
 	<% end_if %>
 
 <% end_if %>

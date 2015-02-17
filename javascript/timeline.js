@@ -420,7 +420,7 @@ window.Microblog = window.Microblog || {}
 			$('a').entwine({
 				onmatch: function () {
 					var href = this.attr('href');
-					if (href && href.length && href.lastIndexOf('.') > 0) {
+					if (href && href.length && href.lastIndexOf('.') > 0 && !this.hasClass('force-link')) {
 						var ext = href.substr(href.lastIndexOf('.') + 1);
 						if ($.inArray(ext, ['png', 'jpg', 'gif']) > -1) {
 							// see if this actually has an image already
