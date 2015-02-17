@@ -153,6 +153,22 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 	}
 	
 	/**
+	 * Get the list of members mentioned in this post
+	 */
+	public function mentionedMembers() {
+		$members = array();
+		if (preg_match_all('/@(.*?):(\d+)/', $this->Content, $matches)) {
+			foreach ($matches[2] as $match) {
+				$member = Member::get()->byID((int) $match);
+				if ($member && $member->ID) {
+					$members[] = $member;
+				}
+			}
+		}
+		return $members;
+	}
+	
+	/**
 	 * Handle the wilson rating specially 
 	 * 
 	 * @param type $field
@@ -285,7 +301,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		if ($this->PermSourceID) {
 			return $this->PermSource();
 		}
-		
+
 		if ($this->ID && $this->Target && strpos($this->Target, ',')) {
 			list($type, $id) = explode(',', $this->Target);
 			$item = DataList::create($type)->byID($id);
@@ -293,21 +309,43 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 				return $item;
 			}
 		}
-		
-		// @TODO Move this to an extension that can be enabled per-project instead of by default. 
-		// otherwise, find a post by this user and use the shared parent
-//		$owner = $this->Owner();
-//		if ($owner && $owner->exists()) {
-//			$source = $owner->postPermissionSource();
-//			$this->PermSourceID = $source->ID;
-//			// TODO: Remove this; it's only used until all posts have an appropriate permission source...
-//			if ($this->ID) {
-//				Restrictable::set_enabled(false);
-//				$this->write();
-//				Restrictable::set_enabled(true);
-//			}
-//			return $source;
-//		}
+	}
+	
+	public function getRecipients($notificationType) {
+		switch ($notificationType) {
+			case 'MICRO_POST_CREATED': {
+				$members = $this->mentionedMembers();
+				return $members;
+			}
+		}
+	}
+
+	/**
+	 * Return a list of available keywords in the format 
+	 * array('keyword' => 'A description') to help users format notification fields
+	 * @return array
+	 */
+	public function getAvailableKeywords() {
+		return array(
+			'Content'		=> 'Raw content of the post',
+			'HTMLContent'	=> 'Rendered HTML of the post content',
+			'Title'			=> 'Title of the post (if set)',
+			'Link'			=> 'A link to the post',
+		);
+	}
+
+	/**
+	 * Gets an associative array of data that can be accessed in
+	 * notification fields and templates 
+	 * @return array
+	 */
+	public function getNotificationTemplateData() {
+		return array(
+			'Content'		=> $this->Content,
+			'HTMLContent'	=> $this->ConvertedContent(),
+			'Title'			=> $this->Title,
+			'Link'			=> $this->Link()
+		);
 	}
 
 	public function forSyncro() {

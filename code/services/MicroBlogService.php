@@ -206,7 +206,7 @@ class MicroBlogService {
 
 		$post->extend('onCreated', $member, $target);
 		if ($this->notificationService) {
-			
+			$this->notificationService->notify('MICRO_POST_CREATED', $post);
 		}
 
 		return $post;

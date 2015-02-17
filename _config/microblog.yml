@@ -53,3 +53,16 @@ SystemConfig:
   extensions:
     - MicroBlogSystemSettings
 
+
+---
+Name: notifications_config
+Only:
+  moduleexists: 'notifications'
+---
+Injector:
+  MicroBlogService:
+    properties:
+      notificationService: %$NotificationService
+SystemNotification:
+  identifiers:
+    - MICRO_POST_CREATED
