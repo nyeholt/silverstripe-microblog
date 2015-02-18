@@ -25,9 +25,15 @@ class Rateable extends DataExtension {
 		
 		$base = ClassInfo::baseDataClass($this->owner);
 		
-		$bound = '((Up + 1.9208) / (Up + Down) - ' . 
+		$simple = DB::getConn() instanceof SQLite3Database ? true : false;
+		
+		if ($simple) {
+			$bound = '((Up / Down) / (Up + Down))';
+		} else {
+			$bound = '((Up + 1.9208) / (Up + Down) - ' . 
                    '1.96 * SQRT((Up * Down) / (Up + Down) + 0.9604) / ' .
                    '(Up + Down)) / (1 + 3.8416 / (Up + Down))  / SQRT(HOUR(TIMEDIFF(NOW(), '.$base.'.Created)) + 1)';
+		}
 	
 		$query->selectField($bound, 'WilsonRating');
 
