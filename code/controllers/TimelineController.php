@@ -81,12 +81,14 @@ class TimelineController extends ContentController {
 	}
 
 	public function init() {
+		if ($this->getSession() && $this->data()->exists()) {
+			Versioned::choose_site_stage($this->getSession());
+		} else {
+			Versioned::reading_stage('Live');
+		}
+		
 		parent::init();
 		
-		if ($this->getSession()) {
-			Versioned::choose_site_stage($this->getSession());
-		}
-
 		Requirements::block(THIRDPARTY_DIR . '/prototype/prototype.js');
 		if (self::config()->jquery_lib != THIRDPARTY_DIR . '/jquery/jquery.js') {
 			Requirements::block(THIRDPARTY_DIR . '/jquery/jquery.js');
