@@ -127,6 +127,12 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		parent::onBeforeWrite();
 	}
 	
+	/**
+	 * Has this post been read by the given user?
+	 * 
+	 * @param Member $member
+	 * @return boolean
+	 */
 	public function isUnreadByUser($member = null) {
 		if (!$member) {
 			$member = $this->securityContext->getMember();
@@ -145,14 +151,29 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		return (strtotime($this->LastEdited) - strtotime($this->Created)) > $grace;
 	}
 	
+	/**
+	 * Get a summary of the post
+	 * 
+	 * @return string
+	 */
 	public function PostSummary() {
 		return $this->obj('Content')->ContextSummary(40, 'poweapfawepofj');
 	}
 	
+	/**
+	 * Returns the title of this post (trimmed down in length for sanity)
+	 * 
+	 * @return string
+	 */
 	public function PostTitle() {
 		return $this->obj('Title')->LimitCharacters(40, 'afwef');
 	}
 	
+	/**
+	 * Get the content of this post with hash-tags converted to links
+	 * 
+	 * @return string
+	 */
 	public function ConvertedContent() {
 		$content = $this->Content;
 		if (preg_match_all('/#([a-z0-9_-]+)/is', $content, $matches)) {
@@ -200,6 +221,11 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		return parent::hasOwnTableDatabaseField($field);
 	}
 
+	/**
+	 * Is this post an image? 
+	 * 
+	 * @return boolean
+	 */
 	public function IsImage() {
 		return $this->socialGraphService->isImage($this->Content);
 	}
@@ -299,6 +325,11 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		return Director::absoluteURL($this->Link());
 	}
 
+	/**
+	 * Gets all the replies to this post
+	 * 
+	 * @return ArrayList
+	 */
 	public function Posts() {
 		return $this->microBlogService->getRepliesTo($this);
 	}
@@ -324,6 +355,14 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		}
 	}
 	
+	/**
+	 * Get a list of all the members who should receive notifications based on the
+	 * notificationType variable
+	 * 
+	 * @param string $notificationType
+	 *				The notification type being sent
+	 * @return array
+	 */
 	public function getRecipients($notificationType) {
 		switch ($notificationType) {
 			case 'MICRO_POST_CREATED': {
