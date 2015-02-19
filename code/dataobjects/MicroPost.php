@@ -186,6 +186,20 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		return DBField::create_field('Text', $content);
 	}
 	
+	public function getPostTarget() {
+		if ($this->Target && strpos($this->Target, ',')) {
+			list($type, $id) = explode(',', $this->Target);
+			$item = DataList::create($type)->restrictedByID($id);
+			return $item;
+		}
+	}
+	
+	public function currentContext() {
+		$tgt = Controller::curr()->getRequest()->getVar('target');
+		return strlen($tgt) > 0 && $this->Target == $tgt;
+	}
+	
+
 	/**
 	 * Get the list of members mentioned in this post
 	 */
