@@ -14,7 +14,11 @@ class RestrictedMarkdown extends TextParser {
 
 	public function parse() {
 		$parsedown = new RestrictedMarkdownParser();
-		return $parsedown->parse(strip_tags(ShortcodeParser::get_active()->parse($this->content)));
+		$html = $parsedown->parse(ShortcodeParser::get_active()->parse($this->content));
+		$config = HTMLPurifier_Config::createDefault();
+		$purifier = new HTMLPurifier($config);
+		$html = $purifier->purify($html);
+		return $html;
 	}
 
 }
