@@ -111,7 +111,8 @@ class TimelineController extends ContentController {
 		Requirements::javascript('microblog/javascript/jquery-textcomplete-0.3.7/jquery.overlay.js');
 		Requirements::javascript('microblog/javascript/jquery-textcomplete-0.3.7/jquery.textcomplete.js');
 
-		Requirements::javascript('microblog/javascript/showdown/showdown.min.js');
+//		Requirements::javascript('microblog/javascript/showdown/showdown.min.js');
+		Requirements::javascript('microblog/javascript/marked.js');
 		Requirements::javascript('microblog/javascript/date.js');
 		Requirements::javascript('microblog/javascript/microblog.js');
 

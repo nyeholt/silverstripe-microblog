@@ -3,6 +3,10 @@ window.Microblog = window.Microblog || {}
 
 ;(function($) {
 	
+	marked.setOptions({
+		sanitize: true
+	});
+
 	Microblog.Timeline = function () {
 		var feed = null;
 		
@@ -237,9 +241,8 @@ window.Microblog = window.Microblog || {}
 							if (data && data.response) {
 								if (data.response.RenderedContent) {
 									postContent.html(data.response.RenderedContent);
-								} else if (typeof(Showdown) != 'undefined') {
-									var converter = new Showdown.converter();
-									postContent.html(converter.makeHtml(data.response.Content));
+								} else if (typeof(marked) != 'undefined') {
+									postContent.html(marked(data.response.Content));
 									delete converter;
 								}
 							}
@@ -525,15 +528,14 @@ window.Microblog = window.Microblog || {}
 				return false;
 			})
 			
-			if (typeof(Showdown) != 'undefined') {
-				var converter = new Showdown.converter();
+			if (typeof(marked) != 'undefined') {
 				$('textarea.postContent.preview').entwine({
 					onmatch: function () {
 						var parent = $(this).parent(); //('form');
 						var preview = $('<div>').addClass('postPreview').hide();
 						preview.insertAfter(parent);
 						$(this).keyup(function () {
-							preview.html(converter.makeHtml($(this).val())).show();
+							preview.html(marked($(this).val())).show();
 						})
 						this._super();
 					}
