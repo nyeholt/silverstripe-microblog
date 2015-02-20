@@ -37,6 +37,13 @@ class MicroBlogService {
 	 */
 	public $notificationService;
 	
+	/**
+	 * Do we allow anonymous posting?
+	 *
+	 * @var boolean
+	 */
+	public $allowAnonymousPosts = false;
+	
 	public $postProcess = false;
 	
 	/**
@@ -116,6 +123,11 @@ class MicroBlogService {
 		if (!$member) {
 			$member = $this->securityContext->getMember();
 		}
+		
+		if (!$member->exists() && !$this->allowAnonymousPosts) {
+			throw new Exception("Anonymous posting disallowed");
+		}
+
 		$post = MicroPost::create();
 		$post->Content = $content;
 		$post->Title = $title;
