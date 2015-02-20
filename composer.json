@@ -17,6 +17,7 @@
 		"silverstripe/queuedjobs": "~2.2",
 		"silverstripe/restrictedobjects": "~2.1",
 		"silverstripe/webservices": "~3.1",
-		"silverstripe/select2": "~1.0"
+		"silverstripe/select2": "~1.0",
+		"ezyang/htmlpurifier": "dev-master#c67e4c2f7e06f89ca0eb4ce72b191144e40dc3ef"
 	}
 }
