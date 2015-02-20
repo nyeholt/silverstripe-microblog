@@ -8,6 +8,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 	private static $db = array(
 		'Title'				=> 'Varchar(255)',
 		'Content'			=> 'Text',
+		'RenderedContent'	=> 'Text',
 		'Author'			=> 'Varchar(255)',
 		'OriginalLink'		=> 'Varchar',
 		'OriginalContent'	=> 'Text',
@@ -89,6 +90,8 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 	 * @var SyncrotronService 
 	 */
 	public $syncrotronService;
+	
+	private $afterWriteRender = false;
 
 	public function onBeforeWrite() {
 		$member = $this->securityContext->getMember();
@@ -125,8 +128,22 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 			}
 		}
 		parent::onBeforeWrite();
+		
+		if ($this->ID) {
+			$this->RenderedContent = $this->renderWith('PostContent')->raw();
+		} else {
+			$this->afterWriteRender = true;
+		}
 	}
 	
+	public function onAfterWrite() {
+		parent::onAfterWrite();
+		if ($this->afterWriteRender) {
+			$this->afterWriteRender = false;
+			$this->write();
+		}
+	}
+
 	/**
 	 * Has this post been read by the given user?
 	 * 

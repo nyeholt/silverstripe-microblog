@@ -59,7 +59,11 @@
 			<% end_if %>
 			
 			<div class="postText">
-			<% include PostContent %>
+				<% if $RenderedContent %>
+				$RenderedContent.raw
+				<% else %>
+				<% include PostContent %>
+				<% end_if %>
 			</div>
 			
 			<% if $ParentID == 0 || $Top.Options.Threaded %>

@@ -260,7 +260,6 @@ class MicroBlogService {
 				$this->queuedJobService->queueJob(new ProcessPostJob($post));
 			}
 			$html = $post->renderWith('PostContent');
-			$post->RenderedContent = $html->raw();
 			return $post;
 		}
 	}
