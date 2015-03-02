@@ -143,6 +143,10 @@ class MicroBlogService {
 			}
 		}
 
+		if (isset($to['public'])) {
+			$post->PublicAccess = (bool) $to['public'];
+		}
+
 		$post->write();
 		
 		// if we're a good poster, scan its content, otherwise post process it for spam
@@ -220,7 +224,7 @@ class MicroBlogService {
 				}
 			}
 		}
-		
+
 		// we stick this in here so the UI can update...
 		$post->RemainingVotes = $member->VotesToGive;
 

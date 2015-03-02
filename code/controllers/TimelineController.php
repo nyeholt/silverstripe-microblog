@@ -11,6 +11,9 @@ class TimelineController extends ContentController {
 	
 	const POOR_USER_THRESHOLD = -100;
 	
+	private static $default_public = false;
+	private static $default_logged_in = true;
+	
 	private static $jquery_lib = 'framework/thirdparty/jquery/jquery.js';
 	private static $jquery_ui_lib = 'framework/thirdparty/jquery-ui/jquery-ui.js';
 	
@@ -301,10 +304,12 @@ class TimelineController extends ContentController {
 		$taf->addExtraClass('postContent');
 		$taf->addExtraClass('preview');
 		
-		$loggedIn = CheckboxField::create('LoggedInUsers', "Logged in users", true);
+		$public = CheckboxField::create('PublicUsers', 'Public users', Config::inst()->get('TimelineController', 'default_public'));
+		$loggedIn = CheckboxField::create('LoggedInUsers', "Logged in users", Config::inst()->get('TimelineController', 'default_logged_in'));
 		$member = MultiSelect2Field::create('Members', "To", Member::get()->map()->toArray())->setMultiple(true);
 		$group = MultiSelect2Field::create("Groups", "To Groups", Group::get()->filter("ParentID", 0)->map()->toArray())->setMultiple(true);
 		
+		$fields->push($public);
 		$fields->push($loggedIn);
 		$fields->push($member);
 		$fields->push($group);
@@ -374,10 +379,12 @@ class TimelineController extends ContentController {
 		$field->setFolderName($folderName);
 		
 		// these values will be copied across from the post form at post time
-		$loggedIn = CheckboxField::create('LoggedInUsers', "Logged in users", true);
+		$public = CheckboxField::create('PublicUsers', 'Public users', Config::inst()->get('TimelineController', 'default_public'));
+		$loggedIn = CheckboxField::create('LoggedInUsers', "Logged in users", Config::inst()->get('TimelineController', 'default_logged_in'));
 		$member = MultiSelect2Field::create('Members', "To", Member::get()->map()->toArray())->setMultiple(true);
 		$group = MultiSelect2Field::create("Groups", "To Groups", Group::get()->filter("ParentID", 0)->map()->toArray())->setMultiple(true);
 		
+		$fields->push($public);
 		$fields->push($loggedIn);
 		$fields->push($member);
 		$fields->push($group);
@@ -422,6 +429,7 @@ class TimelineController extends ContentController {
 		$title = isset($data['Title']) ? $data['Title'] : null;
 
 		$to = array(
+			'public'	=> isset($data['PublicUsers']) ? $data['PublicUsers'] : null,
 			'logged_in'	=> isset($data['LoggedInUsers']) ? $data['LoggedInUsers'] : null,
 			'members'	=> isset($data['Members']) ? $data['Members'] : null,
 			'groups'	=> isset($data['Groups']) ? $data['Groups'] : null,

@@ -16,6 +16,11 @@
 	
 	<input type="button" class="specific-users" value="Post to" />
 	<div class="post-specific-users" style="display:none">
+		<% if $PublicUsers %>
+		$PublicUsers
+		<label for="Form_PostForm_PublicUsers">Public users</label>
+		<% end_if %>
+		
 		<% if $LoggedInUsers %>
 		$LoggedInUsers
 		<label for="Form_PostForm_LoggedInUsers">Logged in users</label>
