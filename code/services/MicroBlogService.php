@@ -210,7 +210,7 @@ class MicroBlogService {
 					$to['groups'] = explode(',', $to['groups']);
 				}
 				foreach ($to['groups'] as $groupId) {
-					$groupId = (int) $memberId;
+					$groupId = (int) $groupId;
 					$group = Group::get()->byID($groupId);
 					if ($group) {
 						$grantTo[] = $group;
