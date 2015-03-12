@@ -48,6 +48,7 @@ class MicroPostDigestJob extends AbstractQueuedJob {
 				$parent = Group::get()->byID($groupId);
 				if ($parent) {
 					$allMembers = $parent->Members();
+					$allMembers = $allMembers->filter('DigestType', $type);
 					$members = $allMembers->map()->toArray();
 					if (count($members)) {
 						$this->members = array_keys($members);

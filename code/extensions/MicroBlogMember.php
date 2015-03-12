@@ -20,6 +20,7 @@ class MicroBlogMember extends DataExtension {
 		'Up'						=> 'Int',
 		'Down'						=> 'Int',
 		'LastPostView'				=> 'SS_DateTime',
+		'DigestType'				=> "ENUM('none,daily,weekly', 'none')",
 	);
 
 	private static $has_one = array(
