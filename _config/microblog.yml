@@ -27,6 +27,10 @@ Injector:
     properties:
       filters:
         - %$MicroPostActivityFilter
+  MicroPostDigestJob:
+    properties:
+      microBlogService: %$MicroBlogService
+      transactionManager: %$TransactionManager
 
 BBCodeParser:
   allow_smilies: 1
