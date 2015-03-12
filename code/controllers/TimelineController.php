@@ -190,6 +190,10 @@ class TimelineController extends ContentController {
 
 			$posts = $this->microBlogService->getStatusUpdates(null, array('ID' => 'ASC'), $since, false, false, array(), 0, 1);
 			$post = $posts->first();
+			
+			if (!$post) {
+				return Security::permissionFailure();
+			}
 
 			$options = $this->Options();
 			$options->Replies = true;
