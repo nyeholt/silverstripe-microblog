@@ -20,8 +20,10 @@ class MicroPostActivityFilter implements RequestFilter {
 			$members = Member::get()->filter('ID', array_keys($actions));
 
 			foreach ($members as $member) {
-				$member->LastPostView = SS_Datetime::now()->getValue();
-				$member->write();
+				if ($member->exists()) {
+					$member->LastPostView = SS_Datetime::now()->getValue();
+					$member->write();
+				}
 			}
 		}
 	}
