@@ -31,6 +31,7 @@ class TimelineController extends ContentController {
 	);
 
 	private static $allowed_actions = array(
+		'digest',
 		'StatusForm',
 		'PostForm',
 		'FollowForm',
@@ -166,6 +167,28 @@ class TimelineController extends ContentController {
 				'MemberID'		=> $m->ID,
 			)));
 		}
+	}
+	
+	public function digest() {
+		if (!Permission::check('ADMIN')) {
+			return $this->httpError(403);
+		}
+		$posts = $this->microBlogService->globalFeed(array(
+			'Created:GreaterThan'	=> date('Y-m-d 00:00:00', strtotime('-1 month')),
+		), $orderBy = 'ID DESC', $since = null, $number = 10, $markViewed = false);
+
+		if (!count($posts)) {
+			return;
+		}
+
+		$content = SSViewer::execute_template('DigestEmail', ArrayData::create(array(
+			'Posts'		=> $posts,
+			'Member'	=> Member::currentUser()
+		)));
+		
+		$content = HTTP::absoluteURLs($content);
+		
+		echo $content;
 	}
 	
 	/**
