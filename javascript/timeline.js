@@ -280,14 +280,14 @@ window.Microblog = window.Microblog || {}
 							callback([]);
 							return false;
 						}
-						
 					},
+					
 					index: 1,
 					replace: function (mention) {
 						return '' + mention + ' ';
 					}
 				}
-			]).overlay([
+			], {zIndex: '201'}).overlay([
 				{
 					match: /\B@(.*?):\d+/g,
 					css: {
