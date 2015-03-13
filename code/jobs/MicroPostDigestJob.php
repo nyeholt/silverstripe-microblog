@@ -101,6 +101,8 @@ class MicroPostDigestJob extends AbstractQueuedJob {
 					'Posts'		=> $posts,
 					'Member'	=> $member
 				)));
+				
+				$content = HTTP::absoluteURLs($content);
 
 				$config = SiteConfig::current_site_config();
 
