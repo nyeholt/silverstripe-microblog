@@ -31,6 +31,7 @@
 			<div class="gravatarImage">
 				<img src="http://www.gravatar.com/avatar/{$Owner.gravatarHash}.jpg" />
 			</div>
+			<p>
 			<em>
 			<% if $Owner.ID == $Top.Member.ID %>
 			Me
@@ -38,6 +39,8 @@
 			$Owner.FirstName
 			<% end_if %>
 			</em>
+			at $Created.Nice
+			</p>
 		</td>
 		<td>
 			<% if Title %>
@@ -47,7 +50,7 @@
 			$RenderedContent.raw
 
 			<p>
-				<a href="$Link">View online</a>
+				<a href="$Link">View online</a><% if $NumReplies %>, with $NumReplies replies<% end_if %>
 			</p>
 			<br/>
 			<br/>

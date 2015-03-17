@@ -90,6 +90,8 @@ class MicroPostDigestJob extends AbstractQueuedJob {
 		if ($member && $member->ID) {
 			$this->transactionManager->run(function () use ($microBlogService, $since, $member) {
 				$posts = $microBlogService->globalFeed(array(
+					'ParentID'				=> 0,
+					'ThreadOwnerID:not'		=> $member->ID,
 					'Created:GreaterThan'	=> $since
 				), $orderBy = 'ID DESC', $since = null, $number = 10, $markViewed = false);
 				
@@ -110,6 +112,9 @@ class MicroPostDigestJob extends AbstractQueuedJob {
 				$mail->setTo($member->Email);
 				$mail->setBody($content);
 				$mail->setSubject($config->Title . ' digest');
+				if ($config->FromEmail) {
+					$mail->setFrom($config->FromEmail);
+				} 
 
 				$mail->send();
 			}, $member);
