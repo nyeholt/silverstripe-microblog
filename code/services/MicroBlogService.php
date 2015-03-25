@@ -93,12 +93,12 @@ class MicroBlogService {
 		return $this->userActions;
 	}
 	
-	public function unreadPosts($tags = null) {
+	public function unreadPosts($target = null) {
 		$member = $this->securityContext->getMember();
 		if (!$member || !$member->ID) {
 			return array();
 		}
-		return $member->getUnreadPosts($tags);
+		return $member->getUnreadPosts($target);
 	}
 
 	/**

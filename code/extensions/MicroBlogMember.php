@@ -78,17 +78,16 @@ class MicroBlogMember extends DataExtension {
 	/**
 	 * Gets the latest posts that _this_ member can view
 	 */
-	public function getUnreadPosts($tags = '') {
+	public function getUnreadPosts($target = '') {
 		// this little cache bit has absolutely no effect because SS will re-create (And requery) the database
 		// on EVERY call to currentMember
 		if (!$this->unreadPosts) {
 			$filter = array(
 				'Created:GreaterThan'		=> $this->owner->LastPostView, 
 			);
-			
-			if (strlen($tags) && preg_match('/[a-z0-9_,-]/i', $tags)) {
-				$tags = explode(',', $tags);
-				$filter['Tags.Title'] = $tags;
+
+			if (strlen($target)) {
+				$filter['Target'] = $target;
 			}
 			
 			$this->unreadPosts = $this->microBlogService->globalFeed($filter, $orderBy = 'ID DESC', $since = null, $number = 20, $markViewed = false);

@@ -15,7 +15,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		'IsOembed'			=> 'Boolean',
 		'Deleted'			=> 'Boolean',
 		'NumReplies'		=> 'Int',
-		'Target'			=> 'Varchar',
+		'Target'			=> 'Varchar',		// ClassName,ID
 	);
 
 	private static $has_one = array(
