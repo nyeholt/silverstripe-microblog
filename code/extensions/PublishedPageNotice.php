@@ -18,7 +18,7 @@ class PublishedPageNotice extends SiteTreeExtension {
 POST;
 		$member = Member::currentUser();
 		if ($member && $member->ID) {
-			$content = sprintf(_t('MicroBlog.PAGE_PUBlISH_NOTICE', $text), $member->FirstName, $member->Surname, $this->owner->Title, $this->owner->Link(), date('Y-m-d H:i:s'));
+			$content = sprintf(_t('MicroBlog.PAGE_PUBlISH_NOTICE', $text), $member->FirstName, $member->Surname, $this->owner->Title, $this->owner->Link(), date('H:i M jS'));
 			$this->microBlogService->createPost($member, $content, array('PostType' => 'notice-post'), 0, null, array('logged_in' => true));
 		}
 	}

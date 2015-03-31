@@ -6,7 +6,7 @@
 			</p>
 			
 			<p>
-			The following posts have been made in your network 
+			Here's the latest updates from your network
 			</p>
 			
 			<br/><br/>
@@ -26,6 +26,14 @@
 	
 
 	<% loop $Posts %>
+	<% if PostType == 'notice-post' %>
+	<tr style="padding-bottom: 10px;">
+		<td valign="top" colspan="3">
+			$RenderedContent.raw
+			<br/>
+		</td>
+	</tr>
+	<% else %>
 	<tr style="padding-bottom: 10px;">
 		<td valign="top">
 			<div class="gravatarImage">
@@ -43,9 +51,6 @@
 			</p>
 		</td>
 		<td>
-			<% if Title %>
-			<h3  style="font-family: Arial; font-size: 16px">$Title</h3>
-			<% end_if %>
 			
 			$RenderedContent.raw
 
@@ -58,6 +63,7 @@
 		<td>
 		</td>
 	</tr>
+	<% end_if %>
 	<% end_loop %>
 </table>
 

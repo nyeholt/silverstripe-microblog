@@ -18,7 +18,7 @@ class MicroPostDigestJob extends AbstractQueuedJob {
 	
 	public function __construct($since = 0, $type = null, $groupId = 0) {
 		
-		if (!$this->totalSteps && $groupId) {
+		if ($groupId) {
 			// means we need to build the list of users 
 			$this->currentStep = 1;
 			$this->totalSteps = 2;
