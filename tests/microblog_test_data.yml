@@ -1,0 +1,15 @@
+
+Group:
+    posters:
+        Title: Posters
+Member:
+    user1: 
+        FirstName: user
+        Surname: one
+        Email: userone@test.com
+        Groups: =>Group.posters
+    user2: 
+        FirstName: user
+        Surname: two
+        Email: usertwo@test.com
+        Groups: =>Group.posters

@@ -16,6 +16,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		'Deleted'			=> 'Boolean',
 		'NumReplies'		=> 'Int',
 		'Target'			=> 'Varchar',		// ClassName,ID
+		'PostType'			=> 'Varchar',
 	);
 
 	private static $has_one = array(
@@ -54,12 +55,6 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		'Content'
 	);
 	
-	private static $dependencies = array(
-		'socialGraphService'	=> '%$SocialGraphService',
-		'microBlogService'		=> '%$MicroBlogService',
-		'securityContext'		=> '%$SecurityContext',
-	);
-	
 	private static $default_sort = 'ID DESC';
 
 	/**
@@ -85,6 +80,12 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 	 * @var SecurityContext
 	 */
 	public $securityContext;
+	
+	/**
+	 * @var PermissionService
+	 */
+	public $permissionService;
+	
 	
 	/**
 	 * @var SyncrotronService 
@@ -141,6 +142,73 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		if ($this->afterWriteRender) {
 			$this->afterWriteRender = false;
 			$this->write();
+		}
+	}
+	
+	
+	/**
+	 * Gives access to this micropost, based on information in the $to array
+	 * 
+	 * @param array $to
+	 *			The people/groups this post is being sent to. This is an array of
+	 *			- logged_in: boolean (logged in users; uses a system config setting to determine which group represents 'logged in'
+	 *			- members: an array, or comma separated string, of member IDs
+	 *			- groups: an array, or comma separated string, of group IDs
+	 */
+	public function giveAccessTo($to) {
+		if ($to) {
+			$grantTo = array();
+			if (isset($to['logged_in']) && $to['logged_in']) {
+				// find the 'logged in' group, and grant to that.
+				$groups = null;
+				if (class_exists('Multisites')) {
+					$groups = Multisites::inst()->getCurrentSite()->LoggedInGroups()->toArray();
+				} else {
+					$groups = SiteConfig::current_site_config()->LoggedInGroups()->toArray();
+				}
+				if ($groups) {
+					$grantTo = array_merge($grantTo, $groups);
+				}
+			}
+			// todo evaluate security implication of posting to arbitrary members...
+			// do we need to check 'friends' status here?
+			if (isset($to['members']) && count($to['members'])) {
+				if (!is_array($to['members'])) {
+					$to['members'] = explode(',', $to['members']);
+				}
+				foreach ($to['members'] as $memberId) {
+					$id = (int) $memberId;
+					$toMember = Member::get()->byID($id);
+					if ($toMember) {
+						$grantTo[] = $toMember;
+					}
+				}
+			}
+			
+			if (isset($to['groups']) && count($to['groups'])) {
+				if (!is_array($to['groups'])) {
+					$to['groups'] = explode(',', $to['groups']);
+				}
+				foreach ($to['groups'] as $groupId) {
+					$groupId = (int) $groupId;
+					$group = Group::get()->byID($groupId);
+					if ($group) {
+						$grantTo[] = $group;
+					}
+				}
+			}
+			
+			if (count($grantTo)) {
+				foreach ($grantTo as $grantee) {
+					$this->permissionService->grant($this, 'View', $grantee);
+				}
+			}
+			
+			// what about to the public?
+			if (isset($to['public'])) {
+				$this->PublicAccess = true;
+				$this->write();
+			}
 		}
 	}
 
@@ -364,6 +432,8 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 	public function Posts() {
 		return $this->microBlogService->getRepliesTo($this);
 	}
+	
+	
 	
 	/**
 	 * We need to define a  permission source to ensure the 

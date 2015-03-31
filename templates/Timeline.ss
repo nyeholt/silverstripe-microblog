@@ -8,7 +8,7 @@
 <% end_if %>
 
 <% loop Posts %>
-	<div class="microPost <% if $ParentID > 0 %>hasparent<% else %>toplevel  <% if $Top.Options.ShowTitlesOnly %>collapsed-post<% end_if %> <% end_if %> <% if $isUnreadByUser %>unread<% end_if %>" 
+	<div class="microPost $PostType <% if $ParentID > 0 %>hasparent<% else %>toplevel  <% if $Top.Options.ShowTitlesOnly %>collapsed-post<% end_if %> <% end_if %> <% if $isUnreadByUser %>unread<% end_if %>" 
 		 data-id="$ID" data-owner="$Owner.ID" data-parent="$ParentID" id="post$ID" data-rating="$WilsonRating" data-editable="1">
 		<div class="microPostContent">
 			<div class="postOptions">

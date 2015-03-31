@@ -76,6 +76,11 @@ div.microPost.collapsed-post .postText, div.microPost.collapsed-post .replyForm,
 	display: none;
 }
 
+/** special 'notice' posts */
+div.microPost.notice-post { background-color: transparent; border:none; margin: 0 0 0 3rem; padding: 0px; }
+div.microPost.notice-post .postText { padding: 0px}
+div.microPost.notice-post .postOptions, div.notice-post .replyForm {display: none}
+
 div.postImage {
 	float: right; 
 	margin: 5px 5px 0px 0px;
@@ -83,6 +88,7 @@ div.postImage {
 
 div.microPostContent {
 	background: transparent;
+	overflow: auto;
 }
 
 div.microPostContent img {

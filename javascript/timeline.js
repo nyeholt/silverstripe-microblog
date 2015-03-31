@@ -420,7 +420,7 @@ window.Microblog = window.Microblog || {}
 			})
 			
 			// Auto replace image URLs 
-			$('a').entwine({
+			$('div.microPost a').entwine({
 				onmatch: function () {
 					var href = this.attr('href');
 					if (href && href.length && href.lastIndexOf('.') > 0 && !this.hasClass('force-link')) {
@@ -509,7 +509,7 @@ window.Microblog = window.Microblog || {}
 					var postId = $(this).closest('div.microPost').attr('data-id');
 					var replyForm = $('#replyTo' + postId);
 					if (replyForm.length == 0) {
-						replyForm = $(this).parent().siblings('form.replyForm');
+						replyForm = $(this).parents('.postReplies').siblings('form.replyForm');
 					}
 					replyForm.show().removeClass('visually-hidden').find('textarea').focus();
 				}

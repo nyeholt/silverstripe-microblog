@@ -6,12 +6,9 @@
  */
 class TestMicroBlogService extends SapphireTest {
 	
-	public function setUp() {
-		Restrictable::set_enabled(false);
-	}
+	protected static $fixture_file = 'microblog_test_data.yml';
 	
 	public function testTagExtract() {
-		
 		
 		$this->logInWithPermission();
 		$post = MicroPost::create();
@@ -41,9 +38,36 @@ POST;
 		$memberTwo->write();
 
 		$svc = singleton('MicroBlogService');
+		/* @var $svc MicroBlogService */
 		
+		singleton('SecurityContext')->setMember($memberOne);
 		$svc->addFriendship($memberOne, $memberTwo);
 		
 		// gah - ss3's testing setup needs to be better sorted to be able to do this bit...
+	}
+	
+	public function testCreatePost() {
+		Restrictable::set_enabled(true);
+		$this->logInWithPermission();
+		MicroPost::get()->removeAll();
+		
+		$group = $this->objFromFixture('Group', 'posters');
+		$member = $this->objFromFixture('Member', 'user1');
+		$user2 = $this->objFromFixture('Member', 'user2');
+		
+		$groups = $member->Groups()->toArray();
+		
+		$svc = singleton('MicroBlogService');
+		/* @var $svc MicroBlogService */
+		
+		$post = $svc->createPost($member, "My post content"); // , null, 0, null, array('groups' => $group->ID));
+		
+		$this->assertTrue($post->checkPerm('View', $member));
+		$this->assertFalse($post->checkPerm('View', $user2));
+		
+		$post->giveAccessTo(array('groups' => $group->ID));
+		
+		$this->assertTrue($post->checkPerm('View', $user2));
+		
 	}
 }

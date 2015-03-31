@@ -27,11 +27,6 @@ class MicroBlogService {
 	public $queuedJobService;
 	
 	/**
-	 * @var PermissionService
-	 */
-	public $permissionService;
-	
-	/**
 	 *
 	 * @var NotificationService
 	 */
@@ -45,6 +40,13 @@ class MicroBlogService {
 	public $allowAnonymousPosts = false;
 	
 	public $postProcess = false;
+	
+	/**
+	 * The list of properties that a user can set when creating a post
+	 *
+	 * @var array
+	 */
+	public $allowedProperties = array('Title' => true, 'PostType' => true);
 	
 	/**
 	 * The items that we can sort things by
@@ -62,7 +64,6 @@ class MicroBlogService {
 	
 	private static $dependencies = array(
 		'dataService'			=> '%$DataService',
-		'permissionService'		=> '%$PermissionService',
 		'queuedJobService'		=> '%$QueuedJobService',
 		'securityContext'		=> '%$SecurityContext',
 		'transactionManager'	=> '%$TransactionManager',
@@ -108,6 +109,8 @@ class MicroBlogService {
 	 *			The member creating the post. Will default to the calling member if not specified
 	 * @param string $content
 	 *			The content being loaded into the post
+	 * @param array $properties
+	 *			Additional properties to be bound into the post. 
 	 * @param int $parentId
 	 *			The ID of a micropost that is considered the 'parent' of this post
 	 * @param mixed $target
@@ -119,7 +122,12 @@ class MicroBlogService {
 	 *			- groups: an array, or comma separated string, of group IDs
 	 * @return MicroPost 
 	 */
-	public function createPost(DataObject $member, $content, $title = null, $parentId = 0, $target = null, $to = null) {
+	public function createPost(DataObject $member, $content, $properties = null, $parentId = 0, $target = null, $to = null) {
+		// backwards compatible 
+		if (is_string($properties)) {
+			$properties = array('Title' => $properties);
+		}
+		
 		if (!$member) {
 			$member = $this->securityContext->getMember();
 		}
@@ -130,7 +138,15 @@ class MicroBlogService {
 
 		$post = MicroPost::create();
 		$post->Content = $content;
-		$post->Title = $title;
+		
+		if ($properties && count($properties)) {
+			foreach ($properties as $field => $value) {
+				if (isset($this->allowedProperties[$field])) {
+					$post->$field = $value;
+				}
+			}
+		}
+
 		$post->OwnerID = $member->ID;
 		$post->Target = $target;
 
@@ -177,52 +193,7 @@ class MicroBlogService {
 		$this->rewardMember($member, 2);
 		
 		if ($to) {
-			$grantTo = array();
-			if (isset($to['logged_in']) && $to['logged_in']) {
-				// find the 'logged in' group, and grant to that.
-				$groups = null;
-				if (class_exists('Multisites')) {
-					$groups = Multisites::inst()->getCurrentSite()->LoggedInGroups()->toArray();
-				} else {
-					$groups = SiteConfig::current_site_config()->LoggedInGroups()->toArray();
-				}
-				if ($groups) {
-					$grantTo = array_merge($grantTo, $groups);
-				}
-			}
-			// todo evaluate security implication of posting to arbitrary members...
-			// do we need to check 'friends' status here?
-			if (isset($to['members']) && count($to['members'])) {
-				if (!is_array($to['members'])) {
-					$to['members'] = explode(',', $to['members']);
-				}
-				foreach ($to['members'] as $memberId) {
-					$id = (int) $memberId;
-					$toMember = Member::get()->byID($id);
-					if ($toMember) {
-						$grantTo[] = $toMember;
-					}
-				}
-			}
-			
-			if (isset($to['groups']) && count($to['groups'])) {
-				if (!is_array($to['groups'])) {
-					$to['groups'] = explode(',', $to['groups']);
-				}
-				foreach ($to['groups'] as $groupId) {
-					$groupId = (int) $groupId;
-					$group = Group::get()->byID($groupId);
-					if ($group) {
-						$grantTo[] = $group;
-					}
-				}
-			}
-			
-			if (count($grantTo)) {
-				foreach ($grantTo as $grantee) {
-					$this->permissionService->grant($post, 'View', $grantee);
-				}
-			}
+			$post->giveAccessTo($to);
 		}
 
 		// we stick this in here so the UI can update...

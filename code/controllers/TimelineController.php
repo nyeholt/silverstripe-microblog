@@ -462,7 +462,7 @@ class TimelineController extends ContentController {
 			'groups'	=> isset($data['Groups']) ? $data['Groups'] : null,
 		);
 
-		$post = $this->microBlogService->createPost($this->securityContext->getMember(), $content, $title, $parentId, $target, $to);
+		$post = $this->microBlogService->createPost($this->securityContext->getMember(), $content, array('Title' => $title), $parentId, $target, $to);
 
 		$tags = $this->tagsFromRequest();
 		$post->tag($tags);

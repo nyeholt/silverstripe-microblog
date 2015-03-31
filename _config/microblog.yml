@@ -31,6 +31,15 @@ Injector:
     properties:
       microBlogService: %$MicroBlogService
       transactionManager: %$TransactionManager
+  MicroPost:
+    properties:
+      socialGraphService: %$SocialGraphService
+      microBlogService: %$MicroBlogService
+      securityContext: %$SecurityContext
+      permissionService: %$PermissionService
+  PublishedPageNotice:
+    properties:
+      microBlogService: %$MicroBlogService
 
 BBCodeParser:
   allow_smilies: 1
