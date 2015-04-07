@@ -373,6 +373,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 	 * When 'deleting' an object, we actually just remove all its content 
 	 */
 	public function delete() {
+		$this->RenderedContent = '';
 		if ($this->checkPerm('Delete')) {
 			$this->Tags()->removeAll();
 			// if we have replies, we can't delete completely!
