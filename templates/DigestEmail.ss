@@ -1,3 +1,6 @@
+<style type="text/css">
+	.post-target-link {display: none; }
+</style>
 <table  style="font-family: Arial; font-size: 12px">
 	<tr style="padding-bottom: 10px;">
 		<td colspan="3">

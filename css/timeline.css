@@ -79,7 +79,7 @@ div.microPost.collapsed-post .postText, div.microPost.collapsed-post .replyForm,
 /** special 'notice' posts */
 div.microPost.notice-post { background-color: transparent; border:none; margin: 0 0 0 3rem; padding: 0px; }
 div.microPost.notice-post .postText { padding: 0px}
-div.microPost.notice-post .postOptions, div.notice-post .replyForm {display: none}
+div.microPost.notice-post .post-target-link, div.microPost.notice-post .postOptions, div.notice-post .replyForm {display: none}
 
 div.postImage {
 	float: right; 
