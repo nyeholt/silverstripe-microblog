@@ -2,7 +2,7 @@
 	$HiddenFields
 	<% with FieldMap %>
 
-	<% if $Top.Options.UserTitle %>
+	<% if $Title %>
 	<label class="postform-label" for="Form_PostForm_Title">Title</label>
 	$Title
 	<% end_if %>
