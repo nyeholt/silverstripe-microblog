@@ -2,9 +2,12 @@
 	
 	var checkCommentCount = function (trigger) {
 		var props = {};
+		var endpoint = 'jsonservice/microBlog/unreadPosts';
+		
 		if (trigger.attr('data-target')) {
-			props.target = trigger.attr('data-target');
-		}
+			props.filter = {'Target': trigger.attr('data-target')};
+			endpoint = 'jsonservice/microBlog/globalFeed';
+		} 
 		
 		$.get('jsonservice/microBlog/unreadPosts', props).success(function (posts) {
 			if (posts.response && posts.response.items) {

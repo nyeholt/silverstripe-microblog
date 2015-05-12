@@ -2,7 +2,7 @@
 <% require javascript(microblog/javascript/timeline-commenter.js) %>
 <% require css(microblog/css/commenter.css) %>
 
-<a href="{$BaseHref}timeline<% if $Targeted %>?target=$ClassName,$ID<% end_if %>" class="comment-list-trigger" data-target='$ClassName,$ID' title="Show timeline comments" data-tooltip aria-haspopup="true">
+<a href="{$BaseHref}timeline<% if $Targeted %>?target=$ClassName,$ID<% end_if %>" class="comment-list-trigger" <% if $Targeted %>data-target='$ClassName,$ID'<% end_if %> title="Show timeline comments" data-tooltip aria-haspopup="true">
 	<span class="typcn typcn-messages"></span>
 	<span class="comment-count comment-count-0"></span>
 	<span class="visually-hidden">Comments</span>
