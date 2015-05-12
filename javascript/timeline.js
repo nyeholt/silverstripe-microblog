@@ -402,6 +402,13 @@ window.Microblog = window.Microblog || {}
 							Microblog.Timeline.editPost(editId)
 						})
 					}
+					
+					// and PostTarget checks, depending on our timeline context
+					if ($('input[name=PostTarget]').length === 0) {
+						// we can show the post-target-links because we're not in the context of 
+						// hooking into specific posts
+						$(this).find('.post-target-link').show();
+					}
 				}
 			})
 

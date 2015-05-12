@@ -21,8 +21,9 @@
 		Download original: <a href="$Attachment.getURL" title="Download attached file" class="force-link" target="_blank">$Attachment.Name</a>
 	<% end_if %>
 
+	
 	<% if not $ParentID && $PostTarget.Link %>
-	<span class="post-target-link">
+	<span class="post-target-link" style="display: none">
 	See more: <a href="$PostTarget.Link">$PostTarget.Title</a>
 	</span>
 	<% end_if %>
