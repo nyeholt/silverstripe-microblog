@@ -60,12 +60,13 @@ Only:
 Site:
   extensions:
     - MicroBlogSystemSettings
+
 ---
 Name: system_settings
 Except:
   moduleexists: 'multisites'
 ---
-SystemConfig:
+SiteConfig:
   extensions:
     - MicroBlogSystemSettings
 
