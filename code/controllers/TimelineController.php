@@ -97,7 +97,7 @@ class TimelineController extends ContentController {
 		if (self::config()->jquery_lib != THIRDPARTY_DIR . '/jquery/jquery.js') {
 			Requirements::block(THIRDPARTY_DIR . '/jquery/jquery.js');
 		}
-
+		
 		Requirements::javascript(self::config()->jquery_lib);
 		Requirements::javascript(self::config()->jquery_ui_lib);
 		
@@ -110,20 +110,19 @@ class TimelineController extends ContentController {
 		
 		Requirements::javascript('webservices/javascript/webservices.js');
 		
-		Requirements::javascript('microblog/javascript/jquery.autogrow-textarea.js');
 		
-		Requirements::javascript('microblog/javascript/jquery-textcomplete-0.3.7/jquery.overlay.js');
-		Requirements::javascript('microblog/javascript/jquery-textcomplete-0.3.7/jquery.textcomplete.js');
-
-//		Requirements::javascript('microblog/javascript/showdown/showdown.min.js');
-		Requirements::javascript('microblog/javascript/marked.js');
-		Requirements::javascript('microblog/javascript/date.js');
-		Requirements::javascript('microblog/javascript/microblog.js');
-
-		Requirements::javascript('microblog/javascript/timeline.js');
-
-		Requirements::javascript('microblog/javascript/local-storage.js');
-		Requirements::javascript('microblog/javascript/microblog-statesave.js');
+		Requirements::combine_files('_microblog_combined.js', array(
+			'microblog/javascript/jquery.autogrow-textarea.js',
+			'microblog/javascript/jquery-textcomplete-0.3.7/jquery.overlay.js',
+			'microblog/javascript/jquery-textcomplete-0.3.7/jquery.textcomplete.js',
+			'microblog/javascript/showdown/showdown.min.js',
+			'microblog/javascript/marked.js',
+			'microblog/javascript/date.js',
+			'microblog/javascript/microblog.js',
+			'microblog/javascript/timeline.js',
+			'microblog/javascript/local-storage.js',
+			'microblog/javascript/microblog-statesave.js',
+		));
 
 		Requirements::css('microblog/javascript/jquery-textcomplete-0.3.7/jquery.textcomplete.css');
 		
