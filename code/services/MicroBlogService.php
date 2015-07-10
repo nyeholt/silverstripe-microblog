@@ -87,6 +87,7 @@ class MicroBlogService {
 			'rawPost'			=> 'GET',
 			'savePost'			=> 'POST',
 			'findMember'		=> 'GET',
+			'fileLookup'		=> 'GET',
 		);
 	}
 	
@@ -651,6 +652,28 @@ class MicroBlogService {
 		$post->RemainingVotes = $member->VotesToGive;
 
 		return $post;
+	}
+	
+	/**
+	 * Lookup files that you have uploaded
+	 * 
+	 * @param string $fileId
+	 */
+	public function fileLookup($fileId) {
+		$member = $this->securityContext->getMember();
+		if (!$member) {
+			return;
+		}
+		
+		$file = File::get()->filter(array('ID' => $fileId, 'OwnerID' => $member->ID))->first();
+		if ($file && $file->ID) {
+			return array(
+				'Title'		=> $file->Title,
+				'Link'		=> $file->getAbsoluteURL(),
+				'IsImage'	=> $file instanceof Image,
+				'ID'		=> $file->ID,
+			);
+		}
 	}
 }
 

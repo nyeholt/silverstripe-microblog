@@ -393,63 +393,26 @@ class TimelineController extends ContentController {
 	}
 	
 	public function UploadForm() {
-		Requirements::combine_files('minimal_uploadfield.js', array(
-			THIRDPARTY_DIR . '/jquery-fileupload/jquery.iframe-transport.js',
-			THIRDPARTY_DIR . '/jquery-fileupload/jquery.fileupload.js',
-		));
-
-		$fields = new FieldList($field = new FileField('Attachment', _t('MicroBlog.FILE_UPLOAD', 'Upload files')));
-		$actions = new FieldList(new FormAction('uploadFiles', _t('MicroBlog.UPLOAD_FILES', 'Upload')));
+		if (!$this->securityContext->getMember()) {
+			return;
+		}
 		
+		$fields = FieldList::create();
+		$actions = FieldList::create();
+		
+		$fields->push($upload = FileAttachmentField::create('Attachment', _t('MicroBlog.FILE_UPLOAD', 'Files')));
 		$folderName = $this->securityContext->getMember()->memberFolder()->Filename;
 		if (strpos($folderName, 'assets/') === 0) {
 			$folderName = substr($folderName, 7);
 		}
-		$field->relationAutoSetting = false;
-		$field->setFolderName($folderName);
+		$upload->setFolderName($folderName);
 		
-		// these values will be copied across from the post form at post time
-		$public = CheckboxField::create('PublicUsers', 'Public users', Config::inst()->get('TimelineController', 'default_public'));
-		$loggedIn = CheckboxField::create('LoggedInUsers', "Logged in users", Config::inst()->get('TimelineController', 'default_logged_in'));
-		$member = MultiSelect2Field::create('Members', "To", Member::get()->map()->toArray())->setMultiple(true);
-		$group = MultiSelect2Field::create("Groups", "To Groups", Group::get()->filter("ParentID", 0)->map()->toArray())->setMultiple(true);
-		
-		$fields->push($public);
-		$fields->push($loggedIn);
-		$fields->push($member);
-		$fields->push($group);
-		
-		$target = $this->getTargetFilter();
-		if ($target) {
-			$fields->push(HiddenField::create('PostTarget', '', $target));
-		}
+		// megahack; for some reason the module doesn't bind the dropzone interface unless the backend class is set
+		$upload->setFieldHolderTemplate('MbFileAttachmentField_holder');
 		
 		$form = new Form($this, 'UploadForm', $fields, $actions);
 		$form->addExtraClass('fileUploadForm');
 		return $form;
-	}
-	
-	
-	public function uploadFiles($data, Form $form) {
-		if (!$this->securityContext->getMember()) {
-			throw new PermissionDeniedException('Write');
-		}
-		if (isset($data['Attachment'])) {
-			$post = $this->savePostFromForm($data, $form);
-			// need to do it this way to trigger the upload field doing its thing. 
-			$form->saveInto($post);
-			// get the file field back, grab the file, and set it as the attachement id of the post
-			$field = $form->Fields()->dataFieldByName('Attachment');
-			$post->AttachmentID = $field->getUpload()->getFile()->ID;
-			
-			if ($post->AttachmentID) {
-				$post->write();
-				$this->afterPostCreated($post);
-				
-				// @todo clean this up for NON js browsers
-				return Convert::raw2json($post->toMap());
-			}
-		}
 	}
 	
 	protected function savePostFromForm($data, $form) {

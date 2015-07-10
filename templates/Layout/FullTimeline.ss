@@ -8,21 +8,6 @@ $Content
 	
 	
 
-	<% if $ContextUser %>
-		<div class="uploadForm">
-			<% with $UploadForm %>
-			<form $FormAttributes>
-				<% with FieldMap %>
-				$Attachment
-				<% end_with %>
-				<ul id="uploadedFiles"></ul>
-				$HiddenFields
-			</form>
-			<% end_with %>
-		</div>
-	<% end_if %>
-
-
 	<% if $Post %>
 		<input type="hidden" name="timelineUpdateUrl" value="$Link(flatlist)/$Post" />
 	
@@ -39,6 +24,16 @@ $Content
 			<% include PostForm %>
 			<% end_with %>
 			</div>
+		
+			<% with UploadForm %>
+			<form $FormAttributes >
+			$HiddenFields
+			<% with FieldMap %>
+			$Attachment.FieldHolder
+			<% end_with %>
+			</form>
+			<% end_with %>
+	
 		<% end_if %>
 
 		<div class="StatusFeed autorefresh">
