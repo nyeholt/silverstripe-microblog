@@ -550,6 +550,10 @@ class TimelineController extends ContentController {
 		if (!$noReplies) {
 			$replies = false;
 		}
+		
+		if ($this->request->param('ID')) {
+			$filter['ThreadID'] = (int) $this->request->param('ID');
+		}
 
 		$timeline = $this->owner->microBlogService->getStatusUpdates($filter, $sort, $since, $before, !$replies, $tags, $offset);
 

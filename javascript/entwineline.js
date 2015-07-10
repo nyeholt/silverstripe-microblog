@@ -97,7 +97,7 @@ window.Microblog = window.Microblog || {}
 				}
 				this.feed(f);
 
-				if (!this.refreshTimer()) {
+				if (this.feed().hasClass('autorefresh') && !this.refreshTimer()) {
 					var self = this;
 					this.refreshTimer(setTimeout(function () {
 						self.refreshTimeline(0, true);
