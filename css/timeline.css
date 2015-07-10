@@ -1,5 +1,5 @@
 
-#StatusFeed {
+.StatusFeed {
 	padding: 5px;
 	background-color: #fafafa;
 }
@@ -118,16 +118,9 @@ form.replyForm.hiddenreplies {
 	display: none;
 }
 
-div.uploadForm {
-	padding: 10px;
+form #Attachment {
 	display: none;
-	position: fixed;
-	width: 280px;
-	top: 80px;
-	right: 40px;
 	background: #fff;
-	z-index:2000;
-	
 }
 
 abbr.postTime {

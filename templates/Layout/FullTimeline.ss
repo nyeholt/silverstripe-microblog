@@ -1,44 +1,49 @@
 
 $Content
 
-<input type="hidden" id="MemberDetails" data-member='$MemberDetails.ATT' />
-<input type="hidden" value="$PostForm.FormAction" id="PostFormUrl" />
-<input type="hidden" name="timelineUpdateUrl" value="$Link(flatlist)" />
+<div class="timeline-box">
 
-<% if $ContextUser %>
-	<div class="uploadForm">
-		<% with $UploadForm %>
-		<form $FormAttributes>
-			<% with FieldMap %>
-			$Attachment
+	<input type="hidden" id="MemberDetails" data-member='$MemberDetails.ATT' />
+	<input type="hidden" value="$PostForm.FormAction" id="PostFormUrl" />
+	
+	
+
+	<% if $Post %>
+		<input type="hidden" name="timelineUpdateUrl" value="$Link(flatlist)/$Post" />
+	
+		<div class="StatusFeed autorefresh">
+			$Timeline
+		</div>
+	<% else %>
+
+		<input type="hidden" name="timelineUpdateUrl" value="$Link(flatlist)" />
+		
+		<% if $ContextUser %>
+			<div class="postForm span8">
+			<% with PostForm %>
+			<% include PostForm Options=$Top.Options %>
 			<% end_with %>
-			<ul id="uploadedFiles"></ul>
+			</div>
+		
+			<% if $Top.Options.EnableUploads %>
+			<% with UploadForm %>
+			<form $FormAttributes >
 			$HiddenFields
-		</form>
-		<% end_with %>
-	</div>
-<% end_if %>
+			<% with FieldMap %>
+			$Attachment.FieldHolder
+			<% end_with %>
+			</form>
+			<% end_with %>
+			<% end_if %>
+	
+		<% end_if %>
 
-
-<% if $Post %>
-	<div id="StatusFeed" class="autorefresh">
-		$Timeline
-	</div>
-<% else %>
-
-	<% if $ContextUser %>
-		<div class="postForm span8">
-		<% with PostForm %>
-		<% include PostForm %>
-		<% end_with %>
+		<div class="StatusFeed autorefresh">
+			$Timeline
+			<div class="feed-actions">
+				<a href="#" class="moreposts">Load more...</a>
+			</div>
 		</div>
+
 	<% end_if %>
-
-	<div id="StatusFeed" class="autorefresh">
-		$Timeline
-		<div class="feed-actions">
-			<a href="#" class="moreposts">Load more...</a>
-		</div>
-	</div>
-
-<% end_if %>
+</div>

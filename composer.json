@@ -18,11 +18,12 @@
 		"silverstripe/restrictedobjects": "~2.1",
 		"silverstripe/webservices": "~3.1",
 		"silverstripe/select2": "~1.0",
-		"ezyang/htmlpurifier": "dev-master#c67e4c2f7e06f89ca0eb4ce72b191144e40dc3ef"
+		"ezyang/htmlpurifier": "dev-master#c67e4c2f7e06f89ca0eb4ce72b191144e40dc3ef",
+		"unclecheese/dropzone": "dev-master#8a95cb1890267e07243f02ab40604ef104c18fef"
 	},
 	"extra": {
 		"branch-alias": {
-			"dev-master": "1.10.x-dev"
+			"dev-master": "2.0.x-dev"
 		}
 	}
 }
