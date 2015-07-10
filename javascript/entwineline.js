@@ -447,10 +447,10 @@ window.Microblog = window.Microblog || {}
 						}
 
 						$('input[name=action_savepost]').removeAttr('disabled');
-						$('input[name=action_savepost]').attr('value', 'Reply');
+						$('form.replyForm').find('input[name=action_savepost]').attr('value', 'Reply');
 					}).fail(function () {
 						$('input[name=action_savepost]').removeAttr('disabled');
-						$('input[name=action_savepost]').attr('value', 'Reply');
+						$('form.replyForm').find('input[name=action_savepost]').attr('value', 'Reply');
 					})
 				},
 				onsubmit: function () {
@@ -474,7 +474,7 @@ window.Microblog = window.Microblog || {}
 							$('#Form_PostForm').find('textarea').removeClass('expanded-content').val('').trigger('keydown');
 							$('#Form_PostForm').find('input[type=text]').removeClass('expanded-content').val('');
 							$('input[name=action_savepost]').removeAttr('disabled');
-							$('input[name=action_savepost]').attr('value', 'Add');
+							$('#Form_PostForm').find('input[name=action_savepost]').attr('value', 'Add');
 							var b = $(thisform).parents('.timeline-box');
 							$(thisform).parents('.timeline-box').refreshTimeline();
 							if (data && data.response) {
