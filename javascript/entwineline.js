@@ -144,7 +144,9 @@ window.Microblog = window.Microblog || {}
 				this.pendingUpdate().done(function () {
 					self.pendingUpdate(false);
 					self.loading(false);
-					if (self.feed().hasClass('autorefresh')) {
+					// self.feed may be null now if the timeline object has been removed from the DOM
+					// by this point
+					if (self.feed() && self.feed().hasClass('autorefresh')) {
 						if (reschedule) {
 							setTimeout(function () {
 								self.refreshTimeline(false, reschedule);
