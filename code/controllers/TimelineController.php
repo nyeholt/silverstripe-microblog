@@ -93,6 +93,17 @@ class TimelineController extends ContentController {
 		
 		parent::init();
 		
+		self::include_microblog_requirements();
+
+		$member = $this->securityContext->getMember();
+		if ($member && $member->ID) {
+			if ($member->Balance < self::POOR_USER_THRESHOLD) {
+				throw new Exception("Broken pipe");
+			}
+		}
+	}
+	
+	public static function include_microblog_requirements() {
 		Requirements::block(THIRDPARTY_DIR . '/prototype/prototype.js');
 		if (self::config()->jquery_lib != THIRDPARTY_DIR . '/jquery/jquery.js') {
 			Requirements::block(THIRDPARTY_DIR . '/jquery/jquery.js');
@@ -119,7 +130,7 @@ class TimelineController extends ContentController {
 			'microblog/javascript/marked.js',
 			'microblog/javascript/date.js',
 			'microblog/javascript/microblog.js',
-			'microblog/javascript/timeline.js',
+			'microblog/javascript/entwineline.js',
 			'microblog/javascript/local-storage.js',
 			'microblog/javascript/microblog-statesave.js',
 		));
@@ -127,13 +138,6 @@ class TimelineController extends ContentController {
 		Requirements::css('microblog/javascript/jquery-textcomplete-0.3.7/jquery.textcomplete.css');
 		
 		Requirements::css('microblog/css/timeline.css');
-
-		$member = $this->securityContext->getMember();
-		if ($member && $member->ID) {
-			if ($member->Balance < self::POOR_USER_THRESHOLD) {
-				throw new Exception("Broken pipe");
-			}
-		}
 	}
 	
 	public function IsEnabled($option) {
@@ -209,7 +213,7 @@ class TimelineController extends ContentController {
 			} else {
 				
 			}
-
+			
 			$posts = $this->microBlogService->getStatusUpdates(null, array('ID' => 'ASC'), $since, false, false, array(), 0, 1);
 			$post = $posts->first();
 			

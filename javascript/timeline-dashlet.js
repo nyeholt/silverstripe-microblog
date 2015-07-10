@@ -8,7 +8,6 @@
 				$.get(timeline).success(function (data) {
 					container.html(data);
 				}).error(function (data) {
-					console.log(data);
 					alert("Timeline failed to load");
 				});
 			}
