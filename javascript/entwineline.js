@@ -88,13 +88,8 @@ window.Microblog = window.Microblog || {}
 			feed: null,
 
 			onmatch: function () {
-				console.log(this.refreshTime());
 				this.refreshTime(25000);
-				console.log(this.refreshTimer());
 				this.setFeed($(this).find('.StatusFeed'));
-				
-//				
-//				console.log(this.refreshTime());
 			},
 			setFeed: function (f) {
 				if (!f) {
@@ -288,7 +283,7 @@ window.Microblog = window.Microblog || {}
 						postContent.append(editorField);
 						editorField.val(post.response.OriginalContent ? post.response.OriginalContent : post.response.Content);
 
-						mentionify(editorField);
+						Microblog.Timeline.mentionify(editorField);
 
 						var save = $('<input type="button" value="Save" class="postEditorField">');
 						save.insertAfter(editorField);
@@ -406,7 +401,7 @@ window.Microblog = window.Microblog || {}
 				onclick: function () {
 					var _this = this;
 					// caution - leak possible!! need to switch to new 'from' stuff in entwine
-					var doMore = $(this).parents('.timeline-box').more();
+					var doMore = $(this).parents('.timeline-box').morePosts();
 					if (doMore) {
 						doMore.done(function () {
 							_this.appendTo($(_this).parents('.StatusFeed'));
