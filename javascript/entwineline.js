@@ -469,7 +469,6 @@ window.Microblog = window.Microblog || {}
 					var thisform = this;
 					$(this).ajaxForm({
 						beforeSubmit: function (fields, form) {
-							
 						},
 						success: function (data) {
 							$('#Form_PostForm').find('textarea').removeClass('expanded-content').val('').trigger('keydown');
@@ -521,15 +520,14 @@ window.Microblog = window.Microblog || {}
 			var boundUploads = false;
 			
 			$(document).on('click', 'input[name=uploadTrigger]', function () {
-				$('div#Attachment').toggle();
-				
-				if (!boundUploads) {
-					boundUploads = true;
-					var backend = $('#Attachment').find('.dropzone-holder').data('dropzoneInterface').backend;
-					var trigger = $(this);
+				var context = $(this).parents('.timeline-box');
+				var attachment = context.find('div#Attachment');
+				attachment.toggle();
+				if (!attachment.data('boundUploads')) {
+					attachment.data('boundUploads', true);
+					var backend = attachment.find('.dropzone-holder').data('dropzoneInterface').backend;
 					backend.on('success', function (file, fileId) {
-						var contentField = trigger.parents('form').find('textarea[name=Content]');
-
+						var contentField = context.find('#Form_PostForm textarea[name=Content]');
 						SSWebServices.get('microBlog', 'fileLookup', {fileId: fileId}, function (file) {
 							if (file.response && file.response.ID) {
 								file = file.response;
@@ -538,6 +536,9 @@ window.Microblog = window.Microblog || {}
 									txt = '![' + file.Title + '](' + file.Link + ')';
 								}
 								var current = contentField.val();
+								if (!current) {
+									current = '';
+								}
 								if (current.length > 0) {
 									current += "\n";
 								}
