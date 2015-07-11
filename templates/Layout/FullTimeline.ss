@@ -21,10 +21,11 @@ $Content
 		<% if $ContextUser %>
 			<div class="postForm span8">
 			<% with PostForm %>
-			<% include PostForm %>
+			<% include PostForm Options=$Top.Options %>
 			<% end_with %>
 			</div>
 		
+			<% if $Top.Options.EnableUploads %>
 			<% with UploadForm %>
 			<form $FormAttributes >
 			$HiddenFields
@@ -33,6 +34,7 @@ $Content
 			<% end_with %>
 			</form>
 			<% end_with %>
+			<% end_if %>
 	
 		<% end_if %>
 

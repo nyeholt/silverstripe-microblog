@@ -28,6 +28,7 @@ class TimelineController extends ContentController {
 		'UserTitle'			=> false,			// should users be allowed to set titles?
 		'ShowTitlesOnly'	=> false,			// Should we only show the titles when listing posts? (more forum like)
 		'ShowTitlesInPost'	=> false,			// Should titles be displayed within post content?
+		'EnableUploads'		=> true,
 	);
 
 	private static $allowed_actions = array(
@@ -394,6 +395,10 @@ class TimelineController extends ContentController {
 	
 	public function UploadForm() {
 		if (!$this->securityContext->getMember()) {
+			return;
+		}
+		
+		if (!$this->Options()->EnableUploads) {
 			return;
 		}
 		

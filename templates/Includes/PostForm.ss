@@ -10,7 +10,10 @@
 	$Content
 	
 	$Up.Actions
+	
+	<% if $Options.EnableUploads %>
 	<input type="button" name="uploadTrigger" value="Attach files" />
+	<% end_if %>
 
 	<% if $LoggedInUsers %>
 	
