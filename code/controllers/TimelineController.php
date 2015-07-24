@@ -394,7 +394,8 @@ class TimelineController extends ContentController {
 	}
 	
 	public function UploadForm() {
-		if (!$this->securityContext->getMember()) {
+		$member = $this->securityContext->getMember();
+		if (!$member) {
 			return;
 		}
 		
@@ -406,7 +407,7 @@ class TimelineController extends ContentController {
 		$actions = FieldList::create();
 		
 		$fields->push($upload = FileAttachmentField::create('Attachment', _t('MicroBlog.FILE_UPLOAD', 'Files')));
-		$folderName = $this->securityContext->getMember()->memberFolder()->Filename;
+		$folderName = $member->memberFolder()->Filename . '/' . substr($member->encryptWithUserSettings(date(DateTime::ISO8601)), 0, 12);
 		if (strpos($folderName, 'assets/') === 0) {
 			$folderName = substr($folderName, 7);
 		}
