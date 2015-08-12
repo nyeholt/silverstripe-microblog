@@ -418,7 +418,17 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		}
 		
 		return 'timeline/show/' . $this->ID . '/' . $additional;
-		return 'timeline/show/' . $this->ID . $additional;
+	}
+	
+	public function ThreadLink() {
+		if ($this->ThreadID != $this->ID) {
+			return $this->Thread()->Link();
+		}
+		return $this->Link();
+	}
+	
+	public function AbsoluteThreadLink() {
+		return Director::absoluteURL($this->ThreadLink());
 	}
 	
 	public function AbsoluteLink() {
@@ -498,7 +508,10 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 			'Content'		=> $this->Content,
 			'HTMLContent'	=> $this->ConvertedContent(),
 			'Title'			=> $this->Title,
-			'Link'			=> $this->Link()
+			'Link'			=> $this->Link(),
+			'AbsoluteLink'	=> $this->AbsoluteLink(),
+			'ThreadLink'	=> $this->ThreadLink(),
+			'AbsoluteThreadLink'	=> $this->AbsoluteThreadLink(),
 		);
 	}
 
