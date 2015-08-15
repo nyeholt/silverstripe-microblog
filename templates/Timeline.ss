@@ -11,43 +11,7 @@
 	<div class="microPost $PostType <% if $ParentID > 0 %>hasparent<% else %>toplevel  <% if $Top.Options.ShowTitlesOnly %>collapsed-post<% end_if %> <% end_if %> <% if $isUnreadByUser %>unread<% end_if %>" 
 		 data-id="$ID" data-owner="$Owner.ID" data-parent="$ParentID" id="post$ID" data-rating="$WilsonRating" data-editable="1">
 		<div class="microPostContent">
-			<div class="postOptions">
-				<% if $Top.Options.Voting %>
-				<a href="#" class="vote" data-dir="1" data-id="$ID">Up</a>
-				<a href="#" class="vote" data-dir="-1" data-id="$ID">Down</a>
-				<span class="upCount">$Up</span><span class='vote-separator'>|</span><span class="downCount">$Down</span>
-				<% end_if %>
-
-				<% if $ParentID == 0 %>
-				<a href="$Link">permalink</a>
-				&middot;
-				<% end_if %>
-
-				<% if not $Top.Options.ShowReply %>
-				<a href="#" class="replyToPost">reply</a>
-				&middot;
-				<% end_if %>
-
-				<abbr class="timeago postTime" title="$Created" data-created="$Created">$Created.Nice</abbr> 
-				<% if $isEdited %><span class="edited-mark" title="Edited at $LastEdited">*</span><% end_if %>
-				
-				by 
-				
-				<% if $Owner.ID == $ContextUser.ID %>
-				Me
-				<% else %>
-				$Owner.FirstName
-				<!--<a href="$Owner.Link">$Owner.FirstName</a>-->
-				<% end_if %>
-				<% if Deleted %>
-				<% else %>
-					<% if checkPerm('Delete') %>
-					&middot;
-					<a href="#" class="deletePost">delete</a>
-					<% end_if %>
-				<% end_if %>
-			</div>
-
+			<% include BeforePostContent %>
 			<% if $Top.Options.ShowTitlesInPost && $ParentID == 0 %>
 			<h3 class="micro-post-title">
 				<% if $Top.Options.ShowTitlesOnly %>
@@ -65,6 +29,8 @@
 				<% include PostContent %>
 				<% end_if %>
 			</div>
+			
+			<% include AfterPostContent %>
 			
 			<% if $ParentID == 0 || $Top.Options.Threaded %>
 			<!-- note that the action is left blank and filled in with JS because otherwise the
