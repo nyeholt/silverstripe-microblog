@@ -16,7 +16,7 @@ class MicroPostDigestJob extends AbstractQueuedJob {
 	 */
 	public $transactionManager;
 	
-	public function __construct($since = 0, $type = null, $groupId = 0) {
+	public function __construct($since = 0, $type = null, $groupId = 0, $time = '23:55:00') {
 		
 		if ($groupId) {
 			// means we need to build the list of users 
@@ -56,6 +56,8 @@ class MicroPostDigestJob extends AbstractQueuedJob {
 					}
 				}
 			}
+			
+			$this->sendTime = $time;
 		} else {
 			
 		}
@@ -123,9 +125,12 @@ class MicroPostDigestJob extends AbstractQueuedJob {
 		$this->currentStep++;
 
 		if (count($members) == 0) {
+			if (!$this->sendTime) {
+				$this->sendTime = '23:55:00';
+			}
 			$nextTime = $this->type == 'weekly' ? '+1 week' : '+1 day';
-			$nextDate = date('Y-m-d 23:55:00', strtotime($nextTime));
-			$nextJob = new MicroPostDigestJob(time(), $this->type, $this->groupId);
+			$nextDate = date('Y-m-d ' . $this->sendTime, strtotime($nextTime));
+			$nextJob = new MicroPostDigestJob(time(), $this->type, $this->groupId, $this->sendTime);
 			singleton('QueuedJobService')->queueJob($nextJob, $nextDate);
 			$this->isComplete = true;
 		}
