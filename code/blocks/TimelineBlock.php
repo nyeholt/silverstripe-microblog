@@ -12,6 +12,7 @@ class TimelineBlock extends Block {
 	);
 
 	public function TimelineUrl() {
+		TimelineController::include_microblog_requirements();
 		Requirements::javascript('microblog/javascript/timeline-dashlet.js');
 		$tags = $this->ShowTaggedWith->getValues();
 		$extra = '';
