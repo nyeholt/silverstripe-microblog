@@ -39,6 +39,12 @@ class MicroBlogService {
 	 */
 	public $allowAnonymousPosts = false;
 	
+	/**
+	 * Should all posts be analysed _after_ the http request that creates them
+	 * is completed (ie async)
+	 *
+	 * @var boolean
+	 */
 	public $postProcess = false;
 	
 	/**
@@ -54,6 +60,15 @@ class MicroBlogService {
 	 * @var array
 	 */
 	public $canSort = array('WilsonRating', 'ID', 'Created', 'Up', 'Down', 'ActiveRating', 'PositiveRating');
+	
+	/**
+	 * A map of PostType => age_in_seconds 
+	 * 
+	 * Allows certain types of posts to be filtered out after a particular age
+	 * 
+	 * @var array
+	 */
+	public $typeAge = array();
 	
 	/**
 	 * A request length list of actions that users have taken
@@ -294,7 +309,7 @@ class MicroBlogService {
 		if ($markViewed) {
 			$this->recordUserAction();
 		}
-		
+		$items = $this->updatePostList($items);
 		return $items->limit($number)->restrict();
 	}
 	
@@ -441,9 +456,35 @@ class MicroBlogService {
 		if (count($tags)) {
 			$filter['Tags.Title'] = $tags;
 		}
+		
 
 		$this->recordUserAction();
-		return MicroPost::get()->filter($filter)->sort($sort)->limit($limit)->restrict();
+		$list = MicroPost::get()->filter($filter)->sort($sort)->limit($limit);
+		
+		$list = $this->updatePostList($list);
+
+		return $list->restrict();
+	}
+	
+	protected function updatePostList($list) {
+		if (count($this->typeAge)) {
+			// apply post type specific age filtering. 
+			$typeParts = array(
+				'null'		=> '"PostType" IS NULL',
+			);
+			foreach ($this->typeAge as $type => $age) {
+				$laterThan = date('Y-m-d H:i:s', time()-$age);
+				if (strtolower($type) == 'null') {
+					$typeParts['null'] = '"PostType" IS NULL AND "Created" >= \'' . $laterThan . '\'';
+				} else {
+					$typeParts[$type] = '"PostType" = \'' . Convert::raw2sql($type) . '\' AND "Created" > \'' . $laterThan . '\'';
+				}
+			}
+			$typeWhere = '(' . implode(' OR ', $typeParts) . ')';
+			$list = $list->where($typeWhere);
+		}
+		
+		return $list;
 	}
 	
 	

@@ -70,4 +70,37 @@ POST;
 		$this->assertTrue($post->checkPerm('View', $user2));
 		
 	}
+	
+	public function testCreateTypedPost() {
+		MicroPost::get()->removeAll();
+		$svc = singleton('MicroBlogService');
+		$svc->typeAge = array();
+		/* @var $svc MicroBlogService */
+		
+		$member = $this->objFromFixture('Member', 'user1');
+		
+		$post = $svc->createPost($member, "My test post");
+		
+		$this->assertTrue($post->ID > 0);
+		
+		// get the list, and check that this post is in it
+		$posts = $svc->getStatusUpdates();
+		
+		$this->assertEquals($post->ID, $posts[0]->ID);
+		
+		$post2 = $svc->createPost($member, "Another test post", array('PostType'	=> 'mypost'));
+		
+		$posts = $svc->getStatusUpdates();
+		$this->assertEquals(2, count($posts));
+		$this->assertEquals($post2->ID, $posts[0]->ID);
+		
+		$svc->typeAge = array('mypost' => 2);
+		sleep(3);
+		
+		$posts = $svc->getStatusUpdates();
+		$this->assertEquals(1, count($posts));
+		
+		$this->assertEquals($post->ID, $posts[0]->ID);
+		
+	}
 }
