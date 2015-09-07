@@ -494,7 +494,10 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 			'Content'		=> 'Raw content of the post',
 			'HTMLContent'	=> 'Rendered HTML of the post content',
 			'Title'			=> 'Title of the post (if set)',
-			'Link'			=> 'A link to the post',
+			'Link'			=> 'Relative link to the individual post',
+			'AbsoluteLink'	=> 'Absolute link to the individual post',
+			'ThreadLink'	=> 'Relative link to the thread containing the post',
+			'AbsoluteThreadLink'	=> 'Absolute link to the thread containing the post'
 		);
 	}
 
