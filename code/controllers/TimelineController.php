@@ -135,6 +135,11 @@ class TimelineController extends ContentController {
 			'microblog/javascript/local-storage.js',
 			'microblog/javascript/microblog-statesave.js',
 		));
+		
+		// select 2 functionality
+		Requirements::javascript(SELECT2_MODULE . "/select2/select2.js");
+		Requirements::javascript(SELECT2_MODULE . "/javascript/select2.init.js");
+		Requirements::css(SELECT2_MODULE . "/select2/select2.min.css");
 
 		Requirements::css('microblog/javascript/jquery-textcomplete-0.3.7/jquery.textcomplete.css');
 		Requirements::css('microblog/css/timeline.css');
