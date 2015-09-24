@@ -137,7 +137,6 @@ class TimelineController extends ContentController {
 		));
 
 		Requirements::css('microblog/javascript/jquery-textcomplete-0.3.7/jquery.textcomplete.css');
-		
 		Requirements::css('microblog/css/timeline.css');
 	}
 	
