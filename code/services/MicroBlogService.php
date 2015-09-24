@@ -476,7 +476,7 @@ class MicroBlogService {
 		// if we're only allowing singe votes, we need to get _all_ the current user's votes and
 		// mark the individual posts that have been voted on; this allows the toggling 
 		// of the vote options
-		if ($this->singleVotes) {
+		if ($this->singleVotes && $this->securityContext->getMember()) {
 			$ids = $list->column('ID');
 			$votes = MicroPostVote::get()->filter(array(
 				'UserID'		=> $this->securityContext->getMember()->ID,
