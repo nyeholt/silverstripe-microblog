@@ -40,8 +40,19 @@ class MicroBlogService {
 	public $allowAnonymousPosts = false;
 	
 	/**
+<<<<<<< HEAD
 	 * Should all posts be analysed _after_ the http request that creates them
 	 * is completed (ie async)
+=======
+	 * Are users allowed to vote multiple times on a post?
+	 * 
+	 * @var boolean
+	 */
+	public $singleVotes = false;
+	
+	/**
+	 * Should the processing of post content be done in a threaded manner? Generally not needed
+>>>>>>> aa81f50... NEW Restrict users to a single vote
 	 *
 	 * @var boolean
 	 */
@@ -460,12 +471,28 @@ class MicroBlogService {
 
 		$this->recordUserAction();
 		$list = MicroPost::get()->filter($filter)->sort($sort)->limit($limit);
-		
 		$list = $this->updatePostList($list);
+
+		// if we're only allowing singe votes, we need to get _all_ the current user's votes and
+		// mark the individual posts that have been voted on; this allows the toggling 
+		// of the vote options
+		if ($this->singleVotes) {
+			$ids = $list->column('ID');
+			$votes = MicroPostVote::get()->filter(array(
+				'UserID'		=> $this->securityContext->getMember()->ID,
+				'PostID'		=> $ids,
+			));
+			$map = $votes->map('PostID', 'Direction')->toArray();
+			foreach ($list as $post) {
+				if (isset($map[$post->ID])) {
+					$post->UserVote = $map[$post->ID] > 0 ? 'upvote' : 'downvote';
+				}
+			}
+		}
 
 		return $list->restrict();
 	}
-	
+
 	protected function updatePostList($list) {
 		if (count($this->typeAge)) {
 			// apply post type specific age filtering. 
@@ -650,8 +677,16 @@ class MicroBlogService {
 			return $post;
 		}
 
-		// we allow multiple votes - as many as the user has to give!
-		$currentVote = null; // MicroPostVote::get()->filter(array('UserID' => $member->ID, 'PostID' => $post->ID))->first();
+		// we allow multiple votes - as many as the user has to give! unless
+		// configured not to...
+		$currentVote = null; 
+		
+		if ($this->singleVotes) {
+			$votes = $post->currentVotesByUser();
+			if (count($votes)) {
+				$currentVote = $votes[0];
+			}
+		}
 		
 		if (!$currentVote) {
 			$currentVote = MicroPostVote::create();
@@ -674,7 +709,7 @@ class MicroBlogService {
 		if (!$post->OwnerID || !$owner || !$owner->exists()) {
 			$owner = Security::findAnAdministrator();
 		}
-		
+
 		// write the post as the owner, and calculate some changes for the author
 		$this->transactionManager->run(function () use ($post, $currentVote, $member) {
 			$author = $post->Owner();

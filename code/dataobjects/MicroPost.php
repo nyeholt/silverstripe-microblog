@@ -368,6 +368,21 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		}
 		return $created;
 	}
+	
+	/**
+	 * Gets the list of current votes on this object by the current user
+	 * 
+	 * @param Member $user
+	 * 
+	 * @return ArrayList
+	 */
+	public function currentVotesByUser($user = null) {
+		if (!$user) {
+			$user = $this->securityContext->getMember();
+		}
+		$votes = MicroPostVote::get()->filter(array('UserID' => $user->ID, 'PostID' => $this->ID));
+		return $votes->toArray();
+	}
 
 	/**
 	 * When 'deleting' an object, we actually just remove all its content 

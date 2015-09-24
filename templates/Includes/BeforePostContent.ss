@@ -1,4 +1,4 @@
-			<div class="postOptions">
+			<div class="postOptions $UserVote">
 				<% if $Top.Options.Voting %>
 				<a href="#" class="vote" data-dir="1" data-id="$ID">Up</a>
 				<a href="#" class="vote" data-dir="-1" data-id="$ID">Down</a>
