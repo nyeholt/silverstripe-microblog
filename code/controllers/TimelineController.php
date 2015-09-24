@@ -341,8 +341,21 @@ class TimelineController extends ContentController {
 		
 		$public = CheckboxField::create('PublicUsers', 'Public users', Config::inst()->get('TimelineController', 'default_public'));
 		$loggedIn = CheckboxField::create('LoggedInUsers', "Logged in users", Config::inst()->get('TimelineController', 'default_logged_in'));
+		
+		$groups = Group::get()->filter("ParentID", 0);
+		$specificGroups = null;
+		
+		if (class_exists('Multisites')) {
+			$specificGroups = Multisites::inst()->getCurrentSite()->TargetedGroups();
+		} else {
+			$specificGroups = SiteConfig::current_site_config()->TargetedGroups();
+		}
+		if (count($specificGroups)) {
+			$groups = $specificGroups;
+		}
+		
 		$member = MultiSelect2Field::create('Members', "To", Member::get()->map()->toArray())->setMultiple(true);
-		$group = MultiSelect2Field::create("Groups", "To Groups", Group::get()->filter("ParentID", 0)->map()->toArray())->setMultiple(true);
+		$group = MultiSelect2Field::create("Groups", "To Groups", $groups->map()->toArray())->setMultiple(true);
 		
 		$fields->push($public);
 		$fields->push($loggedIn);
