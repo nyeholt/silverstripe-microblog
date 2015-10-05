@@ -73,6 +73,15 @@ class MicroBlogMember extends DataExtension {
 	 */
 	public $transactionManager;
 	
+	/**
+	 * Whether empty users should have their usernames set to a not-very-random string. 
+	 * This is to handle some annoying scenarios encountered in bulk user imports from
+	 * LDAP type systems.
+	 * 
+	 * @var boolean
+	 */
+	public $generateUsername = false;
+	
 	private $unreadPosts;
 	
 	/**
@@ -112,7 +121,11 @@ class MicroBlogMember extends DataExtension {
 				$name = preg_replace("/[^[:alnum:][:space:]]/ui", '_', $name);
 				$this->owner->Username = $name;
 			} else {
-				throw new ValidationException("Cannot create user without a username");
+				if ($this->generateUsername) {
+					$this->owner->Username = microtime(true) . mt_rand(1000,9999);
+				} else {
+					throw new ValidationException("Cannot create user without a username");
+				}
 			}
 		}
 
