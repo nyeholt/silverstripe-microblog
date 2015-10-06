@@ -55,6 +55,12 @@ class TimelineController extends ContentController {
 	 */
 	public $securityContext;
 	
+	/**
+	 *
+	 * @var int
+	 */
+	public $ajaxMemberLimit = 20;
+	
 	protected $parentController = null;
 	protected $showReplies = true;
 	
@@ -139,6 +145,7 @@ class TimelineController extends ContentController {
 		// select 2 functionality
 		Requirements::javascript(SELECT2_MODULE . "/select2/select2.js");
 		Requirements::javascript(SELECT2_MODULE . "/javascript/select2.init.js");
+		Requirements::javascript(SELECT2_MODULE . '/javascript/ajaxselect2.init.js');
 		Requirements::css(SELECT2_MODULE . "/select2/select2.min.css");
 
 		Requirements::css('microblog/javascript/jquery-textcomplete-0.3.7/jquery.textcomplete.css');
@@ -354,7 +361,20 @@ class TimelineController extends ContentController {
 			$groups = $specificGroups;
 		}
 		
-		$member = MultiSelect2Field::create('Members', "To", Member::get()->map()->toArray())->setMultiple(true);
+		$members = Member::get();
+		
+		if ($members->count() > $this->ajaxMemberLimit) {
+			$member = AjaxSelect2Field::create('Members', "To")
+				->setConfig('classToSearch', 'Member')
+				->setConfig('multiple', true)
+				->setConfig('searchFields', array('FirstName', 'Surname', 'Email'))
+				->setConfig('resultsLimit', $this->ajaxMemberLimit);
+			
+		} else {
+			$member = MultiSelect2Field::create('Members', "To", $members->map()->toArray())->setMultiple(true);
+		}
+		
+		
 		$group = MultiSelect2Field::create("Groups", "To Groups", $groups->map()->toArray())->setMultiple(true);
 		
 		$fields->push($public);
