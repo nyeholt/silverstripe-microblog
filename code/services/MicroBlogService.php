@@ -40,10 +40,8 @@ class MicroBlogService {
 	public $allowAnonymousPosts = false;
 	
 	/**
-<<<<<<< HEAD
-	 * Should all posts be analysed _after_ the http request that creates them
-	 * is completed (ie async)
-=======
+	 * 
+	 * 
 	 * Are users allowed to vote multiple times on a post?
 	 * 
 	 * @var boolean
@@ -51,8 +49,10 @@ class MicroBlogService {
 	public $singleVotes = false;
 	
 	/**
+	 * Should all posts be analysed _after_ the http request that creates them
+	 * is completed (ie async)
+	 * 
 	 * Should the processing of post content be done in a threaded manner? Generally not needed
->>>>>>> aa81f50... NEW Restrict users to a single vote
 	 *
 	 * @var boolean
 	 */
@@ -502,9 +502,9 @@ class MicroBlogService {
 			foreach ($this->typeAge as $type => $age) {
 				$laterThan = date('Y-m-d H:i:s', time()-$age);
 				if (strtolower($type) == 'null') {
-					$typeParts['null'] = '"PostType" IS NULL AND "Created" >= \'' . $laterThan . '\'';
+					$typeParts['null'] = '"PostType" IS NULL AND "MicroPost"."Created" >= \'' . $laterThan . '\'';
 				} else {
-					$typeParts[$type] = '"PostType" = \'' . Convert::raw2sql($type) . '\' AND "Created" > \'' . $laterThan . '\'';
+					$typeParts[$type] = '"PostType" = \'' . Convert::raw2sql($type) . '\' AND "MicroPost"."Created" > \'' . $laterThan . '\'';
 				}
 			}
 			$typeWhere = '(' . implode(' OR ', $typeParts) . ')';
