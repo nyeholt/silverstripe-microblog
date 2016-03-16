@@ -445,7 +445,7 @@ class TimelineController extends ContentController {
 		
 		$fields->push($upload = FileAttachmentField::create('Attachment', _t('MicroBlog.FILE_UPLOAD', 'Files')));
         $random = new RandomGenerator();
-		$folderName = $member->memberFolder()->Filename . '/' . $random->randomToken();
+		$folderName = $member->memberFolder()->Filename . '/' . $random->randomToken('sha1');
 		if (strpos($folderName, 'assets/') === 0) {
 			$folderName = substr($folderName, 7);
 		}
