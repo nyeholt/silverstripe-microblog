@@ -270,6 +270,18 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		}
 		return DBField::create_field('Text', $content);
 	}
+    
+    public static function handle_video($arguments, $url, $parser, $shortcode) {
+        $attrs = array();
+        $attrs[] = isset($arguments['w']) ? 'width="' . Convert::raw2xml($arguments['w']) . '"' : '';
+        $attrs[] = isset($arguments['h']) ? 'height="' . Convert::raw2xml($arguments['h']) . '"' : '';
+        $attrs[] = isset($arguments['controls']) ? 'controls="' . Convert::raw2xml($arguments['controls']) . '"' : '';
+        
+        $tag = '<video ' . implode(' ', $attrs) . '>';
+        $tag .= '<source src="' . Convert::raw2att($url) . '" type="video/mp4"></source>'; 
+        $tag .= '</video>';
+        return $tag;
+    }
 	
 	public function getPostTarget() {
 		if ($this->Target && strpos($this->Target, ',')) {
@@ -279,6 +291,11 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		}
 	}
 	
+    /**
+     * Whether the current context is that of the post target. 
+     * 
+     * @return boolean
+     */
 	public function currentContext() {
 		$tgt = Controller::curr()->getRequest()->getVar('target');
 		return strlen($tgt) > 0 && $this->Target == $tgt;
