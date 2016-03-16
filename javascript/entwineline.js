@@ -220,18 +220,6 @@ window.Microblog = window.Microblog || {}
 							// done here because we've just removed and re-added to the dom?
 	//						wrapper.find('textarea.expandable').autogrow();
 						});
-
-						/*
-						$('.fileUploadForm').fileupload('disable');
-						$('.fileUploadForm').fileupload('enable');
-						*/
-//						if ($.fileupload && $('.fileUploadForm').length) {
-//							$('.fileUploadForm').fileupload(
-//								'option',
-//								'dropZone',
-//								$('textarea.postContent')
-//							);
-//						}
 					}
 				});
 			},
@@ -433,7 +421,6 @@ window.Microblog = window.Microblog || {}
 			$('form.replyForm').entwine({
 				onmatch: function () {
 					$(this).attr('action', $('#PostFormUrl').val());
-//					$(this).find('textarea.expandable').autogrow();
 					Microblog.Timeline.mentionify($(this).find('textarea'));
 					var thisform = this;
 					this.ajaxForm(function (data, status, xhr, form) {

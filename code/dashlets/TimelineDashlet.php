@@ -11,6 +11,10 @@ if (class_exists('Dashlet')) {
 		private static $db = array(
 			'FilterTags'		=> 'MultiValueField',
 		);
+        
+        private static $has_one = array(
+            'FeaturedPost'      => 'MicroPost',
+        );
 
 		public function canCreate($member = null) {
 			if (!$member) {
@@ -18,6 +22,17 @@ if (class_exists('Dashlet')) {
 			}
 			return $member->ID > 0;
 		}
+        
+        public function getCMSFields() {
+            $fields = parent::getCMSFields();
+            
+            $fields->push(AjaxSelect2Field::create('FeaturedPostID', 'Featured post')
+                ->setConfig('classToSearch', 'MicroPost')
+                ->setConfig('searchFields', array('ID', 'Title'))
+            );
+            
+            return $fields;
+        }
 		
 		public function getDashletFields() {
 			$fields = parent::getDashletFields();
@@ -55,12 +70,21 @@ if (class_exists('Dashlet')) {
 
 
 		public function TimelineUrl() {
+            if ($this->FeaturedPostID) {
+                $post = MicroPost::get()->restrictedByID($this->FeaturedPostID);
+                if ($post) {
+                    return $post->Link();
+                }
+            }
+            
 			$tags = $this->widget->FilterTags->getValues();
 			$extra = '';
 			if (count($tags)) {
 				$extra = '?tags=' . urlencode(implode(',', $tags));
 			}
-			return 'timeline' . $extra;
+            
+            $link = 'timeline' . $extra;
+			return $link;
 		}
 
 		public function ShowDashlet() {
