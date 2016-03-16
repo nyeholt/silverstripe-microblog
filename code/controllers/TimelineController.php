@@ -238,10 +238,6 @@ class TimelineController extends ContentController {
 			$options->ShowTitlesOnly = false;
 			
 			$timeline = trim($this->customise(array('Post' => $id, 'ForceContent' => true, 'Posts' => $posts, 'Options' => $options))->renderWith('Timeline'));
-			
-			if (Director::is_ajax()) {
-				return $timeline;
-			}
 
 			$data = array(
 				'Timeline'		=> $timeline,
@@ -250,6 +246,10 @@ class TimelineController extends ContentController {
 			);
 
 			$timeline = $this->customise($data)->renderWith('FullTimeline');
+            
+            if (Director::is_ajax()) {
+				return $timeline;
+			}
 			
 			return $this->customise(array('Title' => $post->Title, 'Content' => $timeline))->renderWith(array('TimelineController_show', 'Page'));
 		}
