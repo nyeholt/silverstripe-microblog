@@ -47,6 +47,13 @@ class MicroBlogService {
 	 * @var boolean
 	 */
 	public $singleVotes = false;
+    
+    /**
+     * Must users have a vote balance?
+     *
+     * @var boolean
+     */
+    public $requireVoteBalance = true;
 	
 	/**
 	 * Should all posts be analysed _after_ the http request that creates them
@@ -471,8 +478,8 @@ class MicroBlogService {
 
 		$this->recordUserAction();
 		$list = MicroPost::get()->filter($filter)->sort($sort)->limit($limit);
-		$list = $this->updatePostList($list);
-
+		$list = $this->updatePostList($list)->restrict();
+        
 		// if we're only allowing singe votes, we need to get _all_ the current user's votes and
 		// mark the individual posts that have been voted on; this allows the toggling 
 		// of the vote options
@@ -490,7 +497,7 @@ class MicroBlogService {
 			}
 		}
 
-		return $list->restrict();
+		return $list;
 	}
 
 	protected function updatePostList($list) {
@@ -672,7 +679,7 @@ class MicroBlogService {
 	public function vote(DataObject $post, $dir = 1) {
 		$member = $this->securityContext->getMember();
 		
-		if ($member->VotesToGive <= 0) {
+		if ($this->requireVoteBalance && $member->VotesToGive <= 0) {
 			$post->RemainingVotes = 0;
 			return $post;
 		}
