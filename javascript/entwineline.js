@@ -351,6 +351,12 @@ window.Microblog = window.Microblog || {}
 			
 			$(document).on('click', 'a.vote', function (e) {
 				e.preventDefault();
+
+				$('a.vote').removeClass('voted');
+				$('a.vote').addClass('not-voted');
+				
+				$(this).removeClass('not-voted').addClass('voted');
+				
 				var _this = $(this);
 				var dir = $(this).attr('data-dir'); 
 //				Microblog.Timeline
