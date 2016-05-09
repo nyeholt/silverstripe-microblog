@@ -11,7 +11,7 @@
 	<div class="microPost $PostType <% if $ParentID > 0 %>hasparent<% else %>toplevel  <% if $Top.Options.ShowTitlesOnly %>collapsed-post<% end_if %> <% end_if %> <% if $isUnreadByUser %>unread<% end_if %>" 
 		 data-id="$ID" data-owner="$Owner.ID" data-parent="$ParentID" id="post$ID" data-rating="$WilsonRating" data-editable="1">
 		<div class="microPostContent">
-			<% include BeforePostContent %>
+			<% include BeforePostContent TimelineOptions=$Top.Options %>
 			<% if $Top.Options.ShowTitlesInPost && $ParentID == 0 %>
 			<h3 class="micro-post-title">
 				<% if $Top.Options.ShowTitlesOnly %>
@@ -30,7 +30,7 @@
 				<% end_if %>
 			</div>
 			
-			<% include AfterPostContent %>
+			<% include AfterPostContent TimelineOptions=$Top.Options %>
 			
 			<% if $ParentID == 0 || $Top.Options.Threaded %>
 			<!-- note that the action is left blank and filled in with JS because otherwise the

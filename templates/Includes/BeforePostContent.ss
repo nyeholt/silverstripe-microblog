@@ -1,5 +1,5 @@
 			<div class="postOptions $UserVote">
-				<% if $Top.Options.Voting %>
+				<% if $TimelineOptions.Voting %>
 				<a href="#" class="vote <% if $UserVote == 'downvote' %>not-voted<% end_if %><% if $UserVote == 'upvote' %>voted<% end_if %>" data-dir="1" data-id="$ID">Up</a>
 				<a href="#" class="vote <% if $UserVote == 'downvote' %>voted<% end_if %><% if $UserVote == 'upvote' %>not-voted<% end_if %>" data-dir="-1" data-id="$ID">Down</a>
 				<span class="upCount">$Up</span><span class='vote-separator'>|</span><span class="downCount">$Down</span>
@@ -10,7 +10,7 @@
 				&middot;
 				<% end_if %>
 
-				<% if not $Top.Options.ShowReply %>
+				<% if not $TimelineOptions.ShowReply %>
 				<a href="#" class="replyToPost">reply</a>
 				&middot;
 				<% end_if %>
