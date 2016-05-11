@@ -78,6 +78,16 @@ class TimelineController extends ContentController {
 		'microBlogService'		=> '%$MicroBlogService',
 		'securityContext'		=> '%$SecurityContext',
 	);
+    
+    /**
+     * Do we include the admin UI core libs for frontend? Included as a legacy
+     * option for those systems to enable it if needed. 
+     * 
+     * Otherwise, it's a fundamentally broken piece.
+     *
+     * @var boolean
+     */
+    private static $include_ssui_core = false;
 
 	public function __construct($parent = null, $replies = true, $context = null) {
 		if ($parent instanceof DataObject) {
@@ -124,10 +134,11 @@ class TimelineController extends ContentController {
 		Requirements::javascript(THIRDPARTY_DIR . '/javascript-loadimage/load-image.js');
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery-form/jquery.form.js');
 		Requirements::javascript(FRAMEWORK_DIR . '/javascript/i18n.js');
-		Requirements::javascript(FRAMEWORK_ADMIN_DIR . '/javascript/ssui.core.js');
-		
+        if (Config::inst()->get('TimelineController', 'include_ssui_core')) {
+    		Requirements::javascript(FRAMEWORK_ADMIN_DIR . '/javascript/ssui.core.js');            
+        }
+
 		Requirements::javascript('webservices/javascript/webservices.js');
-		
 		
 		Requirements::combine_files('_microblog_combined.js', array(
 			'microblog/javascript/jquery.autogrow-textarea.js',
