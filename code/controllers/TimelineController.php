@@ -173,6 +173,9 @@ class TimelineController extends ContentController {
 		if (!$this->arrayOptions) {
 			$this->arrayOptions = ArrayData::create(self::config()->options);
 		}
+
+		$this->extend('extendTimelineControllerOptions', $this->arrayOptions);
+
 		return $this->arrayOptions;
 	}
 
@@ -245,7 +248,7 @@ class TimelineController extends ContentController {
 			}
 
 			$options = $this->Options();
-			$options->Replies = true;
+			//$options->Replies = true;
 			$options->ShowTitlesOnly = false;
 			
 			$timeline = trim($this->customise(array('Post' => $id, 'ForceContent' => true, 'Posts' => $posts, 'Options' => $options))->renderWith('Timeline'));

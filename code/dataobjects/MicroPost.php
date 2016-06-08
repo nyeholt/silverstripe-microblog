@@ -56,6 +56,14 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 	);
 	
 	private static $default_sort = 'ID DESC';
+    
+    /**
+     * Should deletes be complete from the DB or just a 'soft' delete that has things filtered
+     * instead?
+     *
+     * @var boolean
+     */
+    private static $soft_delete = false;
 
 	/**
 	 * Do we automatically detect oembed data and change comments? 
@@ -93,6 +101,17 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 	public $syncrotronService;
 	
 	private $afterWriteRender = false;
+    
+    public function getCMSFields() {
+        $fields = parent::getCMSFields();
+        
+        if ($this->Deleted && !Permission::check('ADMIN')) {
+            // remove the 'original content' field for non-admins
+            $fields->replaceField('OriginalContent', ReadonlyField::create('DeletedMessage', "Original Content", "Only admins may view deleted content"));
+        }
+        
+        return $fields;
+    }
 
 	public function onBeforeWrite() {
 		$member = $this->securityContext->getMember();
@@ -145,6 +164,16 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		}
 	}
 	
+    
+    public function toFilteredMap() {
+        $map = $this->toMap();
+        
+        if (!Permission::check('ADMIN')) {
+            unset($map['OriginalContent']);
+        }
+        
+        return $map;
+    }
 	
 	/**
 	 * Gives access to this micropost, based on information in the $to array
@@ -409,15 +438,16 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		if ($this->checkPerm('Delete')) {
 			$this->Tags()->removeAll();
 			// if we have replies, we can't delete completely!
-			if ($this->Replies()->exists() && $this->Replies()->count() > 0) {
+			if ($this->config()->soft_delete || ($this->Replies()->exists() && $this->Replies()->count() > 0)) {
 				$count = $this->Replies()->count();
 				$item = $this->Replies()->first();
 				$this->Deleted = true;
+                $this->OriginalContent = $this->Author . "\n\n" . $this->Content;
 				$this->Content = _t('MicroPost.DELETED', '[deleted]');
 				$this->Author = $this->Content;
 				$this->write();
 			} else {
-				return parent::delete();
+                return parent::delete();
 			}
 		}
 	}
