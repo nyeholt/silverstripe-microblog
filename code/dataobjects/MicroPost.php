@@ -17,6 +17,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		'NumReplies'		=> 'Int',
 		'Target'			=> 'Varchar',		// ClassName,ID
 		'PostType'			=> 'Varchar',
+        'DisableReplies'    => 'Boolean',
 	);
 
 	private static $has_one = array(

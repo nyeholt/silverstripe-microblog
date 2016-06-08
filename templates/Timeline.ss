@@ -32,6 +32,7 @@
 			
 			<% include AfterPostContent TimelineOptions=$Top.Options %>
 			
+			<% if not $DisableReplies %>
 			<% if $ParentID == 0 || $Top.Options.Threaded %>
 			<!-- note that the action is left blank and filled in with JS because otherwise the
 				recursive template loses context of what to fill in, so we use our top level form -->
@@ -41,6 +42,7 @@
 				<textarea placeholder="Add reply..." name="Content" class="expandable postContent"></textarea>
 				<input type="submit" value="Reply" name="action_savepost" />
 			</form>
+			<% end_if %>
 			<% end_if %>
 
 			<div class="postReplies">

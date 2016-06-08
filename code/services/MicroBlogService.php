@@ -70,7 +70,7 @@ class MicroBlogService {
 	 *
 	 * @var array
 	 */
-	public $allowedProperties = array('Title' => true, 'PostType' => true);
+	public $allowedProperties = array('Title' => true, 'PostType' => true, 'DisableReplies' => true);
 	
 	/**
 	 * The items that we can sort things by

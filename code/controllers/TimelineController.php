@@ -359,6 +359,8 @@ class TimelineController extends ContentController {
 		$taf->addExtraClass('expandable');
 		$taf->addExtraClass('postContent');
 		$taf->addExtraClass('preview');
+        
+        $disableReplies = CheckboxField::create('DisableReplies', _t('MicroBlog.DISABLE_REPLIES', 'Disable replies'));
 		
 		$public = CheckboxField::create('PublicUsers', 'Public users', Config::inst()->get('TimelineController', 'default_public'));
 		$loggedIn = CheckboxField::create('LoggedInUsers', "Logged in users", Config::inst()->get('TimelineController', 'default_logged_in'));
@@ -388,13 +390,13 @@ class TimelineController extends ContentController {
 			$member = MultiSelect2Field::create('Members', "To", $members->map()->toArray())->setMultiple(true);
 		}
 		
-		
 		$group = MultiSelect2Field::create("Groups", "To Groups", $groups->map()->toArray())->setMultiple(true);
 		
 		$fields->push($public);
 		$fields->push($loggedIn);
 		$fields->push($member);
 		$fields->push($group);
+        $fields->push($disableReplies);
 		
 		$target = $this->getTargetFilter();
 		if ($target) {
@@ -485,8 +487,10 @@ class TimelineController extends ContentController {
 			'members'	=> isset($data['Members']) ? $data['Members'] : null,
 			'groups'	=> isset($data['Groups']) ? $data['Groups'] : null,
 		);
-
-		$post = $this->microBlogService->createPost($this->securityContext->getMember(), $content, array('Title' => $title), $parentId, $target, $to);
+        
+        $properties = array('Title' => $title, 'DisableReplies' => isset($data['DisableReplies']) ? $data['DisableReplies'] : false);
+        
+		$post = $this->microBlogService->createPost($this->securityContext->getMember(), $content, $properties, $parentId, $target, $to);
 
 		$tags = $this->tagsFromRequest();
 		$post->tag($tags);
