@@ -502,7 +502,7 @@ window.Microblog = window.Microblog || {}
 				}
 			});
 			
-			$(document).on('click', 'input.specific-users', function () {
+			$(document).on('click', '.postForm .specific-users', function () {
 				if ($('.post-specific-users').is(':visible')) {
 					$('.post-specific-users').slideUp();
 				} else {
@@ -512,7 +512,7 @@ window.Microblog = window.Microblog || {}
 			
 			var boundUploads = false;
 			
-			$(document).on('click', 'input[name=uploadTrigger]', function () {
+			$(document).on('click', '.postForm .upload-trigger', function () {
 				var context = $(this).parents('.timeline-box');
 				var attachment = context.find('div#Attachment');
 				attachment.toggle();
