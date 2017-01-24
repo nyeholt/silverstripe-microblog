@@ -32,32 +32,32 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 	private static $has_many = array(
 		'Replies'		=> 'MicroPost.Parent',
 	);
-	
+
 	private static $defaults = array(
 		'PublicAccess'		=> false,
 		'InheritPerms'		=> true,		// we'll have  default container set soon
 	);
-	
+
 	private static $extensions = array(
-		'Rateable',
+		'ScoredRateable',
 		'Restrictable',
 		'TaggableExtension',
 	);
 
 	private static $summary_fields = array(
-		'PostTitle', 
+		'PostTitle',
 		'Author',
 		'PostSummary',
 		'Created'
 	);
-	
+
 	private static $searchable_fields = array(
 		'Title',
 		'Content'
 	);
-	
+
 	private static $default_sort = 'ID DESC';
-    
+
     /**
      * Should deletes be complete from the DB or just a 'soft' delete that has things filtered
      * instead?
@@ -67,50 +67,50 @@ class MicroPost extends DataObject { /* implements Syncroable { */
     private static $soft_delete = false;
 
 	/**
-	 * Do we automatically detect oembed data and change comments? 
-	 * 
+	 * Do we automatically detect oembed data and change comments?
+	 *
 	 * Override using injector configuration
-	 * 
+	 *
 	 * @var boolean
 	 */
 	public $oembedDetect = true;
-	
+
 	/**
 	 * @var SocialGraphService
 	 */
 	public $socialGraphService;
-	
+
 	/**
 	 * @var MicroBlogService
 	 */
 	public $microBlogService;
-	
+
 	/**
 	 * @var SecurityContext
 	 */
 	public $securityContext;
-	
+
 	/**
 	 * @var PermissionService
 	 */
 	public $permissionService;
-	
-	
+
+
 	/**
-	 * @var SyncrotronService 
+	 * @var SyncrotronService
 	 */
 	public $syncrotronService;
-	
+
 	private $afterWriteRender = false;
-    
+
     public function getCMSFields() {
         $fields = parent::getCMSFields();
-        
+
         if ($this->Deleted && !Permission::check('ADMIN')) {
             // remove the 'original content' field for non-admins
             $fields->replaceField('OriginalContent', ReadonlyField::create('DeletedMessage', "Original Content", "Only admins may view deleted content"));
         }
-        
+
         return $fields;
     }
 
@@ -127,7 +127,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		if (!$this->Author) {
 			$this->Author = $this->securityContext->getMember()->getTitle();
 		}
-		
+
 		if ($this->AttachmentID && strlen($this->Content) == 0) {
 			$attachment = $this->Attachment();
 			$link = '';
@@ -149,14 +149,14 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 			}
 		}
 		parent::onBeforeWrite();
-		
+
 		if ($this->ID) {
 			$this->RenderedContent = $this->renderWith('PostContent')->raw();
 		} else {
 			$this->afterWriteRender = true;
 		}
 	}
-	
+
 	public function onAfterWrite() {
 		parent::onAfterWrite();
 		if ($this->afterWriteRender) {
@@ -164,21 +164,21 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 			$this->write();
 		}
 	}
-	
-    
+
+
     public function toFilteredMap() {
         $map = $this->toMap();
-        
+
         if (!Permission::check('ADMIN')) {
             unset($map['OriginalContent']);
         }
-        
+
         return $map;
     }
-	
+
 	/**
 	 * Gives access to this micropost, based on information in the $to array
-	 * 
+	 *
 	 * @param array $to
 	 *			The people/groups this post is being sent to. This is an array of
 	 *			- logged_in: boolean (logged in users; uses a system config setting to determine which group represents 'logged in'
@@ -214,7 +214,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 					}
 				}
 			}
-			
+
 			if (isset($to['groups']) && count($to['groups'])) {
 				if (!is_array($to['groups'])) {
 					$to['groups'] = explode(',', $to['groups']);
@@ -227,13 +227,13 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 					}
 				}
 			}
-			
+
 			if (count($grantTo)) {
 				foreach ($grantTo as $grantee) {
 					$this->permissionService->grant($this, 'View', $grantee);
 				}
 			}
-			
+
 			// what about to the public?
 			if (isset($to['public'])) {
 				$this->PublicAccess = true;
@@ -244,7 +244,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 
 	/**
 	 * Has this post been read by the given user?
-	 * 
+	 *
 	 * @param Member $member
 	 * @return boolean
 	 */
@@ -252,12 +252,12 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		if (!$member) {
 			$member = $this->securityContext->getMember();
 		}
-		
+
 		if ($member && $member->ID) {
 			return strtotime($this->Created) > strtotime($member->LastPostView);
 		}
 	}
-	
+
 	/**
 	 * has this post been edited? return 'true' if the diff between created and last edited
 	 * is greater than a 'grace' period.
@@ -265,34 +265,34 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 	public function isEdited($grace = 300) {
 		return (strtotime($this->LastEdited) - strtotime($this->Created)) > $grace;
 	}
-	
+
 	/**
 	 * Get a summary of the post
-	 * 
+	 *
 	 * @return string
 	 */
 	public function PostSummary() {
 		return $this->obj('Content')->ContextSummary(40, 'poweapfawepofj');
 	}
-	
+
 	/**
 	 * Returns the title of this post (trimmed down in length for sanity)
-	 * 
+	 *
 	 * @return string
 	 */
 	public function PostTitle() {
 		return $this->obj('Title')->LimitCharacters(40, 'afwef');
 	}
-	
+
 	/**
 	 * Get the content of this post with hash-tags converted to links
-	 * 
+	 *
 	 * @return string
 	 */
 	public function ConvertedContent() {
 		$content = $this->Content;
 		if (preg_match_all('/#([a-z0-9_-]+)/is', $content, $matches)) {
-			
+
 			foreach ($matches[1] as $tag) {
 				$link = Controller::join_links(TimelineController::URL_SEGMENT, '?tags=' . urlencode($tag));
 				$content = str_replace('#' . $tag, "[\\#$tag]($link)", $content);
@@ -300,19 +300,19 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		}
 		return DBField::create_field('Text', $content);
 	}
-    
+
     public static function handle_video($arguments, $url, $parser, $shortcode) {
         $attrs = array();
         $attrs[] = isset($arguments['w']) ? 'width="' . Convert::raw2xml($arguments['w']) . '"' : '';
         $attrs[] = isset($arguments['h']) ? 'height="' . Convert::raw2xml($arguments['h']) . '"' : '';
         $attrs[] = isset($arguments['controls']) ? 'controls="' . Convert::raw2xml($arguments['controls']) . '"' : '';
-        
+
         $tag = '<video ' . implode(' ', $attrs) . '>';
-        $tag .= '<source src="' . Convert::raw2att($url) . '" type="video/mp4"></source>'; 
+        $tag .= '<source src="' . Convert::raw2att($url) . '" type="video/mp4"></source>';
         $tag .= '</video>';
         return $tag;
     }
-	
+
 	public function getPostTarget() {
 		if ($this->Target && strpos($this->Target, ',')) {
 			list($type, $id) = explode(',', $this->Target);
@@ -320,17 +320,17 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 			return $item;
 		}
 	}
-	
+
     /**
-     * Whether the current context is that of the post target. 
-     * 
+     * Whether the current context is that of the post target.
+     *
      * @return boolean
      */
 	public function currentContext() {
 		$tgt = Controller::curr()->getRequest()->getVar('target');
 		return strlen($tgt) > 0 && $this->Target == $tgt;
 	}
-	
+
 
 	/**
 	 * Get the list of members mentioned in this post
@@ -347,12 +347,12 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		}
 		return $members;
 	}
-	
+
 	/**
-	 * Handle the wilson rating specially 
-	 * 
+	 * Handle the wilson rating specially
+	 *
 	 * @param type $field
-	 * @return string 
+	 * @return string
 	 */
 	public function hasOwnTableDatabaseField($field) {
 		if ($field == 'WilsonRating') {
@@ -368,33 +368,33 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 	}
 
 	/**
-	 * Is this post an image? 
-	 * 
+	 * Is this post an image?
+	 *
 	 * @return boolean
 	 */
 	public function IsImage() {
 		return $this->socialGraphService->isImage($this->Content);
 	}
-	
+
 	/**
 	 * Check contents of the post for things like tags, user references, external
-	 * references etc. 
+	 * references etc.
 	 */
 	public function analyseContent() {
 		$this->microBlogService->extractTags($this);
 		$this->socialGraphService->convertPostContent($this);
 	}
-	
+
 	/**
 	 * Tag this post with a particular tag
-	 * 
+	 *
 	 * @param string $tag
 	 */
 	public function tag($tags, $clearExisting = false) {
 		if (!is_array($tags)) {
 			$tags = array($tags);
 		}
-		
+
 		if ($clearExisting) {
 			$this->Tags()->removeAll();
 		}
@@ -415,12 +415,12 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		}
 		return $created;
 	}
-	
+
 	/**
 	 * Gets the list of current votes on this object by the current user
-	 * 
+	 *
 	 * @param Member $user
-	 * 
+	 *
 	 * @return ArrayList
 	 */
 	public function currentVotesByUser($user = null) {
@@ -432,7 +432,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 	}
 
 	/**
-	 * When 'deleting' an object, we actually just remove all its content 
+	 * When 'deleting' an object, we actually just remove all its content
 	 */
 	public function delete() {
 		$this->RenderedContent = '';
@@ -473,45 +473,45 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		if (strlen($this->Title)) {
 			$additional = str_replace('.', '-', URLSegmentFilter::create()->filter($this->Title));
 		}
-		
+
 		$curr = Controller::curr();
-		
+
 		if ($curr && $curr instanceof TimelineController) {
 			return $curr->Link('show/' . $this->ID . '/' . $additional);
 		}
-		
+
 		return 'timeline/show/' . $this->ID . '/' . $additional;
 	}
-	
+
 	public function ThreadLink() {
 		if ($this->ThreadID != $this->ID) {
 			return $this->Thread()->Link();
 		}
 		return $this->Link();
 	}
-	
+
 	public function AbsoluteThreadLink() {
 		return Director::absoluteURL($this->ThreadLink());
 	}
-	
+
 	public function AbsoluteLink() {
 		return Director::absoluteURL($this->Link());
 	}
 
 	/**
 	 * Gets all the replies to this post
-	 * 
+	 *
 	 * @return ArrayList
 	 */
 	public function Posts() {
 		return $this->microBlogService->getRepliesTo($this);
 	}
-	
-	
-	
+
+
+
 	/**
-	 * We need to define a  permission source to ensure the 
-	 * ParentID isn't used for permission inheritance 
+	 * We need to define a  permission source to ensure the
+	 * ParentID isn't used for permission inheritance
 	 */
 	public function permissionSource() {
 		if ($this->ParentID) {
@@ -529,11 +529,11 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 			}
 		}
 	}
-	
+
 	/**
 	 * Get a list of all the members who should receive notifications based on the
 	 * notificationType variable
-	 * 
+	 *
 	 * @param string $notificationType
 	 *				The notification type being sent
 	 * @return array
@@ -548,7 +548,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 	}
 
 	/**
-	 * Return a list of available keywords in the format 
+	 * Return a list of available keywords in the format
 	 * array('keyword' => 'A description') to help users format notification fields
 	 * @return array
 	 */
@@ -566,7 +566,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 
 	/**
 	 * Gets an associative array of data that can be accessed in
-	 * notification fields and templates 
+	 * notification fields and templates
 	 * @return array
 	 */
 	public function getNotificationTemplateData() {
@@ -584,16 +584,16 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 	public function forSyncro() {
 		$props = $this->syncrotronService->syncroObject($this);
 		unset($props['PermSourceID']);
-		
+
 		$props['Post_ThreadEmail'] = $this->ThreadOwner()->Email;
 		$props['Post_OwnerEmail'] = $this->Owner()->Email;
-		
+
 		return $props;
 	}
 
 	public function fromSyncro($properties) {
 		$this->syncrotronService->unsyncroObject($properties, $this);
-		
+
 		// now make sure the other things are aligned
 		if (isset($properties->Post_ThreadEmail)) {
 			$member = DataList::create('Member')->filter(array('Email' => $properties->Post_ThreadEmail))->first();
