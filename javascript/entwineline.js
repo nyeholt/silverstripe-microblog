@@ -2,13 +2,9 @@
 window.Microblog = window.Microblog || {}
 
 ;(function($) {
-	
-	marked.setOptions({
-		sanitize: true
-	});
-	
 	var postContainer = $('<div>');
-	
+	var covnerter = new showdown.Converter();;
+    
 
 	Microblog.Timeline = function () {
 				
@@ -368,6 +364,19 @@ window.Microblog = window.Microblog || {}
 				});
 				return false;
 			});
+            
+            $('.js-convert-markdown').entwine({
+                onmatch: function () {
+                    $(this).html(converter.makeHtml($(this).html()));
+                    
+                    $(this).find('pre > code').each (function (i, block) {
+                        hljs.highlightBlock(block);
+                    })
+
+                }
+            })
+            
+            
 
 			$('div.microPost').entwine({
 				onmatch: function () {
@@ -380,6 +389,10 @@ window.Microblog = window.Microblog || {}
 							button.parents('.timeline-box').editPost(editId)
 						})
 					}
+                    
+                    $(this).find('.postText').each(function () {
+                        
+                    });
 					
 					// and PostTarget checks, depending on our timeline context
 					if ($('input[name=PostTarget]').length === 0) {
@@ -547,15 +560,16 @@ window.Microblog = window.Microblog || {}
 					})
 				}
 			})
-			
-			if (typeof(marked) != 'undefined') {
+
+			if (typeof(showdown) != 'undefined') {
+                var converter = new showdown.Converter();
 				$('textarea.postContent.preview').entwine({
 					onmatch: function () {
 						var parent = $(this).parent(); //('form');
 						var preview = $('<div>').addClass('postPreview').hide();
 						preview.insertAfter(parent);
 						$(this).keyup(function () {
-							preview.html(marked($(this).val())).show();
+							preview.html(converter.makeHtml($(this).val())).show();
 						})
 						this._super();
 					}

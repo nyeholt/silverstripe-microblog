@@ -9,7 +9,7 @@
 		<% else_if IsImage %>
 		<img src="$Content" />
 		<% else %>
-		$ConvertedContent.Parse(RestrictedMarkdown)
+        <div class="js-convert-markdown">$ConvertedContent.Parse(PostFormatter)</div>
 		<% end_if %>
 	<% else %>
 		<% if OwnerID == $CurrentMember.ID %>

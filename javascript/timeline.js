@@ -537,14 +537,15 @@ window.Microblog = window.Microblog || {}
 				return false;
 			})
 			
-			if (typeof(marked) != 'undefined') {
+			if (typeof(Showdown) != 'undefined') {
+                var converter = new showdown.Converter();
 				$('textarea.postContent.preview').entwine({
 					onmatch: function () {
 						var parent = $(this).parent(); //('form');
 						var preview = $('<div>').addClass('postPreview').hide();
 						preview.insertAfter(parent);
 						$(this).keyup(function () {
-							preview.html(marked($(this).val())).show();
+							preview.html(converter.makeHtml($(this).val())).show();
 						})
 						this._super();
 					}

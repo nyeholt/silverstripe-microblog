@@ -145,13 +145,14 @@ class TimelineController extends ContentController {
 			'microblog/javascript/jquery-textcomplete-0.3.7/jquery.overlay.js',
 			'microblog/javascript/jquery-textcomplete-0.3.7/jquery.textcomplete.js',
 			'microblog/javascript/showdown/showdown.min.js',
-			'microblog/javascript/marked.js',
 			'microblog/javascript/date.js',
 			'microblog/javascript/microblog.js',
 			'microblog/javascript/entwineline.js',
 			'microblog/javascript/local-storage.js',
 			'microblog/javascript/microblog-statesave.js',
 		));
+
+        Requirements::javascript('microblog/javascript/highlight/highlight.min.js');
 		
 		// select 2 functionality
 		Requirements::javascript(SELECT2_MODULE . "/select2/select2.js");
@@ -161,6 +162,7 @@ class TimelineController extends ContentController {
 
 		Requirements::css('microblog/javascript/jquery-textcomplete-0.3.7/jquery.textcomplete.css');
 		Requirements::css('microblog/css/timeline.css');
+        Requirements::css('microblog/javascript/highlight/googlecode.css');
 	}
 	
 	public function IsEnabled($option) {
