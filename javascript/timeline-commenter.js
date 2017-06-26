@@ -9,7 +9,7 @@
 			endpoint = 'jsonservice/microBlog/globalFeed';
 		} 
 		
-		$.get('jsonservice/microBlog/unreadPosts', props).success(function (posts) {
+		$.get(endpoint, props).success(function (posts) {
 			if (posts.response && posts.response.items) {
 				var count = posts.response.items.length;
 				if (count > 0) {
