@@ -212,7 +212,10 @@ window.Microblog = window.Microblog || {}
 								}
 							}
 	//						wrapper.append(me);
-							me.effect("highlight", {}, 3000);
+                            if (me.effect) {
+                                me.effect("highlight", {}, 3000);
+                            }
+							
 							// done here because we've just removed and re-added to the dom?
 	//						wrapper.find('textarea.expandable').autogrow();
 						});
