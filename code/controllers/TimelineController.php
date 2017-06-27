@@ -185,6 +185,13 @@ class TimelineController extends ContentController {
 		if ($this->request->isAjax()) {
 			return $this->renderWith('FullTimeline');
 		}
+        if ($this->request->getVar('embed')) {
+            Requirements::clear();
+            Requirements::unblock_all();
+
+            static::include_microblog_requirements();
+            return $this->renderWith(array('FullTimeline', 'IframedTimeline'));
+        }
 		return $this->renderWith(array('FullTimeline', 'Page'));
 	}
 
@@ -787,4 +794,42 @@ class TimelineController extends ContentController {
 		$id = (int) $this->request->param('ID');
 		return $id;
 	}
+
+    public static function timeline_shortcode($arguments, $content = null, $parser = null) {
+        self::include_microblog_requirements();
+        Requirements::javascript('microblog/javascript/timeline-dashlet.js');
+        
+        $url = 'timeline';
+
+        $params = [];
+
+        $encodeItems = function ($csv) {
+            $arr = explode(',', $csv);
+            array_walk($arr, function ($item) {
+                return urlencode($item);
+            });
+            return implode(',', $arr);
+        };
+
+        if (isset($arguments['tags'])) {
+            $tags = $encodeItems($arguments['tags']);
+            $params['tags'] = $tags;
+        }
+
+        if (isset($arguments['target'])) {
+            $target = $arguments['target'];
+            if ($target === 'me' && Controller::has_curr()) {
+                $ctrl = Controller::curr();
+                if ($ctrl instanceof ContentController) {
+                    $target = $ctrl->data()->ClassName . ',' . $ctrl->data()->ID;
+                }
+            }
+
+            $params['target'] = $encodeItems($target);
+        }
+
+        $url .= '?' . http_build_query($params);
+
+        return "<div class='timeline-container' data-url='$url'></div>";
+    }
 }

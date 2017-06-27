@@ -39,6 +39,45 @@ TimelineController via yaml, or within the CMS against the MicroBlogPage.
 * **ShowTitlesInPost** (false): Should the title of a post be automatically 
   output? Useful when tied in with the ShowTitlesOnly setting
 
+
+## URL string parameters
+
+The root URL for a timeline is `timeline` - to this, you can add extra params
+to change the output content, which will also flow on to posts made on that 
+timeline. 
+
+* `tags` - a comma separated list of tags to display (will also be bound on 
+  new posts added)
+* `target` - a Class{comma}ID representation of a dataobject to bind a post to,
+  eg Page,4
+* `since` - a date-time to display posts after this date
+* `sort` - a field to sort by. 
+
+
+## Embedding in other pages
+
+To embed a timeline in other pages, you can either have the timeline embedded 
+inline, or included via an iframe. 
+
+**Inline**
+
+In your page code, 
+
+* call `TimelineController::include_microblog_requirements()`
+* add `Requirements::javascript('microblog/javascript/timeline-dashlet.js');`
+* In your template, output `<div class='timeline-container' data-url='$url'></div>` 
+  * where `$url` is `timeline` with any parameters as above; for example, 
+    `timeline?target=$ClassName,$ID` to output a list of comments for _this_ page
+
+**Inline using shortcodes**
+
+* Use the shortcode [microblog_timeline tags="" target=""] to automatically output 
+  the above 
+
+**IFrame**
+
+* Create an iframe with `src="timeline?target=XX,Y"` as per above parameters. 
+
 ## Scheduled processes
 
 * Digest emails: Users can choose to receive a digest of posts, generated 

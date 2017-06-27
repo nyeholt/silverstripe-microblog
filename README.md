@@ -18,7 +18,8 @@ A summary of features
 * @mentions of users
 * Threaded replies
 * Edit posts in-place
-* Can be used for comment/discussion threads on individual pages. 
+* Can be used for comment/discussion threads on individual pages (timeline?target=Page,11)
+* Can be embedded in other pages using an iframe (timeline?embed=1)
 * Notifications (with the [silverstripe-australia/notifications](https://packagist.org/packages/silverstripe-australia/notifications) module installed)
 * Can be configured to resemble a forum, or left as a twitter / facebook 
   style feed of posts

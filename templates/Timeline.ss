@@ -40,7 +40,7 @@
 				<input type="hidden" value="$SecurityID" name="SecurityID" />
 				<input type="hidden" name="ParentID" value="$ID" />
 				<textarea placeholder="Add reply..." name="Content" class="expandable postContent"></textarea>
-				<input type="submit" value="Reply" name="action_savepost" />
+				<input type="submit" value="Reply" name="action_savepost" class="post-reply" />
 			</form>
 			<% end_if %>
 			<% end_if %>
