@@ -24,7 +24,7 @@
 	
 	<% if not $ParentID && $PostTarget.Link %>
 	<span class="post-target-link" style="display: none">
-	See more: <a href="$PostTarget.Link">$PostTarget.Title</a>
+	Posted on: <a href="$PostTarget.Link">$PostTarget.Title</a>
 	</span>
 	<% end_if %>
 <% end_if %>

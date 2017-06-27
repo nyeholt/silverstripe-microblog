@@ -308,6 +308,12 @@ window.Microblog = window.Microblog || {}
 		
 		$.entwine('microblog', function ($) {
 			$('div.postText a').entwine({
+                onmatch: function () {
+                    if ($(this).parents('.iframe-timeline').length > 0) {
+                        // add a target=_top to break the frame
+                        $(this).attr('target', '_parent');
+                    }
+                },
 				onclick: function () {
 					var postId = $(this).parents('.microPost').attr('data-id');
 					Microblog.track('timeline', 'post_click', $(this).attr('href'));
@@ -398,12 +404,12 @@ window.Microblog = window.Microblog || {}
                     });
 					
 					// and PostTarget checks, depending on our timeline context
-					if ($('input[name=PostTarget]').length === 0) {
+					if ($('input[name=PostTarget]').length === 0 && $(this).parents('.TimelineDashlet').length > 0) {
 						// we can show the post-target-links because we're not in the context of 
 						// hooking into specific posts
 						// Disabled here; specific implementations can add this code themselves to
 						// enabled the display of these links if desired
-						// $(this).find('.post-target-link').show();
+						$(this).find('.post-target-link').show();
 					}
 				}
 			})
