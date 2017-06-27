@@ -21,6 +21,7 @@ class TimelineController extends ContentController {
 		'Threaded'			=> false,			// should we show a threaded view?
 		'Replies'			=> true,			// allow replies?
 		'Voting'			=> true,			// allow voting?
+        'ShowPostForm'      => true,
 //		'Edits'				=> true,
 		
 		'ShowReply'			=> true,			// show the reply box all the time?
@@ -171,11 +172,15 @@ class TimelineController extends ContentController {
 	}
 	
 	private $arrayOptions; 
-	public function Options() {
+	public function getOptions() {
 		if (!$this->arrayOptions) {
 			$this->arrayOptions = ArrayData::create(self::config()->options);
 		}
 
+        // hard coding this logic for now; it really probably doesn't belong here though. 
+        if ($this->getRequest()->getVar('mentions')) {
+            $this->arrayOptions->ShowPostForm = false;
+        }
 		$this->extend('extendTimelineControllerOptions', $this->arrayOptions);
 
 		return $this->arrayOptions;
@@ -194,6 +199,7 @@ class TimelineController extends ContentController {
         }
 		return $this->renderWith(array('FullTimeline', 'Page'));
 	}
+
 
 	public function MemberDetails() {
 		$m = $this->securityContext->getMember();
@@ -256,7 +262,7 @@ class TimelineController extends ContentController {
 				return Security::permissionFailure();
 			}
 
-			$options = $this->Options();
+			$options = $this->getOptions();
 			//$options->Replies = true;
 			$options->ShowTitlesOnly = false;
 			
@@ -356,7 +362,7 @@ class TimelineController extends ContentController {
 	public function PostForm () {
 		$fields = FieldList::create();
 		
-		if ($this->Options()->UserTitle) {
+		if ($this->getOptions()->UserTitle) {
 			$fields->push($title = TextField::create('Title', _t('MicroBlog.TITLE', 'Title')));
 			$title->setAttribute('placeholder', _t('MicroBlog.TITLE_PLACEHOLDER', 'Title (optional)'));
 		}
@@ -461,7 +467,7 @@ class TimelineController extends ContentController {
 			return;
 		}
 		
-		if (!$this->Options()->EnableUploads) {
+		if (!$this->getOptions()->EnableUploads) {
 			return;
 		}
 		
@@ -577,10 +583,15 @@ class TimelineController extends ContentController {
 		if (!$sort) {
 			$sort = 'ID';
 		}
-		
+
+        $mentions = (int) $this->getRequest()->getVar('mentions');
+        if ($mentions) {
+            $filter['Mentions.ID'] = Member::currentUserID();
+        }
+
 		$offset = $this->request->getVar('offset');
 		
-		$noReplies = $this->Options()->Replies;
+		$noReplies = $this->getOptions()->Replies;
 		if (!$noReplies) {
 			$replies = false;
 		}
@@ -593,7 +604,7 @@ class TimelineController extends ContentController {
 
 		$props = array(
 			'Posts' => $timeline, 
-			'Options' => $this->Options(),
+			'Options' => $this->getOptions(),
 			'QueryOffset'	=> $timeline->QueryOffset,
 			'SortBy'		=> $sort,
 			'Target'		=> $target,
@@ -610,16 +621,23 @@ class TimelineController extends ContentController {
 	public function Timeline() {
 		$since = $this->owner->getRequest()->getVar('since');
 		$offset = (int) $this->owner->getRequest()->getVar('before');
+        $mentions = (int) $this->getRequest()->getVar('mentions');
 		if (!$offset) {
 			$offset = false;
 		}
 		$filter = array();
 		$tags = $this->getFilterTags();
 		$target = $this->getTargetFilter();
+        $options = $this->getOptions();
+
 		if ($target) {
 			$filter['Target'] = $target;
 		}
-		
+
+        if ($mentions && Member::currentUserID()) {
+            $filter['Mentions.ID'] = Member::currentUserID();
+        }
+
 		$sort = $this->request->getVar('sort');
 		if (!$sort) {
 			$sort = 'ID';
@@ -629,7 +647,7 @@ class TimelineController extends ContentController {
 		
 		$props = array(
 			'Posts' => $data, 
-			'Options' => $this->Options(),
+			'Options'       =>        $options,
 			'QueryOffset'	=> $data->QueryOffset,
 			'Target'		=> $target,
 			'SortBy'		=> $sort
@@ -658,7 +676,7 @@ class TimelineController extends ContentController {
 		
 		$props = array(
 			'Posts'			=> $timeline, 
-			'Options'		=> $this->Options(),
+			'Options'		=> $this->getOptions(),
 			'QueryOffset'	=> $timeline->QueryOffset,
 			'SortBy'		=> $sort
 		);
@@ -681,7 +699,7 @@ class TimelineController extends ContentController {
 
 		$props = array(
 			'Posts'			=> $data, 
-			'Options'		=> $this->Options(),
+			'Options'		=> $this->getOptions(),
 			'QueryOffset'	=> $data->QueryOffset,
 			'SortBy'		=> 'ID',
 		);
@@ -720,12 +738,17 @@ class TimelineController extends ContentController {
 		if ($target) {
 			$params['target'] = $target;
 		}
-		
+
+        $mentions = $this->getRequest()->getVar('mentions');
+        if ($mentions) {
+            $params['mentions'] = 1;
+        }
+
 		$tagstr = count($params) ? '?' . http_build_query($params) : '';
 		return Controller::join_links($link, $action, $tagstr);
 	}
-	
-	
+
+
 	/**
 	 * View a particular user's feed
 	 */
@@ -754,7 +777,7 @@ class TimelineController extends ContentController {
 		
 		$props = array(
 			'Posts' => $data, 
-			'Options' => $this->Options(),
+			'Options' => $this->getOptions(),
 			'QueryOffset'	=> $data->QueryOffset,
 			'Target'		=> $target,
 			'SortBy'		=> $sort

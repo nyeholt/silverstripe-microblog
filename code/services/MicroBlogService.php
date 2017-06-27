@@ -335,7 +335,7 @@ class MicroBlogService {
 	 * Gets all the status updates for a particular user before a given time
 	 * 
 	 * @param array $filter
-	 *			The specific member to get status updates from
+	 *			The specific filter flags, or member object, to get status updates from
 	 * @param type $sortBy
 	 *			The order in which the items should be sorted
 	 * @param type $since
@@ -353,6 +353,7 @@ class MicroBlogService {
 	 *			
 	 */
 	public function getStatusUpdates($filter = array(), $sortBy = 'ID', $since = 0, $before = false, $topLevelOnly = true, $tags = array(), $offset = 0, $number = 10) {
+        // legacy support; this should really be performed from the calling code to use its own filter logic.
 		if ($filter instanceof Member) {
 			$userIds[] = $filter->ProfileID;
 			$filter = array(

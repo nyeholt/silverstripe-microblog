@@ -6,8 +6,6 @@ $Content
 	<input type="hidden" id="MemberDetails" data-member='$MemberDetails.ATT' />
 	<input type="hidden" value="$PostForm.FormAction" id="PostFormUrl" />
 	
-	
-
 	<% if $Post %>
 		<input type="hidden" name="timelineUpdateUrl" value="$Link(flatlist)/$Post" />
 	
@@ -19,11 +17,13 @@ $Content
 		<input type="hidden" name="timelineUpdateUrl" value="$Link(flatlist)" />
 		
 		<% if $ContextUser %>
-			<div class="postForm span8">
+			<% if $Options.ShowPostForm %>
+            <div class="postForm span8">
 			<% with PostForm %>
 			<% include PostForm Options=$Top.Options %>
 			<% end_with %>
 			</div>
+            <% end_if %>
 		
 			<% if $Top.Options.EnableUploads %>
 			<% with UploadForm %>

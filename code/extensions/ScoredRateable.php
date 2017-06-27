@@ -28,18 +28,18 @@ class ScoredRateable extends DataExtension {
 		$simple = DB::getConn() instanceof SQLite3Database ? true : false;
 
 		if ($simple) {
-			$bound = '((Up / Down) / (Up + Down))';
+			$bound = "(($base.Up / $base.Down) / ($base.Up + $base.Down))";
 		} else {
-			$bound = '((Up + 1.9208) / (Up + Down) - ' .
-                   '1.96 * SQRT((Up * Down) / (Up + Down) + 0.9604) / ' .
-                   '(Up + Down)) / (1 + 3.8416 / (Up + Down))  / SQRT(HOUR(TIMEDIFF(NOW(), '.$base.'.Created)) + 1)';
+			$bound = "(($base.Up + 1.9208) / ($base.Up + $base.Down) - " .
+                   "1.96 * SQRT(($base.Up * $base.Down) / ($base.Up + $base.Down) + 0.9604) / " .
+                   "($base.Up + $base.Down)) / (1 + 3.8416 / ($base.Up + $base.Down))  / SQRT(HOUR(TIMEDIFF(NOW(), $base.Created)) + 1)";
 		}
 
 		$query->selectField($bound, 'WilsonRating');
 
-		$query->selectField('(Up + Down)', 'ActiveRating');
+		$query->selectField("($base.Up + $base.Down)", 'ActiveRating');
 
-		$query->selectField('(Up - Down)', 'PositiveRating');
+		$query->selectField("($base.Up - $base.Down)", "PositiveRating");
 
 	}
 }

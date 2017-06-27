@@ -33,6 +33,10 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		'Replies'		=> 'MicroPost.Parent',
 	);
 
+    private static $many_many = array(
+        'Mentions'      => 'Member',
+    );
+
 	private static $defaults = array(
 		'PublicAccess'		=> false,
 		'InheritPerms'		=> true,		// we'll have  default container set soon
@@ -163,6 +167,16 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 			$this->afterWriteRender = false;
 			$this->write();
 		}
+
+        $mentions = $this->mentionedMembers();
+
+        if (count($mentions)) {
+            foreach ($mentions as $mentioned) {
+                $this->Mentions()->add($mentioned);
+            }
+        } else {
+            $this->Mentions()->removeAll();
+        }
 	}
 
 
