@@ -29,6 +29,8 @@
 				<% if Deleted %>
 				<% else %>
 					<% if checkPerm('Delete') %>
+                    &middot;
+					<a href="#" class="hidePost">hide</a>
 					&middot;
 					<a href="#" class="deletePost">delete</a>
 					<% end_if %>

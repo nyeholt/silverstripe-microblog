@@ -112,6 +112,7 @@ class MicroBlogService {
 			'unreadPosts'		=> 'GET',
 			'createPost'		=> 'POST',
 			'deletePost'		=> 'POST',
+            'hidePost'  		=> 'POST',
 			'vote'				=> 'POST',
 			'getStatusUpdates'	=> 'GET',
 			'getTimeline'		=> 'GET',
@@ -447,7 +448,11 @@ class MicroBlogService {
 		if ($before !== false) {
 			$before = (int) $before;
 			$filter['ID:LessThan'] = $before;
-		} 
+		}
+
+        if (!isset($filter['Hidden'])) {
+            $filter['Hidden'] = 0;
+        }
 
 		$sort = array();
 
@@ -671,6 +676,18 @@ class MicroBlogService {
 
 		return $post;
 	}
+
+    public function hidePost(DataObject $post) {
+        if (!$post) {
+			return;
+		}
+		if ($post->checkPerm('Delete')) {
+			$post->Hidden = true;
+            $post->write();
+		}
+
+		return $post;
+    }
 	
 	/**
 	 * Vote for a particular post

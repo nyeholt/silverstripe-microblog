@@ -14,6 +14,7 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		'OriginalContent'	=> 'Text',
 		'IsOembed'			=> 'Boolean',
 		'Deleted'			=> 'Boolean',
+        'Hidden'            => 'Boolean',
 		'NumReplies'		=> 'Int',
 		'Target'			=> 'Varchar',		// ClassName,ID
 		'PostType'			=> 'Varchar',

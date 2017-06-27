@@ -222,6 +222,26 @@ window.Microblog = window.Microblog || {}
 					}
 				});
 			},
+            hidePost: function (id) {
+                if (!id) {
+                    return;
+                }
+                var params = {
+                    'postType': 'MicroPost',
+                    'postID': id
+                };
+
+                SSWebServices.post('microBlog', 'hidePost', params, function (data) {
+                    if (data && data.response) {
+                        // marked as deleted, versus completely removed
+                        if (data.response.Hidden) {
+                            $('#post' + id).fadeOut('slow');
+                        } else {
+                            $('#post' + id).find('div.postText').html(data.response.Content);
+                        }
+                    }
+                })
+            },
 			deletePost: function (id) {
 				if (!id) {
 					return;
@@ -353,6 +373,15 @@ window.Microblog = window.Microblog || {}
 //				Microblog.Timeline.deletePost(postId);
 				return false;
 			})
+            
+            $(document).on('click', 'a.hidePost', function (e) {
+				var postId = $(this).parents('.microPost').attr('data-id');
+				$(this).parents('.timeline-box').hidePost(postId);
+//				Microblog.Timeline.deletePost(postId);
+				return false;
+			})
+            
+            
 			
 			$(document).on('click', 'a.vote', function (e) {
 				e.preventDefault();

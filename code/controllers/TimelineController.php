@@ -622,6 +622,7 @@ class TimelineController extends ContentController {
 		$since = $this->owner->getRequest()->getVar('since');
 		$offset = (int) $this->owner->getRequest()->getVar('before');
         $mentions = (int) $this->getRequest()->getVar('mentions');
+        $showHidden = (int) $this->getRequest()->getVar('hidden');
 		if (!$offset) {
 			$offset = false;
 		}
@@ -636,6 +637,10 @@ class TimelineController extends ContentController {
 
         if ($mentions && Member::currentUserID()) {
             $filter['Mentions.ID'] = Member::currentUserID();
+        }
+
+        if ($showHidden) {
+            $filter['Hidden'] = array(0, 1);
         }
 
 		$sort = $this->request->getVar('sort');
