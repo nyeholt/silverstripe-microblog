@@ -3,7 +3,7 @@ window.Microblog = window.Microblog || {}
 
 ;(function($) {
 	var postContainer = $('<div>');
-	var covnerter = new showdown.Converter();;
+	var converter = new showdown.Converter();
     
 
 	Microblog.Timeline = function () {
@@ -600,7 +600,6 @@ window.Microblog = window.Microblog || {}
 			})
 
 			if (typeof(showdown) != 'undefined') {
-                var converter = new showdown.Converter();
 				$('textarea.postContent.preview').entwine({
 					onmatch: function () {
 						var parent = $(this).parent(); //('form');
