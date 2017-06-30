@@ -81,7 +81,14 @@
 							return data;
 						}
 					});
+                    
+                    return false;
 				}
+                
+                if (SS && SS.Dialog) {
+                    SS.Dialog.open(url);
+                    return false;
+                }
 				
 				var jqueryModal = $('#comments-modal-ui');
 				if (jqueryModal.length > 0) {
