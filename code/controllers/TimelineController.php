@@ -146,7 +146,7 @@ class TimelineController extends ContentController {
 			'microblog/javascript/jquery-textcomplete-0.3.7/jquery.overlay.js',
 			'microblog/javascript/jquery-textcomplete-0.3.7/jquery.textcomplete.js',
 			'microblog/javascript/showdown/showdown.min.js',
-			'microblog/javascript/date.js',
+//			'microblog/javascript/date.js',
 			'microblog/javascript/microblog.js',
 			'microblog/javascript/entwineline.js',
 			'microblog/javascript/local-storage.js',
