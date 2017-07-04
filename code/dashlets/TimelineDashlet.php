@@ -90,6 +90,7 @@ if (class_exists('Dashlet')) {
 		public function ShowDashlet() {
 			// explicit inclusion so it doesn't need to jquery.ondemand these files, which tends to die
 			Requirements::javascript('microblog/javascript/timeline-dashlet.js');
+            TimelineController::include_microblog_requirements();
 			
 			return '';
 			// oh man this is so hacky, but I don't really quite know the best way to do what I want which is

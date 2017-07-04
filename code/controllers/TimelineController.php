@@ -110,8 +110,10 @@ class TimelineController extends ContentController {
 		}
 		
 		parent::init();
-		
-		self::include_microblog_requirements();
+
+        if (!$this->getRequest()->isAjax()) {
+            self::include_microblog_requirements();
+        }
 
 		$member = $this->securityContext->getMember();
 		if ($member && $member->ID) {
@@ -122,6 +124,7 @@ class TimelineController extends ContentController {
 	}
 	
 	public static function include_microblog_requirements() {
+
 		Requirements::block(THIRDPARTY_DIR . '/prototype/prototype.js');
 		if (self::config()->jquery_lib != THIRDPARTY_DIR . '/jquery/jquery.js') {
 			Requirements::block(THIRDPARTY_DIR . '/jquery/jquery.js');
