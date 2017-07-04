@@ -1,5 +1,5 @@
 {
-	"name": "silverstripe/microblog",
+	"name": "symbiote/silverstripe-microblog",
 	"description": "Provides microblog type functionality for creating interactive sites like Facebook, Twitter and Reddit.",
 	"type": "silverstripe-module",
 	"keywords": ["silverstripe", "comments", "blog", "microblog"],
@@ -7,23 +7,25 @@
 	"authors": [
 	{
 		"name": "Marcus Nyeholt",
-		"email": "marcus@silverstripe.com.au"
+		"email": "marcus@symbiote.com.au"
 	}
 	],
 	"require":
 	{
-		"silverstripe/cms": "~3.1",
-		"silverstripe/multivaluefield": "~2.0",
-		"silverstripe/queuedjobs": "~2.2",
-		"silverstripe/restrictedobjects": "~2.1",
+		"silverstripe/cms": "~3.2",
+		"symbiote/silverstripe-multivaluefield": "~2.4",
+		"symbiote/silverstripe-queuedjobs": "~4.0",
+		"symbiote/silverstripe-restrictedobjects": "~3.0",
 		"silverstripe/webservices": "~3.1",
 		"silverstripe/select2": "~1.0",
 		"ezyang/htmlpurifier": "dev-master#c67e4c2f7e06f89ca0eb4ce72b191144e40dc3ef",
 		"unclecheese/dropzone": "dev-master#8a95cb1890267e07243f02ab40604ef104c18fef"
 	},
 	"extra": {
+		"installer-name": "microblog",
 		"branch-alias": {
-			"dev-master": "2.9.x-dev"
+			"dev-master": "2.10.x-dev"
+
 		}
 	}
 }
