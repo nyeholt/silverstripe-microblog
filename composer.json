@@ -14,7 +14,7 @@
 	{
 		"silverstripe/cms": "~3.2",
 		"symbiote/silverstripe-multivaluefield": "~2.4",
-		"symbiote/silverstripe-queuedjobs": "~4.0",
+		"symbiote/silverstripe-queuedjobs": "~2.4",
 		"symbiote/silverstripe-restrictedobjects": "~3.0",
 		"silverstripe/webservices": "~3.1",
 		"silverstripe/select2": "~1.0",
