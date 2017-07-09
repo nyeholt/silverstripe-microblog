@@ -165,8 +165,18 @@ class MicroBlogService {
 		
 		if (!$member) {
 			$member = $this->securityContext->getMember();
+
 		}
-		
+
+        if ($member instanceof PublicMicroblogMember) {
+            $this->allowAnonymousPosts = true;
+        }
+
+        // cannot post a root level post if not logged in 
+        if (!($parentId || $target)) {
+            $this->allowAnonymousPosts = false;
+        }
+
 		if (!$member->exists() && !$this->allowAnonymousPosts) {
 			throw new Exception("Anonymous posting disallowed");
 		}

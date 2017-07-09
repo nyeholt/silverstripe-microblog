@@ -15,8 +15,8 @@ $Content
 	<% else %>
 
 		<input type="hidden" name="timelineUpdateUrl" value="$Link(flatlist)" />
-		
-		<% if $ContextUser %>
+        
+		<% if $ContextUser.ID > 0 %>
 			<% if $Options.ShowPostForm %>
             <div class="postForm span8">
 			<% with PostForm %>

@@ -18,6 +18,7 @@ class TimelineController extends ContentController {
 	private static $jquery_ui_lib = 'framework/thirdparty/jquery-ui/jquery-ui.js';
 	
 	private static $options = array(
+        'AllowPublic'       => false,
 		'Threaded'			=> false,			// should we show a threaded view?
 		'Replies'			=> true,			// allow replies?
 		'Voting'			=> true,			// allow voting?
@@ -63,6 +64,7 @@ class TimelineController extends ContentController {
 	public $ajaxMemberLimit = 20;
 	
 	protected $parentController = null;
+
 	protected $showReplies = true;
 	
 	/**
@@ -99,10 +101,19 @@ class TimelineController extends ContentController {
 		}
 		
 		$this->showReplies = $replies;
-		$this->contextUser = $context ? $context : Member::currentUser();
+		$this->contextUser = $context ? $context : null;
 	}
 
 	public function init() {
+        if (!$this->contextUser) {
+            $this->contextUser = $this->securityContext->getMember();
+        }
+
+        if (!$this->contextUser && $this->IsEnabled('AllowPublic')) {
+            $this->contextUser = PublicMicroblogMember::create();
+            $this->securityContext->setMember($this->contextUser);
+        }
+
 		if ($this->getSession() && $this->data()->exists()) {
 			Versioned::choose_site_stage($this->getSession());
 		} else {
@@ -170,8 +181,8 @@ class TimelineController extends ContentController {
 	}
 	
 	public function IsEnabled($option) {
-		$opts = self::config()->options;
-		return isset($opts[$option]) && $opts[$option]; 
+		$opts = $this->getOptions();
+		return $opts->$option;
 	}
 	
 	private $arrayOptions; 

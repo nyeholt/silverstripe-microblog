@@ -1,7 +1,9 @@
 			<div class="postOptions $UserVote">
 				<% if $TimelineOptions.Voting %>
+                <% if $ContextUser.ID %>
 				<a href="#" class="vote <% if $UserVote == 'downvote' %>not-voted<% end_if %><% if $UserVote == 'upvote' %>voted<% end_if %>" data-dir="1" data-id="$ID">Up</a>
 				<a href="#" class="vote <% if $UserVote == 'downvote' %>voted<% end_if %><% if $UserVote == 'upvote' %>not-voted<% end_if %>" data-dir="-1" data-id="$ID">Down</a>
+                <% end_if %>
 				<span class="upCount">$Up</span><span class='vote-separator'>|</span><span class="downCount">$Down</span>
 				<% end_if %>
 
