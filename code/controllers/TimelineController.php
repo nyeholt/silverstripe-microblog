@@ -143,12 +143,14 @@ class TimelineController extends ContentController {
         }
 
 		Requirements::javascript('webservices/javascript/webservices.js');
+
+        Requirements::javascript('microblog/javascript/showdown/showdown.min.js');
+        Requirements::javascript('microblog/javascript/highlight/highlight.min.js');
 		
 		Requirements::combine_files('_microblog_combined.js', array(
 			'microblog/javascript/jquery.autogrow-textarea.js',
 			'microblog/javascript/jquery-textcomplete-0.3.7/jquery.overlay.js',
 			'microblog/javascript/jquery-textcomplete-0.3.7/jquery.textcomplete.js',
-			'microblog/javascript/showdown/showdown.min.js',
 //			'microblog/javascript/date.js',
 			'microblog/javascript/microblog.js',
 			'microblog/javascript/entwineline.js',
@@ -156,8 +158,6 @@ class TimelineController extends ContentController {
 			'microblog/javascript/microblog-statesave.js',
 		));
 
-        Requirements::javascript('microblog/javascript/highlight/highlight.min.js');
-		
 		// select 2 functionality
 		Requirements::javascript(SELECT2_MODULE . "/select2/select2.js");
 		Requirements::javascript(SELECT2_MODULE . "/javascript/select2.init.js");
