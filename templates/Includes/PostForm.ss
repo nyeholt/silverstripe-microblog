@@ -12,12 +12,12 @@
 	$Up.Actions
 	
 	<% if $Options.EnableUploads %>
-	<input type="button" name="uploadTrigger" value="Attach files" />
+	<button type="button" class="upload-trigger" name="uploadTrigger">Attach files</button>
 	<% end_if %>
 
 	<% if $LoggedInUsers %>
 	
-	<input type="button" class="specific-users" value="Post options" />
+	<button type="button" class="specific-users">Post to</button>
 	<div class="post-specific-users" style="display:none">
 		$DisableReplies
 		<label for="Form_PostForm_DisableReplies">$DisableReplies.Title</label>
