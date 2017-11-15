@@ -10,6 +10,8 @@ class SocialGraphService {
 		'maxwidth'		=> '600',
 		'maxheight'		=> '400',
 	);
+
+    public $lookupLinks = true;
 	
 	/**
 	 * Check whether a given URL is actually an html page 
@@ -93,17 +95,19 @@ class SocialGraphService {
 				return array('Title' => $graph->Title, 'Content' => MicroPost::create()->customise($data)->renderWith('OpenGraphPost'));
 			}
 		}
-		
-		// get the post and take its <title> tag at the very least
-		$service = new RestfulService($url);
-		$response = $service->request();
-		
-		if ($response && $response->getStatusCode() == 200) {
-			if (preg_match('/<title>(.*?)<\/title>/is', $response->getBody(), $matches)) {
-				$title = Convert::raw2xml(trim($matches[1]));
-				return array('Title' => $title, 'Content' => "<a href='$url'>$title</a>");
-			}
-		}
+
+        if ($this->lookupLinks) {
+            // get the post and take its <title> tag at the very least
+            $service = new RestfulService($url);
+            $response = $service->request();
+
+            if ($response && $response->getStatusCode() == 200) {
+                if (preg_match('/<title>(.*?)<\/title>/is', $response->getBody(), $matches)) {
+                    $title = Convert::raw2xml(strip_tags(trim($matches[1])));
+                    return array('Title' => $title, 'Content' => "<a href='$url'>$title</a>");
+                }
+            }
+        }
 	}
 
 	/**
