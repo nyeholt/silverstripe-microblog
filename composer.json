@@ -24,7 +24,7 @@
 	"extra": {
 		"installer-name": "microblog",
 		"branch-alias": {
-			"dev-master": "2.10.x-dev"
+			"dev-master": "2.11.x-dev"
 
 		}
 	}
