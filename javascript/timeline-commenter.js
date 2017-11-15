@@ -85,7 +85,7 @@
                     return false;
 				}
                 
-                if (SS && SS.Dialog) {
+                if (window.SS && window.SS.Dialog) {
                     SS.Dialog.open(url);
                     return false;
                 }

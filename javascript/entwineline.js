@@ -511,7 +511,7 @@ window.Microblog = window.Microblog || {}
 
 						$('input[name=action_savepost]').removeAttr('disabled');
 						$('form.replyForm').find('input[name=action_savepost]').attr('value', 'Reply');
-					}).fail(function () {
+					}).error(function () {
 						$('input[name=action_savepost]').removeAttr('disabled');
 						$('form.replyForm').find('input[name=action_savepost]').attr('value', 'Reply');
 					})
