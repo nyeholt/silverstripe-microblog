@@ -562,6 +562,18 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 		}
 	}
 
+    /**
+     * Update the list of fields that are indexed for a microblog post
+     *
+     * This provides cleaner direct support for the Elastic search module
+     *
+     * @param ArrayObject $fieldValues
+     */
+    public function updateSearchableData(ArrayObject $fieldValues) {
+        $tags = $this->Tags()->column('Title');
+        $fieldValues['Tags'] = $tags;
+    }
+
 	/**
 	 * Return a list of available keywords in the format
 	 * array('keyword' => 'A description') to help users format notification fields
