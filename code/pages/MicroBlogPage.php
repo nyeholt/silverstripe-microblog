@@ -66,7 +66,7 @@ class MicroBlogPage_Controller extends TimelineController {
 	}
 	
 	private $custOptions; 
-	public function Options() {
+	public function getOptions() {
 		if ($this->custOptions) {
 			return $this->custOptions;
 		}
@@ -78,7 +78,7 @@ class MicroBlogPage_Controller extends TimelineController {
 			return $this->custOptions;
 		}
 		
-		return parent::Options();
+		return parent::getOptions();
 	}
 
 	public function getTargetFilter() {
