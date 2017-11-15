@@ -215,6 +215,13 @@ window.Microblog = window.Microblog || {}
                             if (me.effect) {
                                 me.effect("highlight", {}, 3000);
                             }
+
+                            var replyForm = me.find('form.replyForm');
+                            if (replyForm.length) {
+                                replyForm.initialiseReplyForm();
+                            } else {
+//                                console.log(me.html());
+                            }
 							
 							// done here because we've just removed and re-added to the dom?
 	//						wrapper.find('textarea.expandable').autogrow();
@@ -326,7 +333,7 @@ window.Microblog = window.Microblog || {}
 		});
 		
 		
-		$.entwine('microblog', function ($) {
+		$.entwine(function ($) {
 			$('div.postText a').entwine({
                 onmatch: function () {
                     if ($(this).parents('.iframe-timeline').length > 0) {
@@ -477,10 +484,21 @@ window.Microblog = window.Microblog || {}
 
 			$('form.replyForm').entwine({
 				onmatch: function () {
-					$(this).attr('action', $('#PostFormUrl').val());
+                    this.initialiseReplyForm();
+				},
+                initialiseReplyForm: function () {
+                    if ($(this).hasClass('initialised-replies')) {
+                        return;
+                    }
+                    $(this).addClass('initialised-replies');
+                    var formUrl = $('#PostFormUrl').val();
+                    if (!formUrl) {
+                        formUrl = $('form#Form_PostForm').attr('action');
+                    }
+					$(this).attr('action', formUrl);
 					Microblog.Timeline.mentionify($(this).find('textarea'));
 					var thisform = this;
-					this.ajaxForm(function (data, status, xhr, form) {
+					$(this).ajaxForm(function (data, status, xhr, form) {
 						$('form.replyForm').find('textarea').val('').trigger('keydown');
 						$(thisform).parents('.timeline-box').refreshTimeline();
 						if (data && data.response) {
@@ -497,7 +515,7 @@ window.Microblog = window.Microblog || {}
 						$('input[name=action_savepost]').removeAttr('disabled');
 						$('form.replyForm').find('input[name=action_savepost]').attr('value', 'Reply');
 					})
-				},
+                },
 				onsubmit: function () {
 					$(this).find('input[name=action_savepost]').attr('disabled', 'disabled');
 					$('div.postPreview').hide();
