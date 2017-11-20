@@ -19,12 +19,12 @@
 		"silverstripe/webservices": "~3.1",
 		"silverstripe/select2": "~1.0",
 		"ezyang/htmlpurifier": "dev-master#c67e4c2f7e06f89ca0eb4ce72b191144e40dc3ef",
-		"unclecheese/dropzone": "dev-master#8a95cb1890267e07243f02ab40604ef104c18fef"
+		"unclecheese/dropzone": "~1.4"
 	},
 	"extra": {
 		"installer-name": "microblog",
 		"branch-alias": {
-			"dev-master": "2.11.x-dev"
+			"dev-master": "2.12.x-dev"
 
 		}
 	}
