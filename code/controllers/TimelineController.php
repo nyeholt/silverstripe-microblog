@@ -167,6 +167,12 @@ class TimelineController extends ContentController {
 		Requirements::css('microblog/javascript/jquery-textcomplete-0.3.7/jquery.textcomplete.css');
 		Requirements::css('microblog/css/timeline.css');
         Requirements::css('microblog/javascript/highlight/googlecode.css');
+
+        // and attachment field requirements
+        Requirements::javascript(DROPZONE_DIR.'/javascript/dropzone.js');
+        Requirements::javascript(DROPZONE_DIR.'/javascript/file_attachment_field.js');
+
+        Requirements::css(DROPZONE_DIR.'/css/file_attachment_field.css');
 	}
 	
 	public function IsEnabled($option) {
