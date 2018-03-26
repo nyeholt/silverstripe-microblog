@@ -152,6 +152,18 @@ div.postText, div.postPreview {
 	padding: 10px;
 }
 
+
+span.post-expander:after {
+    content: '+';
+    cursor: pointer;
+    margin-right: 3px;
+}
+
+span.post-expander.expanded:after {
+    content: '-';
+}
+
+
 form.replyForm {
 	margin-left: 10px;
 	margin-bottom: 10px;

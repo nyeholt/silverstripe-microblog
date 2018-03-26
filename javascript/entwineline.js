@@ -348,13 +348,15 @@ window.Microblog = window.Microblog || {}
 				}
 			});
 			
-			$(document).on('click', 'a.post-expander', function (e) {
+			$(document).on('click', 'span.post-expander', function (e) {
 				e.preventDefault()
 				var postId = $(this).attr('data-id');
 				if ($(this).data('toggled')) {
 					$(this).data('toggled', 0);
+                    $(this).removeClass('expanded');
 					$('#' + postId).addClass('collapsed-post').removeClass('expanded-post');
 				} else {
+                    $(this).addClass('expanded');
 					$(this).data('toggled', 1);
 					$('#' + postId).addClass('expanded-post').removeClass('collapsed-post');
 				}
@@ -428,7 +430,8 @@ window.Microblog = window.Microblog || {}
 					if ($(this).attr('data-owner') == Microblog.Member.MemberID && $(this).attr('data-editable')) {
 						var editId = $(this).attr('data-id');
 						var button = $('<a href="#" class="editButton">edit post</a>');
-						$($(this).find('.postOptions')[0]).append(button);
+                        var allOptionsDivs = $(this).find('.postOptions');
+						$(allOptionsDivs[allOptionsDivs.length - 1]).append(button);
 						button.click(function (e) {
 							e.preventDefault();
 							button.parents('.timeline-box').editPost(editId)

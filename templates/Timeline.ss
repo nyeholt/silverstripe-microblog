@@ -15,7 +15,7 @@
 			<% if $Top.Options.ShowTitlesInPost && $ParentID == 0 %>
 			<h3 class="micro-post-title">
 				<% if $Top.Options.ShowTitlesOnly %>
-				<a class="post-expander" data-id="post$ID" href="$Link" title="Link to view the full text of $Title.ATT">$Title</a>
+                <span class="post-expander" data-id="post$ID"></span><a href="$Link" title="Link to view the full text of $Title.ATT">$Title</a>
 				<% else %>
 				$Title
 				<% end_if %>
