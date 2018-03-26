@@ -58,7 +58,8 @@ class MicroPost extends DataObject { /* implements Syncroable { */
 
 	private static $searchable_fields = array(
 		'Title',
-		'Content'
+		'Content',
+        'Tags.Title',
 	);
 
 	private static $default_sort = 'ID DESC';
