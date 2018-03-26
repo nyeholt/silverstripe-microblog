@@ -2,6 +2,16 @@
 	.post-target-link {display: none; }
 </style>
 <table  style="font-family: Arial; font-size: 12px">
+    <tr style="padding-bottom: 10px;">
+		<td width="140px" style="min-width: 140px">&nbsp;
+		</td>
+		<td width="" style="min-width: 400px;">
+		</td>
+		<td>
+		</td>
+	</tr>
+	
+
 	<tr style="padding-bottom: 10px;">
 		<td colspan="3">
 			<p>
@@ -17,31 +27,19 @@
 		</td>
 	</tr>
 	
-	<tr style="padding-bottom: 10px;">
-		<td>
-		</td>
-		<td width="60%">
-			
-		</td>
-		<td>
-		</td>
-	</tr>
 	
-
 	<% loop $Posts %>
 	<% if PostType == 'notice-post' %>
 	<tr style="padding-bottom: 10px;">
-		<td valign="top" colspan="3">
-			$RenderedContent.raw
+        <td></td>
+		<td valign="top" colspan="2">
+			$ConvertedContent.parse(RestrictedMarkdown).RAW
 			<br/>
 		</td>
 	</tr>
 	<% else %>
 	<tr style="padding-bottom: 10px;">
 		<td valign="top">
-			<div class="gravatarImage">
-				<img src="http://www.gravatar.com/avatar/{$Owner.gravatarHash}.jpg" />
-			</div>
 			<p>
 			<em>
 			<% if $Owner.ID == $Top.Member.ID %>
@@ -50,6 +48,7 @@
 			$Owner.FirstName
 			<% end_if %>
 			</em>
+                <br/>
 			at $Created.Nice
 			</p>
 		</td>
