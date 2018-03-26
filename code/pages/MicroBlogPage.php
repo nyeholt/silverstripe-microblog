@@ -23,8 +23,10 @@ class MicroBlogPage extends Page {
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
 		
-		$fields->addFieldToTab('Root.MicroBlog', MultiValueTextField::create('ShowTaggedWith', _t('MicroBlog.SHOW_POSTS_TAGGED', 'Show posts with these tags')));
+		$fields->addFieldToTab('Root.MicroBlog', $f = MultiValueTextField::create('ShowTaggedWith', _t('MicroBlog.SHOW_POSTS_TAGGED', 'Show posts with these tags')));
 		$fields->addFieldToTab('Root.MicroBlog', MultiValueTextField::create('AddTags', _t('MicroBlog.ADD_TAGS', 'Add the following tags to posts')));
+
+        $f->setRightTitle("If tags are set, posts displayed will not be restricted to children of this page unless the 'Tag posts against...' option is selected");
 		
 		$fields->addFieldToTab('Root.MicroBlog', $cb = CheckboxField::create('SelfTagPosts', _t('MicroBlog.SELF_TAG', 'Tag posts against this page')));
 		
@@ -81,7 +83,20 @@ class MicroBlogPage_Controller extends TimelineController {
 		return parent::getOptions();
 	}
 
+    /**
+     * We only have a target filter _if_ we are not displaying tags, or are
+     * set to SelfTag posts. 
+     *
+     *
+     * @return string
+     */
 	public function getTargetFilter() {
+        $tags = $this->ShowTaggedWith->getValues();
+
+        if ($tags && count($tags) && !$this->data()->SelfTagPosts) {
+            return '';
+        }
+        
 		return get_class($this->data()) . ',' . $this->data()->ID;
 	}
 
