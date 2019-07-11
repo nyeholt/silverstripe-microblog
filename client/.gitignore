@@ -1,0 +1,6 @@
+.yarn-cache*
+/node_modules/
+yarn-error.log
+v8-compile-cache*
+/www/
+adb*.log

@@ -1,0 +1,12 @@
+version: '2'
+services:
+  node:
+    image: "symbiote/node:${DOCKER_NODE_VERSION}"
+    tty: true
+    working_dir: /tmp
+    ports:
+      - 4200:4200
+    volumes:
+      - '.:/tmp'
+      - ${DOCKER_SHARED_PATH}/node-cache:/home/node/.cache
+    command: ["/bin/bash"]
