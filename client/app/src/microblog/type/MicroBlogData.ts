@@ -1,6 +1,7 @@
-import { MicroPost } from "./MicroPost";
+import { MicroPostMap } from "./MicroPostMap";
 
 
 export interface MicroBlogData {
-    posts: MicroPost[]
+    posts: MicroPostMap
 }
+

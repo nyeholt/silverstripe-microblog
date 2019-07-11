@@ -4,9 +4,10 @@ import thunk from 'redux-thunk';
 
 // Add your various reducers in here. 
 
-import { GlobalStore } from 'src/store/type/GlobalStore';
-import { ActionType } from 'src/store/type/Actions';
+import { GlobalStore } from 'src/type/GlobalStore';
+import { ActionType } from 'src/type/Actions';
 import microBlogReducer from 'src/microblog/reducer/MicroBlogReducer';
+import RemoteSourceDataManager from './RemoteSourceDataManager';
 
 const combinedReducers: Reducer<GlobalStore> = combineReducers<GlobalStore>({
     microblog: microBlogReducer
@@ -30,5 +31,7 @@ store.dispatch({
 if (process.env.NODE_ENV !== 'production') {
     (window as any).store = store;
 }
+
+RemoteSourceDataManager.setStore(store);
 
 export default store;

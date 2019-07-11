@@ -1,10 +1,26 @@
 import * as React from 'react';
-import wretch from 'wretch';
 import { MicroPost } from 'src/microblog/type/MicroPost';
 import MicroblogPostList from '../molecules/MicroblogPostList';
+import { MicroblogForm } from '../molecules/MicroblogForm';
+import { loadPosts } from 'src/microblog/actions/MicroBlogActions';
+import { Dispatch, AnyAction } from 'redux';
+import { GlobalStore } from 'src/type/GlobalStore';
+import { MicroPostMap } from 'src/microblog/type/MicroPostMap';
+import { connect } from 'react-redux';
 
-interface Props {
+
+type Props = OwnProps & StateProps & DispatchProps
+interface OwnProps {
     settings: MicroblogSettings
+
+}
+
+interface StateProps {
+    posts?: MicroPostMap
+}
+
+interface DispatchProps {
+    loadPosts?: () => void
 }
 
 interface MicroblogSettings {
@@ -20,48 +36,73 @@ interface MicroblogMember {
 
 interface State {
     loading: boolean
-    posts: MicroPost[]
 }
 
-export class Microblog extends React.Component<Props, State>  {
+class Microblog extends React.Component<Props, State>  {
 
     constructor(props: Props) {
         super(props)
 
         this.state = {
-            loading: true,
-            posts: []
+            loading: true
         }
     }
 
     componentDidMount(): void {
-        wretch("/api/v1/microblog/posts")
-            .get()
-            .json((data) => {
-                if (data && data.payload) {
-                    const loadedPosts: MicroPost[] = data.payload;
+        this.props.loadPosts ? this.props.loadPosts() : null;
+        // this.componentWillMount
+        // wretch("/api/v1/microblog/posts")
+        //     .get()
+        //     .json((data) => {
+        //         if (data && data.payload) {
+        //             const loadedPosts: MicroPost[] = data.payload;
 
-                    this.setState(() => {
-                        return {
-                            loading: false,
-                            posts: loadedPosts
-                        }
-                    })
-                }
-            });
+        //             this.setState(() => {
+        //                 return {
+        //                     loading: false,
+        //                     posts: loadedPosts
+        //                 }
+        //             })
+        //         }
+        //     });
     }
 
 
     render(): JSX.Element {
         const {
-            loading,
             posts
-        } = this.state;
+        } = this.props;
+
+        let orderedPosts: MicroPost[] = [];
+
+        if (posts) {
+            for (let i in posts) {
+                orderedPosts.push(posts[i]);
+            }
+        }
 
         return (<div>
-
-            {loading && <div>Loading...</div>}
-            <MicroblogPostList posts={posts} />
+            <MicroblogForm />
+            {orderedPosts.length === 0 && <div>Loading...</div>}
+            <MicroblogPostList posts={orderedPosts} />
         </div>)
     }
 }
+
+
+const mapStateToProps = (state: GlobalStore): StateProps => {
+    return {
+        posts: state.microblog.posts
+    }
+}
+
+
+const mapDispatchToProps = (dispatch: Dispatch<AnyAction>): DispatchProps => {
+    return {
+        loadPosts: () => dispatch(loadPosts() as any),
+    };
+}
+
+
+const ConnectedMicroblog = connect<StateProps & DispatchProps>(mapStateToProps, mapDispatchToProps)(Microblog);
+export default ConnectedMicroblog;
