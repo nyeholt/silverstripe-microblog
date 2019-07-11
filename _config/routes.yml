@@ -1,7 +1,0 @@
----
-Name: routes
-After: framework/routes#coreroutes
----
-Director:
-  rules:
-    timeline: TimelineController
