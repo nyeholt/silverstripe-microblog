@@ -5,11 +5,7 @@ import './type/Window';
 
 import App from './components/App';
 
-import RemoteSourceDataManager from 'src/store/RemoteSourceDataManager';
-import MicroPostDataSource from 'src/microblog/MicroPostDataSource';
 
-
-RemoteSourceDataManager.registerDataSource(MicroPostDataSource);
 
 const blogs: HTMLCollectionOf<HTMLElement> = document.getElementsByClassName('Microblog') as HTMLCollectionOf<HTMLElement>;
 

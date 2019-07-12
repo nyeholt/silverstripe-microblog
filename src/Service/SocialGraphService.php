@@ -2,6 +2,9 @@
 
 namespace Symbiote\MicroBlog\Service;
 
+use SilverStripe\ORM\FieldType\DBField;
+use Embed\Providers\OEmbed;
+
 /**
  * @author marcus@symbiote.com.au
  * @license BSD License http://silverstripe.org/bsd-license/
@@ -83,7 +86,7 @@ class SocialGraphService
      */
     public function convertUrl($url)
     {
-        $oembed = Oembed::get_oembed_from_url($url, false, $this->oembedOptions);
+        $oembed = OEmbed::get_oembed_from_url($url, false, $this->oembedOptions);
         if ($oembed) {
             return array('Title' => '', 'Content' => $oembed->forTemplate());
         }

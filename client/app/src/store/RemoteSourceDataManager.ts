@@ -10,13 +10,18 @@ namespace RemoteSourceDataManager {
 
     let updateTimer : any;
 
-    let dataSources: RemoteDataSource[] = [];
+    let dataSources: {[key: string]: RemoteDataSource} = {}
 
     export function registerDataSource(source: RemoteDataSource) {
         if (store) {
             loadSource(source);
         }
-        dataSources.push(source);
+
+        dataSources[source.id] = source;
+    }
+
+    export function removeDataSource(id: string) {
+        delete dataSources[id];
     }
 
     export function setStore(loadedStore: Store) {
@@ -31,7 +36,7 @@ namespace RemoteSourceDataManager {
     function doUpdate() {
         const now = (new Date()).getTime();
 
-        for (let i = 0, c = dataSources.length; i < c; i++) {
+        for (let i in dataSources) {
             const source = dataSources[i];
             const nextUpdate = source.lastUpdate ? source.lastUpdate + (source.frequency*1000) : 0;
 

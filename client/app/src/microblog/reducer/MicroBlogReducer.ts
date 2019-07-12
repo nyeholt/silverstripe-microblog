@@ -7,7 +7,8 @@ import { MicroPostMap } from "../type/MicroPostMap";
 
 
 const MicroBlogData_default : MicroBlogData = {
-    posts: {}
+    posts: {},
+    postsLoading: false
 }
 
 
@@ -17,10 +18,20 @@ const reducers : ReducerMap<MicroBlogData> = {
             ...state
         }
     },
+    [ActionType.START_POSTS_LOAD]: (state: MicroBlogData, action: AnyAction) : MicroBlogData => {
+        return {
+            ...state,
+            postsLoading: true
+        }
+    },
     [ActionType.LOAD_POSTS]: (state: MicroBlogData, action: AnyAction) : MicroBlogData => {
         let posts: MicroPost[] = action.payload;
 
         let postMap: MicroPostMap = {};
+
+        for (let i in state.posts) {
+            postMap[i] = Object.assign({}, state.posts[i]);
+        }
 
         posts.forEach((post) => {
             postMap[post.ID] = post;
@@ -28,6 +39,7 @@ const reducers : ReducerMap<MicroBlogData> = {
 
         return {
             ...state,
+            postsLoading: false,
             posts: postMap
         }
     }

@@ -1,12 +1,15 @@
 import * as React from 'react';
 import { MicroPost } from 'src/microblog/type/MicroPost';
 import MicroblogPostList from '../molecules/MicroblogPostList';
-import { MicroblogForm } from '../molecules/MicroblogForm';
+import MicroblogForm from '../molecules/MicroblogForm';
 import { loadPosts } from 'src/microblog/actions/MicroBlogActions';
 import { Dispatch, AnyAction } from 'redux';
 import { GlobalStore } from 'src/type/GlobalStore';
 import { MicroPostMap } from 'src/microblog/type/MicroPostMap';
 import { connect } from 'react-redux';
+import RemoteSourceDataManager from 'src/store/RemoteSourceDataManager';
+import MicroPostDataSource from 'src/microblog/MicroPostDataSource';
+
 
 
 type Props = OwnProps & StateProps & DispatchProps
@@ -17,6 +20,7 @@ interface OwnProps {
 
 interface StateProps {
     posts?: MicroPostMap
+    loading: boolean
 }
 
 interface DispatchProps {
@@ -35,7 +39,6 @@ interface MicroblogMember {
 }
 
 interface State {
-    loading: boolean
 }
 
 class Microblog extends React.Component<Props, State>  {
@@ -43,13 +46,12 @@ class Microblog extends React.Component<Props, State>  {
     constructor(props: Props) {
         super(props)
 
-        this.state = {
-            loading: true
-        }
     }
 
     componentDidMount(): void {
-        this.props.loadPosts ? this.props.loadPosts() : null;
+        // we're not worrying about filters just yet...
+        RemoteSourceDataManager.registerDataSource(MicroPostDataSource(""));
+
         // this.componentWillMount
         // wretch("/api/v1/microblog/posts")
         //     .get()
@@ -67,10 +69,16 @@ class Microblog extends React.Component<Props, State>  {
         //     });
     }
 
+    componentWillUnmount(): void {
+        RemoteSourceDataManager.removeDataSource("");
+    }
+
 
     render(): JSX.Element {
         const {
-            posts
+            posts,
+            settings,
+            loading
         } = this.props;
 
         let orderedPosts: MicroPost[] = [];
@@ -79,11 +87,19 @@ class Microblog extends React.Component<Props, State>  {
             for (let i in posts) {
                 orderedPosts.push(posts[i]);
             }
+
+            orderedPosts.sort((a, b) => {
+                return (a.ID == b.ID ? 0 : (
+                    a.ID < b.ID ? 1 : -1
+                ));
+            })
         }
 
+        const hasMember = settings.Member && settings.Member.ID;
+
         return (<div>
-            <MicroblogForm />
-            {orderedPosts.length === 0 && <div>Loading...</div>}
+            {hasMember && <MicroblogForm />}
+            {loading && <div>Loading...</div>}
             <MicroblogPostList posts={orderedPosts} />
         </div>)
     }
@@ -92,7 +108,8 @@ class Microblog extends React.Component<Props, State>  {
 
 const mapStateToProps = (state: GlobalStore): StateProps => {
     return {
-        posts: state.microblog.posts
+        posts: state.microblog.posts,
+        loading: state.microblog.postsLoading
     }
 }
 
