@@ -250,7 +250,7 @@ class MicroBlogService
             $this->notificationService->notify('MICRO_POST_CREATED', $post);
         }
 
-        return $post;
+        return $post->toFilteredMap();
     }
 
     /**
@@ -274,8 +274,8 @@ class MicroBlogService
      */
     public function savePost(DataObject $post, $data)
     {
-        if ($post->canEdit() && isset($data['Content'])) {
-            $post->Content = $data['Content'];
+        if ($post->canEdit()) {
+            $post->update($data);
             if (Security::getCurrentUser()->Balance >= MicroBlogMember::BALANCE_THRESHOLD) {
                 $post->analyseContent();
                 $post->write();
@@ -283,7 +283,7 @@ class MicroBlogService
                 // todo spam check
                 $this->queuedJobService->queueJob(new ProcessPostJob($post));
             }
-            return $post;
+            return $post->toFilteredMap();
         }
     }
 

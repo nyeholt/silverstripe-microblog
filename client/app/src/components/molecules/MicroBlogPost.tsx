@@ -1,17 +1,18 @@
 import * as React from 'react';
 import { MicroPost } from 'src/microblog/type/MicroPost';
+import MicroblogForm from 'src/components/molecules/MicroblogForm';
+
 import { connect } from 'react-redux';
 import { GlobalStore } from 'src/type/GlobalStore';
 import { Dispatch } from 'redux';
-import { ActionType } from 'src/type/Actions';
-import { deletePost } from 'src/microblog/actions/MicroBlogActions';
+import { deletePost, editPost } from 'src/microblog/actions/MicroBlogActions';
 
 interface Props {
     post: MicroPost
 }
 
 interface StateProps {
-    editId?: string
+    editId?: string | null
 }
 
 interface DispatchProps {
@@ -23,11 +24,18 @@ const MicroBlogPost = ({ post, editId, onEdit, onDelete }: Props & StateProps & 
     return <div className={post.ID == editId ? "Card Card--edited" : "Card"}>
         <div className="Card__Title">{post.Title}</div>
         <div className="Card__Body">{post.Content}</div>
+        {post.CanEdit && editId === post.ID && 
+            <div className="Card__Edit">
+                <MicroblogForm editPost={post} />
+            </div>
+        }
+
         {post.CanEdit &&
             <div className="Card__Actions">
                 <button onClick={() => { onEdit ? onEdit(post.ID) : null; }}>Edit</button><button onClick={() => { onDelete ? onDelete(post.ID) : null; }}>Delete</button>
             </div>
         }
+
     </div>;
 }
 
@@ -41,10 +49,7 @@ const mapStateToProps = (state: GlobalStore): StateProps => {
 
 const mapDispatchToProps = (dispatch: Dispatch): DispatchProps => {
     return {
-        onEdit: (id: string) => dispatch({
-            type: ActionType.EDIT_POST,
-            postId: id,
-        }),
+        onEdit: (id: string) => dispatch(editPost(id)),
         onDelete: (postId: string) => dispatch(deletePost(postId) as any),
     };
 }

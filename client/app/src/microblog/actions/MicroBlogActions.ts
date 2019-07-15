@@ -31,6 +31,22 @@ export function createPost(content: string, properties: {[key: string]: any}, po
     }
 }
 
+export function updatePost(content: string, properties: {[key: string]: any}, postedTo?: {[key: string]: string}): ThunkAction<void, GlobalStore, null, AnyAction> {
+    return (dispatch: Dispatch) => {
+        wretch("/api/v1/microblog/savePost").post({
+            postID: properties.ID,
+            postClass: 'MicroPost',
+            data: {
+                Content: content,
+                Title: properties.Title
+            }
+        }).json((json) => {
+            dispatch(editPost(null));
+            return dispatch(loadPostsAction([json.payload]));
+        })
+    }
+}
+
 export function loadPosts(): ThunkAction<void, GlobalStore, null, BaseAction> {
     return (dispatch: Dispatch, getState: () => GlobalStore) => {
         wretch("/api/v1/microblog/posts")
@@ -54,7 +70,8 @@ export function deletePost(postId: string): ThunkAction<void, GlobalStore, null,
                     dispatch({
                         type: ActionType.DELETE_POST,
                         postId: postId
-                    })
+                    });
+                    dispatch
                 }
             }).catch((err) => {
                 console.error("Failed deleting post", err);
@@ -69,6 +86,12 @@ export function setUsers(users: MicroblogMember[]) {
     }
 }
 
+export function editPost(postId: string | null) {
+    return {
+        type: ActionType.EDIT_POST,
+        postId: postId,
+    };
+}
 export function loadPostsAction(posts: MicroPost[]) {
     return {
         type: ActionType.LOAD_POSTS,
