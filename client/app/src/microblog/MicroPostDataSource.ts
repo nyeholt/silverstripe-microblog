@@ -19,8 +19,8 @@ export default (filters: string) => {
             });
             
             w.get().json((data: any) => {
-                if (data && data.status == 200 && data.payload) {
-                    dispatch(loadPostsAction(data.payload));
+                if (data && data.status == 200 && data.payload.posts) {
+                    dispatch(loadPostsAction(data.payload.posts));
                 }
             });
         }

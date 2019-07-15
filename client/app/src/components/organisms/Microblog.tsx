@@ -15,7 +15,6 @@ import MicroPostDataSource from 'src/microblog/MicroPostDataSource';
 type Props = OwnProps & StateProps & DispatchProps
 interface OwnProps {
     settings: MicroblogSettings
-
 }
 
 interface StateProps {
@@ -98,7 +97,7 @@ class Microblog extends React.Component<Props, State>  {
         const hasMember = settings.Member && settings.Member.ID;
 
         return (<div>
-            {hasMember && <MicroblogForm />}
+            {hasMember > 0 && <MicroblogForm />}
             {loading && <div>Loading...</div>}
             <MicroblogPostList posts={orderedPosts} />
         </div>)

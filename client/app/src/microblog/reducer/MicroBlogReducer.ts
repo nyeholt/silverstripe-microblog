@@ -4,10 +4,12 @@ import { Action, AnyAction } from "redux";
 import { MicroBlogData } from "../type/MicroBlogData";
 import { MicroPost } from "../type/MicroPost";
 import { MicroPostMap } from "../type/MicroPostMap";
+import { MicroblogMember } from "../type/MicroBlogMember";
 
 
 const MicroBlogData_default : MicroBlogData = {
     posts: {},
+    users: {},
     postsLoading: false
 }
 
@@ -17,6 +19,33 @@ const reducers : ReducerMap<MicroBlogData> = {
         return {
             ...state
         }
+    },
+    [ActionType.SET_USERS]: (state: MicroBlogData, action: AnyAction) : MicroBlogData => {
+        const userList = action.users;
+        const userMap = Object.assign({}, state.users);
+
+        if (userList && userList.length > 0) {
+            userList.forEach((user: MicroblogMember) => {
+                userMap[user.ID] = user;
+            })
+        }
+        if (userMap) {
+            return {
+                ...state,
+                users: userMap
+            }
+        }
+        return state;
+    },
+    [ActionType.SET_USER]: (state: MicroBlogData, action: AnyAction) : MicroBlogData => {
+        const user = action.user;
+        if (user) {
+            return {
+                ...state,
+                user: user
+            }
+        }
+        return state;
     },
     [ActionType.START_POSTS_LOAD]: (state: MicroBlogData, action: AnyAction) : MicroBlogData => {
         return {

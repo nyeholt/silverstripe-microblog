@@ -4,7 +4,9 @@ import { Dispatch, AnyAction } from 'redux';
 import { createPost } from 'src/microblog/actions/MicroBlogActions';
 import { connect } from 'react-redux';
 
-interface Props { }
+interface Props {
+    postId?: string
+}
 
 interface State {
     title: string

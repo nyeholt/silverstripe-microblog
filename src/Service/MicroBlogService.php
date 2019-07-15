@@ -16,6 +16,7 @@ use Symbiote\MicroBlog\Model\Friendship;
 use SilverStripe\Assets\File;
 use Symbiote\MicroBlog\Extension\MicroBlogMember;
 use Symbiote\MicroBlog\Extension\TaggableExtension;
+use SilverStripe\ORM\SS_List;
 
 /**
  * @author marcus@symbiote.com.au
@@ -319,7 +320,8 @@ class MicroBlogService
         }, $member);
     }
 
-    protected function arrayFromString($filter) {
+    protected function arrayFromString($filter)
+    {
         $keypairs = explode(';', $filter);
         $arr = [];
         foreach ($keypairs as $pair) {
@@ -327,6 +329,35 @@ class MicroBlogService
             $arr[$key] = $value;
         }
         return $arr;
+    }
+
+    protected function packagePostList(SS_List $posts, $number = 100)
+    {
+        $posts = $posts->limit($number)->filterByCallback(function ($post) {
+            return $post->canView();
+        });
+
+        $members = Member::get()->filter([
+            'ID' => $posts->column('OwnerID'),
+        ]);
+
+        $members = $members->filterByCallback(function ($m) {
+            return $m->canView();
+        });
+
+        $response = [
+            'posts' => [],
+            'members' => [],
+        ];
+
+        foreach ($posts as $item) {
+            $response['posts'][] = $item->toFilteredMap();
+        }
+        foreach ($members as $m) {
+            $response['members'][] = $m->toFilteredMap();
+        }
+
+        return $response;
     }
 
     /**
@@ -357,9 +388,7 @@ class MicroBlogService
             $this->recordUserAction();
         }
         $items = $this->updatePostList($items);
-        return $items->limit($number)->filterByCallback(function ($post) {
-            return $post->canView();
-        });
+        return $this->packagePostList($items, $number);
     }
 
     /**
@@ -519,9 +548,7 @@ class MicroBlogService
 
         $this->recordUserAction();
         $list = MicroPost::get()->filter($filter)->sort($sort)->limit($limit);
-        $list = $this->updatePostList($list)->filterByCallback(function ($post) {
-            return $post->canView();
-        });
+        $list = $this->updatePostList($list);
 
         // if we're only allowing singe votes, we need to get _all_ the current user's votes and
         // mark the individual posts that have been voted on; this allows the toggling 
@@ -540,7 +567,7 @@ class MicroBlogService
             }
         }
 
-        return $list;
+        return $this->packagePostList($list, $number);
     }
 
     protected function updatePostList($list)

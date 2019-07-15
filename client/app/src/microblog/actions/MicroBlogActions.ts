@@ -4,7 +4,15 @@ import { BaseAction, ActionType } from 'src/type/Actions';
 import { Dispatch, AnyAction } from 'redux';
 import wretch from 'wretch';
 import { MicroPost } from '../type/MicroPost';
+import { MicroblogMember } from '../type/MicroBlogMember';
 
+
+export function setUser(user: MicroblogMember) : AnyAction {
+    return {
+        type: ActionType.SET_USER,
+        user: user
+    }
+}
 
 export function createPost(content: string, properties: {[key: string]: any}, postedTo?: {[key: string]: string}): ThunkAction<void, GlobalStore, null, AnyAction> {
     if (!postedTo) {
@@ -28,10 +36,18 @@ export function loadPosts(): ThunkAction<void, GlobalStore, null, BaseAction> {
         wretch("/api/v1/microblog/posts")
             .get()
             .json(json => {
-                if (json.payload) {
-                    return dispatch(loadPostsAction(json.payload));
+                if (json.payload && json.payload.posts) {
+                    dispatch(loadPostsAction(json.payload.posts));
+                    dispatch(setUsers(json.payload.users));
                 }
             });
+    }
+}
+
+export function setUsers(users: MicroblogMember[]) {
+    return {
+        type: ActionType.SET_USERS,
+        users: users
     }
 }
 
