@@ -88,7 +88,7 @@
     "bootstrap-scss": "4.3.1",
     "date-fns": "^1.29.0",
     "html-loader": "^0.5.5",
-    "url-loader": "^1.1.2"
+    "url-loader": "^2.0.1"
   },
   "pancake": {
     "auto-save": true,

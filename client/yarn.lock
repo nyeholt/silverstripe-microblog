@@ -6248,6 +6248,10 @@ mime@^2.0.3, mime@^2.3.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/mime/-/mime-2.3.1.tgz#b1621c54d63b97c47d3cfe7f7215f7d64517c369"
 
+mime@^2.4.4:
+  version "2.4.4"
+  resolved "https://registry.yarnpkg.com/mime/-/mime-2.4.4.tgz#bd7b91135fc6b01cde3e9bae33d659b63d8857e5"
+
 mimic-fn@^1.0.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/mimic-fn/-/mimic-fn-1.2.0.tgz#820c86a39334640e99516928bd03fca88057d022"
@@ -9818,6 +9822,14 @@ url-loader@^1.1.2:
   dependencies:
     loader-utils "^1.1.0"
     mime "^2.0.3"
+    schema-utils "^1.0.0"
+
+url-loader@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/url-loader/-/url-loader-2.0.1.tgz#6c47fc7090e3d48939e01fe3c6efcba5938dcec5"
+  dependencies:
+    loader-utils "^1.1.0"
+    mime "^2.4.4"
     schema-utils "^1.0.0"
 
 url-parse@^1.1.8, url-parse@^1.4.3:

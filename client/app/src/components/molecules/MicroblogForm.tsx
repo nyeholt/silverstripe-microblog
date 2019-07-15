@@ -4,8 +4,11 @@ import { createPost, updatePost, editPost } from 'src/microblog/actions/MicroBlo
 import { connect } from 'react-redux';
 import { MicroPost } from 'src/microblog/type/MicroPost';
 
+import * as avatar from "assets/images/marcus.png";
+
 interface Props {
     editPost?: MicroPost | null
+    showTitle?: boolean
 }
 
 interface DispatchProps {
@@ -23,7 +26,7 @@ interface State {
 class MicroblogForm extends React.Component<Props & DispatchProps, State>  {
     constructor(props: Props) {
         super(props)
-        
+
         this.state = {
             id: null,
             title: "",
@@ -70,34 +73,64 @@ class MicroblogForm extends React.Component<Props & DispatchProps, State>  {
         return null;
     }
 
-
     render(): JSX.Element {
-        return (<form className="MicroblogForm" onSubmit={(e:React.SyntheticEvent) => {
-            e.preventDefault();
-            return false;
-        }}>
-            <div className="MicroblogForm__Title">
-                <input name="title" value={this.state.title} onChange={(e: React.FormEvent<HTMLInputElement>) => {
-                    const v = e.currentTarget.value;
-                    this.setState({
-                        title: v
-                    })
-                }} />
-            </div>
-            <div className="MicroblogForm__Content">
-                <textarea name="content" value={this.state.content} onChange={(e: React.FormEvent<HTMLTextAreaElement>) => {
-                    const v = e.currentTarget.value;
-                    this.setState({
-                        content: v
-                    })
-                }}></textarea>
-            </div>
-            <div className="MicroblogForm__Actions">
-                <button onClick={this.newPost}>{ this.props.editPost && "Update" }{!this.props.editPost && "Post" }</button>
-                <button onClick={this.props.cancel }>Cancel</button>
-            </div>
+        const {
+            showTitle } = this.props;
 
-        </form>)
+        const bgImage: React.CSSProperties = {
+            display: "block",
+            background: `transparent url(microblog/client/www/${avatar}) no-repeat`,
+            backgroundSize: "32px",
+            width: "32px",
+            height: "32px",
+            marginRight: "10px",
+        };
+
+        return (
+            <div className="MicroblogForm">
+                <div className="MicroblogForm__Profile">
+                    <span role="img" className="MicroblogForm__Avatar" style={bgImage}>
+                    </span>
+                </div>
+                <div className="MicroblogForm__Fields">
+                    <form onSubmit={(e: React.SyntheticEvent) => {
+                        e.preventDefault();
+                        return false;
+                    }}>
+
+                        {showTitle &&
+                            <div className="MicroblogForm__Field">
+                                <input name="title" value={this.state.title} onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                                    const v = e.currentTarget.value;
+                                    this.setState({
+                                        title: v
+                                    })
+                                }} />
+                            </div>
+                        }
+                        <div className="MicroblogForm__Field">
+                            <textarea placeholder="Say something..." name="content" value={this.state.content} onChange={(e: React.FormEvent<HTMLTextAreaElement>) => {
+                                const v = e.currentTarget.value;
+                                this.setState({
+                                    content: v
+                                })
+                            }}></textarea>
+                        </div>
+                        <div className="MicroblogForm__Actions">
+                            <button className="MicroblogForm__Action__Default" onClick={this.newPost}>{this.props.editPost && "Update"}{!this.props.editPost && "Post"}</button>
+                            <button onClick={() => {
+                                this.setState({
+                                    id: null,
+                                    content: "",
+                                    title: ""
+                                })
+                                this.props.cancel ? this.props.cancel() : null;
+                            }}>Cancel</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>)
     }
 }
 

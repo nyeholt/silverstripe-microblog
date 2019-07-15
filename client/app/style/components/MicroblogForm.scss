@@ -1,0 +1,42 @@
+.MicroblogForm {
+    display: flex;
+    font-size: 12px;
+
+    &__Fields {
+        width: 100%;
+    }
+
+    &__Field {
+        margin-bottom: 1rem;
+        
+
+        input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #666;
+            border-radius: 3px;
+            background-color: #fefefe;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #666;
+            border-radius: 3px;
+            background-color: #fefefe;
+        }
+    }
+
+    &__Actions {
+        button {
+            display: inline-block;
+            padding: 0.3rem 2rem;
+            border-radius: 3px;
+
+            &.MicroblogForm__Action__Default {
+                background-color: #5E3896;
+                color: #fff;
+            }
+        }
+    }
+}

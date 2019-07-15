@@ -9,6 +9,7 @@ import { deletePost, editPost } from 'src/microblog/actions/MicroBlogActions';
 
 interface Props {
     post: MicroPost
+    showTitle?: boolean
 }
 
 interface StateProps {
@@ -20,17 +21,17 @@ interface DispatchProps {
     onDelete?: (postId: string) => void
 }
 
-const MicroBlogPost = ({ post, editId, onEdit, onDelete }: Props & StateProps & DispatchProps): JSX.Element => {
+const MicroBlogPost = ({ post, editId, showTitle, onEdit, onDelete }: Props & StateProps & DispatchProps): JSX.Element => {
     return <div className={post.ID == editId ? "Card Card--edited" : "Card"}>
-        <div className="Card__Title">{post.Title}</div>
+        {showTitle && <div className="Card__Title">{post.Title}</div> }
         <div className="Card__Body">{post.Content}</div>
-        {post.CanEdit && editId === post.ID && 
+        {post.CanEdit == "1" && editId === post.ID && 
             <div className="Card__Edit">
                 <MicroblogForm editPost={post} />
             </div>
         }
 
-        {post.CanEdit &&
+        {post.CanEdit == "1" &&
             <div className="Card__Actions">
                 <button onClick={() => { onEdit ? onEdit(post.ID) : null; }}>Edit</button><button onClick={() => { onDelete ? onDelete(post.ID) : null; }}>Delete</button>
             </div>
