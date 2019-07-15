@@ -8,6 +8,9 @@ export const ActionType = {
     // from example module, please delete!
     START_POSTS_LOAD: "START_POSTS_LOAD",
     LOAD_POSTS: "LOAD_POSTS",
+
+    EDIT_POST: "EDIT_POST",
+    DELETE_POST: "DELETE_POST",
 }
 
 export interface BaseAction extends Action {

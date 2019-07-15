@@ -209,6 +209,8 @@ class MicroPost extends DataObject
             unset($map['OriginalContent']);
         }
 
+        $map['CanEdit'] = $this->canEdit() ? "1" : "0";
+
         return $map;
     }
 
@@ -488,7 +490,7 @@ class MicroPost extends DataObject
     public function delete()
     {
         $this->RenderedContent = '';
-        if ($this->checkPerm('Delete')) {
+        if ($this->canDelete()) {
             $this->Tags()->removeAll();
             // if we have replies, we can't delete completely!
             if ($this->config()->soft_delete || ($this->Replies()->exists() && $this->Replies()->count() > 0)) {
@@ -505,10 +507,17 @@ class MicroPost extends DataObject
         }
     }
 
-    public function canView($member = null) {
+    public function canView($member = null)
+    {
         $can = parent::canView($member);
         return $can || $this->PublicAccess || (Security::getCurrentUser() && $this->OwnerID === Security::getCurrentUser()->ID);
     }
+
+    public function canEdit($member = null)
+    {
+        $can = parent::canEdit();
+        return $can || (Security::getCurrentUser() && $this->OwnerID === Security::getCurrentUser()->ID);
+     }
 
     /**
      * handles SiteTree::canAddChildren, useful for other types too

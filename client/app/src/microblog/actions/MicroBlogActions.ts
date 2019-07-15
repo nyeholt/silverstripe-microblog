@@ -44,6 +44,24 @@ export function loadPosts(): ThunkAction<void, GlobalStore, null, BaseAction> {
     }
 }
 
+export function deletePost(postId: string): ThunkAction<void, GlobalStore, null, BaseAction> {
+    return (dispatch: Dispatch, getState: () => GlobalStore) => {
+        wretch('/api/v1/microblog/deletePost')
+            .post({
+                postId: postId
+            }).json(json => {
+                if (json && json.status && json.status == 200) {
+                    dispatch({
+                        type: ActionType.DELETE_POST,
+                        postId: postId
+                    })
+                }
+            }).catch((err) => {
+                console.error("Failed deleting post", err);
+            })
+    }
+}
+
 export function setUsers(users: MicroblogMember[]) {
     return {
         type: ActionType.SET_USERS,

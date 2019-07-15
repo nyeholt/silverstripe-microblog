@@ -738,12 +738,13 @@ class MicroBlogService
      * 
      * @param DataObject $post 
      */
-    public function deletePost(DataObject $post)
+    public function deletePost($postId)
     {
-        if (!$post) {
+        if (!$postId) {
             return;
         }
-        if ($post->canDelete()) {
+        $post = MicroPost::get()->byID($postId);
+        if ($post && $post->canDelete()) {
             $post->delete();
         }
 

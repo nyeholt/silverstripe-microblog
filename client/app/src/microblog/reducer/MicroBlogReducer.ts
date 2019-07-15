@@ -13,7 +13,6 @@ const MicroBlogData_default : MicroBlogData = {
     postsLoading: false
 }
 
-
 const reducers : ReducerMap<MicroBlogData> = {
     [ActionType.STORE_LOAD]: (state: MicroBlogData, action: AnyAction) : MicroBlogData => {
         return {
@@ -46,6 +45,26 @@ const reducers : ReducerMap<MicroBlogData> = {
             }
         }
         return state;
+    },
+    [ActionType.EDIT_POST]: (state: MicroBlogData, action: AnyAction) : MicroBlogData => {
+        return {
+            ...state,
+            editingPostId: action.postId
+        }
+    },
+    [ActionType.DELETE_POST]: (state: MicroBlogData, action: AnyAction) : MicroBlogData => {
+        let postMap: MicroPostMap = {};
+        for (let i in state.posts) {
+            if (i == action.postId) {
+                continue;
+            }
+            postMap[i] = Object.assign({}, state.posts[i]);
+        }
+
+        return {
+            ...state,
+            posts: postMap
+        }
     },
     [ActionType.START_POSTS_LOAD]: (state: MicroBlogData, action: AnyAction) : MicroBlogData => {
         return {
