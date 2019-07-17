@@ -4,16 +4,22 @@ import MicroBlogPost from './MicroBlogPost';
 
 interface Props {
     posts: MicroPost[]
+    expectedCount?: number
+    parentId?: string
+    loadChildren?: () => void
 }
 
-const MicroblogPostList = ({ posts }: Props): JSX.Element => {
+const MicroblogPostList = ({ posts, expectedCount, loadChildren }: Props): JSX.Element => {
+    const loadMore = expectedCount && expectedCount > 0 && posts.length < expectedCount;
     return (
         <div className="MicroblogPostList">
             {posts.map((post) => {
                 return <MicroBlogPost post={post}  key={post.ID} />
             })}
+            {loadMore && <div className="MicroblogPostList__LoadMore"><a href="#" onClick={(e: React.SyntheticEvent) => loadChildren ? loadChildren() : null }>Show replies...</a></div> }
         </div>
     );
 }
 
 export default MicroblogPostList;
+

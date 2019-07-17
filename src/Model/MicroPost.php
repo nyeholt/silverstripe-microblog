@@ -16,6 +16,8 @@ use SilverStripe\Core\Convert;
 use SilverStripe\ORM\DataList;
 use SilverStripe\View\Parsers\URLSegmentFilter;
 use SilverStripe\Control\Director;
+use SilverStripe\Core\Injector\Injector;
+use Symbiote\MicroBlog\Service\TransactionManager;
 
 /**
  * @author marcus@symbiote.com.au
@@ -42,6 +44,7 @@ class MicroPost extends DataObject
         'PostType'            => 'Varchar',
         'DisableReplies'    => 'Boolean',
         'PublicAccess' => 'Boolean',
+        'NumChildren' => 'Int',
     );
 
     private static $has_one = array(
@@ -62,6 +65,7 @@ class MicroPost extends DataObject
 
     private static $defaults = array(
         'PublicAccess'        => false,
+        'NumChildren'           => 0,
         'InheritPerms'        => true,        // we'll have  default container set soon
     );
 
@@ -492,6 +496,14 @@ class MicroPost extends DataObject
         $this->RenderedContent = '';
         if ($this->canDelete()) {
             $this->Tags()->removeAll();
+            if ($this->ParentID) {
+                $parent = $this->Parent();
+                Injector::inst()->get(TransactionManager::class)->runAsAdmin(function () use ($parent) {
+                    $num = $parent->NumChildren;
+                    $parent->NumChildren = $num > 0 ? $num - 1 : 0;
+                    $parent->write();
+                });
+            }
             // if we have replies, we can't delete completely!
             if ($this->config()->soft_delete || ($this->Replies()->exists() && $this->Replies()->count() > 0)) {
                 $count = $this->Replies()->count();

@@ -1,1 +1,47 @@
 
+.MicroBlogPost {
+    display: flex;
+
+    font-size: 14px;
+
+    margin-bottom: 20px;
+
+    &__Avatar {
+        display: block;
+        background-size: 32px;
+        width: 32px;
+        height: 32px;
+        margin-right: 10px;
+    }
+
+    &__Post {
+        width: 100%;
+    }
+
+    &__Author {
+        margin-bottom: 10px;
+        &__Name {
+            font-weight: bold;
+            margin-right: 20px;
+        }
+
+        &__Created {
+            color: #777;
+            float: right;
+        }
+    }
+
+    &__Content {
+        margin-bottom: 10px;
+    }
+
+    &__Actions {
+        button {
+            display: inline-block;
+            color: #666;
+            padding: 0.2rem 0rem;
+            margin-right: 2rem;
+            margin-bottom: 2rem;
+        }
+    }
+}

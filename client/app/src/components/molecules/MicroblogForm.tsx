@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Dispatch, AnyAction } from 'redux';
-import { createPost, updatePost, editPost } from 'src/microblog/actions/MicroBlogActions';
+import { createPost, updatePost, editPost, replyToPost } from 'src/microblog/actions/MicroBlogActions';
 import { connect } from 'react-redux';
 import { MicroPost } from 'src/microblog/type/MicroPost';
 
@@ -8,6 +8,7 @@ import * as avatar from "assets/images/marcus.png";
 
 interface Props {
     editPost?: MicroPost | null
+    extraProperties?: {[key: string]: string}    // extra parameters to be sent through
     showTitle?: boolean
 }
 
@@ -37,8 +38,8 @@ class MicroblogForm extends React.Component<Props & DispatchProps, State>  {
 
     newPost = (e: React.SyntheticEvent) => {
         e.preventDefault();
-        const { editPost } = this.props;
-        let properties: any = editPost ? editPost : {};
+        const { editPost, extraProperties } = this.props;
+        let properties: any = editPost ? editPost : (extraProperties ? extraProperties : {});
         properties.Title = this.state.title;
 
         if (this.state.content.length === 0) {
@@ -75,16 +76,15 @@ class MicroblogForm extends React.Component<Props & DispatchProps, State>  {
 
     render(): JSX.Element {
         const {
-            showTitle } = this.props;
+            showTitle, 
+            extraProperties 
+        } = this.props;
 
         const bgImage: React.CSSProperties = {
-            display: "block",
             background: `transparent url(microblog/client/www/${avatar}) no-repeat`,
-            backgroundSize: "32px",
-            width: "32px",
-            height: "32px",
-            marginRight: "10px",
         };
+
+        const placeholder = extraProperties && extraProperties.ParentID ? "Reply..." : "Say something...";
 
         return (
             <div className="MicroblogForm">
@@ -109,7 +109,7 @@ class MicroblogForm extends React.Component<Props & DispatchProps, State>  {
                             </div>
                         }
                         <div className="MicroblogForm__Field">
-                            <textarea placeholder="Say something..." name="content" value={this.state.content} onChange={(e: React.FormEvent<HTMLTextAreaElement>) => {
+                            <textarea placeholder={placeholder} name="content" value={this.state.content} onChange={(e: React.FormEvent<HTMLTextAreaElement>) => {
                                 const v = e.currentTarget.value;
                                 this.setState({
                                     content: v
@@ -140,7 +140,7 @@ const mapDispatchToProps = (dispatch: Dispatch<AnyAction>): DispatchProps => {
     return {
         create: (content: string, properties: { [key: string]: any }, to?: { [key: string]: string }) => dispatch(createPost(content, properties, to) as any),
         update: (content: string, properties: { [key: string]: any }) => dispatch(updatePost(content, properties) as any),
-        cancel: () => dispatch(editPost(null))
+        cancel: () => { dispatch(editPost(null));dispatch(replyToPost(null)); }
     };
 }
 

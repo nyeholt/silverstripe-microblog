@@ -36,9 +36,9 @@ class MicroBlogService
     public $notificationService;
 
     /**
-     * @var TransactionService
+     * @var TransactionManager
      */
-    public $transactionService;
+    public $transactionManager;
 
     /**
      * Do we allow anonymous posting?
@@ -164,7 +164,7 @@ class MicroBlogService
      *			- groups: an array, or comma separated string, of group IDs
      * @return MicroPost 
      */
-    public function createPost($content, $properties = null, $parentId = 0, $target = null, $to = null)
+    public function createPost($content, $properties = [], $parentId = 0, $target = null, $to = null)
     {
         if (is_string($to)) {
             $to = $this->arrayFromString($to);
@@ -172,7 +172,11 @@ class MicroBlogService
 
         // backwards compatible 
         if (is_string($properties)) {
-            $properties = array('Title' => $properties);
+            $properties = ['Title' => $properties];
+        }
+        
+        if (!is_array($properties)) {
+            $properties = [];
         }
 
         $member = Security::getCurrentUser();
@@ -195,12 +199,18 @@ class MicroBlogService
         $post->OwnerID = $member->ID;
         $post->Target = $target;
 
+        $parentId = $properties['ParentID'] ?? $parentId;
+
         if ($parentId) {
             $parent = MicroPost::get()->byID($parentId);
-            if ($parent && $parentId->canView()) {
+            if ($parent && $parent->canView()) {
                 $post->ParentID = $parentId;
                 $post->ThreadID = $parent->ThreadID;
                 $post->Target = $parent->Target;
+                $this->transactionManager->runAsAdmin(function () use ($parent) {
+                    $parent->NumChildren = $parent->NumChildren + 1;
+                    $parent->write();
+                });
             }
         }
 
@@ -322,12 +332,13 @@ class MicroBlogService
 
     protected function arrayFromString($filter)
     {
-        $keypairs = explode(';', $filter);
-        $arr = [];
-        foreach ($keypairs as $pair) {
-            list($key, $value) = split("/=/", $pair, 2);
-            $arr[$key] = $value;
-        }
+        $keypairs = implode("\n", explode(';', $filter));
+        $arr = parse_ini_string($keypairs);
+        // $arr = [];
+        // foreach ($keypairs as $pair) {
+        //     list($key, $value) = \split("/=/", $pair, 2);
+        //     $arr[$key] = $value;
+        // }
         return $arr;
     }
 
@@ -372,9 +383,9 @@ class MicroBlogService
         }
         $number = (int)$number;
 
-        if (!count($filter)) {
-            $filter = array('ParentID' => 0);
-        }
+        // if (!count($filter)) {
+        //     $filter = array('ParentID' => 0);
+        // }
         $filter['Deleted'] = 0;
 
         $items = MicroPost::get()->filter($filter)->sort($orderBy);

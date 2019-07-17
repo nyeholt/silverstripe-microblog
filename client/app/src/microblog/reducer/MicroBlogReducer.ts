@@ -52,6 +52,12 @@ const reducers : ReducerMap<MicroBlogData> = {
             editingPostId: action.postId
         }
     },
+    [ActionType.REPLY_TO_POST]: (state: MicroBlogData, action: AnyAction) : MicroBlogData => {
+        return {
+            ...state,
+            replyToPostId: action.postId
+        }
+    },
     [ActionType.DELETE_POST]: (state: MicroBlogData, action: AnyAction) : MicroBlogData => {
         let postMap: MicroPostMap = {};
         for (let i in state.posts) {

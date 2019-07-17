@@ -15,6 +15,7 @@ import MicroPostDataSource from 'src/microblog/MicroPostDataSource';
 type Props = OwnProps & StateProps & DispatchProps
 interface OwnProps {
     settings: MicroblogSettings
+    filter?: { [key: string]: string }
 }
 
 interface StateProps {
@@ -44,12 +45,11 @@ class Microblog extends React.Component<Props, State>  {
 
     constructor(props: Props) {
         super(props)
-
     }
 
     componentDidMount(): void {
         // we're not worrying about filters just yet...
-        RemoteSourceDataManager.registerDataSource(MicroPostDataSource(""));
+        RemoteSourceDataManager.registerDataSource(MicroPostDataSource("ParentID=0"));
 
         // this.componentWillMount
         // wretch("/api/v1/microblog/posts")
@@ -69,7 +69,7 @@ class Microblog extends React.Component<Props, State>  {
     }
 
     componentWillUnmount(): void {
-        RemoteSourceDataManager.removeDataSource("");
+        RemoteSourceDataManager.removeDataSource("ParentID=0");
     }
 
 
@@ -77,14 +77,25 @@ class Microblog extends React.Component<Props, State>  {
         const {
             posts,
             settings,
-            loading
+            loading,
+            filter
         } = this.props;
 
+        let actualFilter = filter ? filter : { ParentID: "0" };
         let orderedPosts: MicroPost[] = [];
 
         if (posts) {
             for (let i in posts) {
-                orderedPosts.push(posts[i]);
+                const post = posts[i];
+                if (actualFilter) {
+                    for (let field in actualFilter) {
+                        if (post[field] == actualFilter[field]) {
+                            orderedPosts.push(post);
+                        }
+                    }
+                } else {
+                    orderedPosts.push(post);
+                }
             }
 
             orderedPosts.sort((a, b) => {
@@ -112,13 +123,11 @@ const mapStateToProps = (state: GlobalStore): StateProps => {
     }
 }
 
-
 const mapDispatchToProps = (dispatch: Dispatch<AnyAction>): DispatchProps => {
     return {
         loadPosts: () => dispatch(loadPosts() as any),
     };
 }
-
 
 const ConnectedMicroblog = connect<StateProps & DispatchProps>(mapStateToProps, mapDispatchToProps)(Microblog);
 export default ConnectedMicroblog;

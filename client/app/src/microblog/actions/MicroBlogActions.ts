@@ -20,13 +20,25 @@ export function createPost(content: string, properties: {[key: string]: any}, po
             public: "1"
         }
     }
-    return (dispatch: Dispatch) => {
+    return (dispatch: Dispatch, getState: () => GlobalStore) => {
         wretch("/api/v1/microblog/createPost").post({
             content: content,
             properties: properties,
             to: postedTo
         }).json((json) => {
-            return dispatch(loadPostsAction([json.payload]));
+            dispatch(replyToPost(null));
+            let postsToLoad = [json.payload];
+            if (properties.ParentID) {
+                let parentPost = getState().microblog.posts[properties.ParentID];
+                if (parentPost) {
+                    parentPost = {
+                        ...parentPost,
+                        NumChildren: parentPost.NumChildren + 1
+                    }
+                    postsToLoad.push(parentPost);
+                }
+            }
+            return dispatch(loadPostsAction(postsToLoad));
         })
     }
 }
@@ -47,9 +59,13 @@ export function updatePost(content: string, properties: {[key: string]: any}, po
     }
 }
 
-export function loadPosts(): ThunkAction<void, GlobalStore, null, BaseAction> {
-    return (dispatch: Dispatch, getState: () => GlobalStore) => {
+export function loadPosts(filter: string | null = ""): ThunkAction<void, GlobalStore, null, BaseAction> {
+
+    return (dispatch: Dispatch) => {
         wretch("/api/v1/microblog/posts")
+            .query({
+                filter: filter
+            })
             .get()
             .json(json => {
                 if (json.payload && json.payload.posts) {
@@ -84,6 +100,13 @@ export function setUsers(users: MicroblogMember[]) {
         type: ActionType.SET_USERS,
         users: users
     }
+}
+
+export function replyToPost(postId: string | null) {
+    return {
+        type: ActionType.REPLY_TO_POST,
+        postId: postId,
+    };
 }
 
 export function editPost(postId: string | null) {

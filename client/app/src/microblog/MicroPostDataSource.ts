@@ -12,7 +12,7 @@ export default (filters: string) => {
         callback: function (dispatch: Dispatch) {
             let w = wretch('/api/v1/microblog/posts');
             if (filters) {
-                w = w.query({filters: filters});
+                w = w.query({filter: filters});
             }
             dispatch({
                 type: ActionType.START_POSTS_LOAD,

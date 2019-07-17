@@ -1,6 +1,14 @@
 .MicroblogForm {
     display: flex;
-    font-size: 12px;
+    font-size: 14px;
+
+    &__Avatar {
+        display: block;
+        background-size: 32px;
+        width: 32px;
+        height: 32px;
+        margin-right: 10px;
+    }
 
     &__Fields {
         width: 100%;
