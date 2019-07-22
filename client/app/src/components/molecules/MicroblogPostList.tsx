@@ -11,6 +11,11 @@ interface Props {
 
 const MicroblogPostList = ({ posts, expectedCount, loadChildren }: Props): JSX.Element => {
     const loadMore = expectedCount && expectedCount > 0 && posts.length < expectedCount;
+    posts.sort((a, b) => {
+        return (a.ID == b.ID ? 0 : (
+            a.ID < b.ID ? 1 : -1
+        ));
+    });
     return (
         <div className="MicroblogPostList">
             {posts.map((post) => {

@@ -10,7 +10,8 @@ import { MicroblogMember } from "../type/MicroBlogMember";
 const MicroBlogData_default : MicroBlogData = {
     posts: {},
     users: {},
-    postsLoading: false
+    postsLoading: false,
+    savingPost: false
 }
 
 const reducers : ReducerMap<MicroBlogData> = {
@@ -50,6 +51,12 @@ const reducers : ReducerMap<MicroBlogData> = {
         return {
             ...state,
             editingPostId: action.postId
+        }
+    },
+    [ActionType.UPDATING_POST]: (state: MicroBlogData, action: AnyAction) : MicroBlogData => {
+        return {
+            ...state,
+            savingPost: action.value
         }
     },
     [ActionType.REPLY_TO_POST]: (state: MicroBlogData, action: AnyAction) : MicroBlogData => {

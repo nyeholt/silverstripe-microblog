@@ -260,6 +260,11 @@ class MicroBlogService
             $this->notificationService->notify('MICRO_POST_CREATED', $post);
         }
 
+        if (!$post->ParentID) {
+            // ensures there's a value set before it gets output.
+            $post->ParentID = 0;
+        }
+
         return $post->toFilteredMap();
     }
 
@@ -348,13 +353,17 @@ class MicroBlogService
             return $post->canView();
         });
 
-        $members = Member::get()->filter([
-            'ID' => $posts->column('OwnerID'),
-        ]);
+        $members = [];
 
-        $members = $members->filterByCallback(function ($m) {
-            return $m->canView();
-        });
+        $postIds = $posts->column('OwnerID');
+
+        if (count($postIds)) {
+            $members = Member::get()->filter([
+                'ID' => $posts->column('OwnerID'),
+            ])->filterByCallback(function ($m) {
+                return $m->canView();
+            });
+        }
 
         $response = [
             'posts' => [],
@@ -839,7 +848,7 @@ class MicroBlogService
         $this->rewardMember($member, -1);
         $post->RemainingVotes = $member->VotesToGive;
 
-        return $post;
+        return $post->toFilteredMap();
     }
 
     /**

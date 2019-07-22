@@ -97,12 +97,6 @@ class Microblog extends React.Component<Props, State>  {
                     orderedPosts.push(post);
                 }
             }
-
-            orderedPosts.sort((a, b) => {
-                return (a.ID == b.ID ? 0 : (
-                    a.ID < b.ID ? 1 : -1
-                ));
-            })
         }
 
         const hasMember = settings.Member && settings.Member.ID;

@@ -26,13 +26,26 @@
         }
 
         &__Created {
+            display: block;
+            font-size: 60%;
             color: #777;
-            float: right;
+            // float: right;
         }
     }
 
     &__Content {
         margin-bottom: 10px;
+    }
+
+    &__VoteArrow {
+        display: block;
+        padding: 5px;
+    }
+
+    &__PostScore {
+        display: block;
+        width: 22px;
+        padding: 5px;
     }
 
     &__Actions {

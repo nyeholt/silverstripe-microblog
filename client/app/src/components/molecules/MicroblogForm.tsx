@@ -5,10 +5,11 @@ import { connect } from 'react-redux';
 import { MicroPost } from 'src/microblog/type/MicroPost';
 
 import * as avatar from "assets/images/marcus.png";
+import { GlobalStore } from 'src/type/GlobalStore';
 
 interface Props {
     editPost?: MicroPost | null
-    extraProperties?: {[key: string]: string}    // extra parameters to be sent through
+    extraProperties?: { [key: string]: string }    // extra parameters to be sent through
     showTitle?: boolean
 }
 
@@ -18,14 +19,18 @@ interface DispatchProps {
     cancel?: () => any
 }
 
+interface StateProps {
+    savingPost: boolean
+}
+
 interface State {
     id: string | null
     title: string
     content: string
 }
 
-class MicroblogForm extends React.Component<Props & DispatchProps, State>  {
-    constructor(props: Props) {
+class MicroblogForm extends React.Component<Props & DispatchProps & StateProps, State>  {
+    constructor(props: Props & StateProps) {
         super(props)
 
         this.state = {
@@ -76,8 +81,9 @@ class MicroblogForm extends React.Component<Props & DispatchProps, State>  {
 
     render(): JSX.Element {
         const {
-            showTitle, 
-            extraProperties 
+            showTitle,
+            extraProperties,
+            savingPost
         } = this.props;
 
         const bgImage: React.CSSProperties = {
@@ -85,6 +91,8 @@ class MicroblogForm extends React.Component<Props & DispatchProps, State>  {
         };
 
         const placeholder = extraProperties && extraProperties.ParentID ? "Reply..." : "Say something...";
+
+        const buttonLabel = savingPost ? "Saving..." : (this.props.editPost ? "Update" : "Post");
 
         return (
             <div className="MicroblogForm">
@@ -117,7 +125,9 @@ class MicroblogForm extends React.Component<Props & DispatchProps, State>  {
                             }}></textarea>
                         </div>
                         <div className="MicroblogForm__Actions">
-                            <button className="MicroblogForm__Action__Default" onClick={this.newPost}>{this.props.editPost && "Update"}{!this.props.editPost && "Post"}</button>
+                            <button disabled={savingPost} className="MicroblogForm__Action__Default" onClick={this.newPost}>
+                                {buttonLabel}
+                            </button>
                             <button onClick={() => {
                                 this.setState({
                                     id: null,
@@ -134,15 +144,20 @@ class MicroblogForm extends React.Component<Props & DispatchProps, State>  {
     }
 }
 
+const mapStateToProps = (state: GlobalStore): StateProps => {
+    return {
+        savingPost: state.microblog.savingPost
+    }
+}
 
 
 const mapDispatchToProps = (dispatch: Dispatch<AnyAction>): DispatchProps => {
     return {
         create: (content: string, properties: { [key: string]: any }, to?: { [key: string]: string }) => dispatch(createPost(content, properties, to) as any),
         update: (content: string, properties: { [key: string]: any }) => dispatch(updatePost(content, properties) as any),
-        cancel: () => { dispatch(editPost(null));dispatch(replyToPost(null)); }
+        cancel: () => { dispatch(editPost(null)); dispatch(replyToPost(null)); },
     };
 }
 
-const ConnectedMicroblogForm = connect<DispatchProps>(null, mapDispatchToProps)(MicroblogForm);
+const ConnectedMicroblogForm = connect<DispatchProps & StateProps>(mapStateToProps, mapDispatchToProps)(MicroblogForm);
 export default ConnectedMicroblogForm;

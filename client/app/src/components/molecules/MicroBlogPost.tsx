@@ -5,8 +5,9 @@ import MicroblogForm from 'src/components/molecules/MicroblogForm';
 import { connect } from 'react-redux';
 import { GlobalStore } from 'src/type/GlobalStore';
 import { Dispatch } from 'redux';
-import { deletePost, editPost, replyToPost, loadPosts } from 'src/microblog/actions/MicroBlogActions';
+import { deletePost, editPost, replyToPost, loadPosts, votePost } from 'src/microblog/actions/MicroBlogActions';
 import MicroblogPostList from './MicroblogPostList';
+import { MicroblogMember } from 'src/microblog/type/MicroBlogMember';
 
 interface Props {
     post: MicroPost
@@ -17,21 +18,47 @@ interface StateProps {
     editId?: string | null
     replyId?: string | null
     allPosts?: MicroPost[]
+    user?: MicroblogMember
 }
 
 interface DispatchProps {
+    votePost?: (postId: string, dir: number) => any
     onEdit?: (id: string) => void
     onReply?: (id: string) => void
     onDelete?: (postId: string) => void
     loadChildren?: () => void
 }
 
-const MicroBlogPost = ({ post, allPosts, replyId, editId, showTitle, onEdit, onDelete, onReply, loadChildren }: Props & StateProps & DispatchProps): JSX.Element => {
+const MicroBlogPost = (props: Props & StateProps & DispatchProps): JSX.Element => {
+    const {
+        post,
+        allPosts,
+        replyId,
+        editId,
+        showTitle,
+        onEdit,
+        onDelete,
+        onReply,
+        loadChildren,
+        votePost,
+        user
+    } = props;
     const children = allPosts ? allPosts.filter(child => child.ParentID == post.ID) : [];
     const expectedChildren = parseInt(post.NumChildren);
+
+    let score = parseInt(post.Up) - parseInt(post.Down);
+    if (isNaN(score)) {
+        score = 0;
+    }
+
     return (
         <div className={post.ID == editId ? "MicroBlogPost MicroBlogPost--edited" : "MicroBlogPost"}>
-            <div className="MicroBlogPost__Profile"><span className="MicroBlogPost__Avatar"></span></div>
+            <div className="MicroBlogPost__Profile">
+                <span className="MicroBlogPost__Avatar"></span>
+                <button className="MicroBlogPost__VoteArrow" onClick={() => votePost ? votePost(post.ID, 1) : null}>⇧</button>
+                <span className="MicroBlogPost__PostScore">{score}</span>
+                <button className="MicroBlogPost__VoteArrow" onClick={() => votePost ? votePost(post.ID, -1) : null}>⇩</button>
+            </div>
             <div className="MicroBlogPost__Post">
                 <div className="MicroBlogPost__Author">
                     <strong className="MicroBlogPost__Author__Name">{post.Author}</strong>
@@ -47,18 +74,22 @@ const MicroBlogPost = ({ post, allPosts, replyId, editId, showTitle, onEdit, onD
                 }
 
                 {replyId === post.ID &&
-                    <div className="MicroBlogPost__EditPost">
-                        <MicroblogForm extraProperties={{ParentID: replyId}} />
+                    <div className="MicroBlogPost__ReplyPost">
+                        <MicroblogForm extraProperties={{ ParentID: replyId }} />
                     </div>
                 }
 
-                {post.CanEdit == "1" &&
-                    <div className="MicroBlogPost__Actions">
+
+                <div className="MicroBlogPost__Actions">
+                    {user &&
                         <button onClick={() => { onReply ? onReply(post.ID) : null; }}>Reply</button>
+                    }
+                    {post.CanEdit == "1" && <React.Fragment>
                         <button onClick={() => { onEdit ? onEdit(post.ID) : null; }}>Edit</button>
                         <button onClick={() => { onDelete ? onDelete(post.ID) : null; }}>Delete</button>
-                    </div>
-                }
+                    </React.Fragment>
+                    }
+                </div>
 
                 {
                     expectedChildren > 0 && <MicroblogPostList loadChildren={loadChildren} posts={children} expectedCount={parseInt(post.NumChildren)} />
@@ -77,7 +108,8 @@ const mapStateToProps = (state: GlobalStore): StateProps => {
     return {
         allPosts: allPosts,
         editId: state.microblog.editingPostId,
-        replyId: state.microblog.replyToPostId
+        replyId: state.microblog.replyToPostId,
+        user: state.microblog.user
     }
 }
 
@@ -87,6 +119,7 @@ const mapDispatchToProps = (dispatch: Dispatch, ownProps: Props): DispatchProps 
         onDelete: (postId: string) => dispatch(deletePost(postId) as any),
         onReply: (id: string) => dispatch(replyToPost(id)),
         loadChildren: () => dispatch(loadPosts("ParentID=" + ownProps.post.ID) as any),
+        votePost: (postId: string, dir: number) => { return dispatch(votePost(postId, dir) as any) }
     };
 }
 

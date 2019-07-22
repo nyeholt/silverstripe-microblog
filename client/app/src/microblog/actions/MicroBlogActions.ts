@@ -21,6 +21,7 @@ export function createPost(content: string, properties: {[key: string]: any}, po
         }
     }
     return (dispatch: Dispatch, getState: () => GlobalStore) => {
+        dispatch(savingPost(true));
         wretch("/api/v1/microblog/createPost").post({
             content: content,
             properties: properties,
@@ -39,12 +40,15 @@ export function createPost(content: string, properties: {[key: string]: any}, po
                 }
             }
             return dispatch(loadPostsAction(postsToLoad));
+        }).then(() => {
+            dispatch(savingPost(false));
         })
     }
 }
 
 export function updatePost(content: string, properties: {[key: string]: any}, postedTo?: {[key: string]: string}): ThunkAction<void, GlobalStore, null, AnyAction> {
     return (dispatch: Dispatch) => {
+        dispatch(savingPost(true));
         wretch("/api/v1/microblog/savePost").post({
             postID: properties.ID,
             postClass: 'MicroPost',
@@ -55,7 +59,21 @@ export function updatePost(content: string, properties: {[key: string]: any}, po
         }).json((json) => {
             dispatch(editPost(null));
             return dispatch(loadPostsAction([json.payload]));
+        }).then(() => {
+            dispatch(savingPost(false));
         })
+    }
+}
+
+export function votePost(postId: string, vote: number): ThunkAction<void, GlobalStore, null, BaseAction> {
+    return (dispatch: Dispatch) => {
+        wretch('/api/v1/microblog/vote').post({
+            postClass: 'MicroPost',
+            postID: postId,
+            dir: vote
+        }).json((postData) => {
+            return dispatch(loadPostsAction([postData.payload]))
+        });
     }
 }
 
@@ -92,6 +110,13 @@ export function deletePost(postId: string): ThunkAction<void, GlobalStore, null,
             }).catch((err) => {
                 console.error("Failed deleting post", err);
             })
+    }
+}
+
+export function savingPost(v: boolean) {
+    return {
+        type: ActionType.UPDATING_POST,
+        value: v
     }
 }
 

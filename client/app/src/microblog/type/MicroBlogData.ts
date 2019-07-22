@@ -8,6 +8,7 @@ export interface MicroBlogData {
     editingPostId?: string | null,    
     replyToPostId?: string | null,    
     postsLoading: boolean,
+    savingPost: boolean,
     posts: MicroPostMap
 }
 
