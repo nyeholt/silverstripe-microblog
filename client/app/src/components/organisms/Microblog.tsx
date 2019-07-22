@@ -15,7 +15,6 @@ import MicroPostDataSource from 'src/microblog/MicroPostDataSource';
 type Props = OwnProps & StateProps & DispatchProps
 interface OwnProps {
     settings: MicroblogSettings
-    filter?: { [key: string]: string }
 }
 
 interface StateProps {
@@ -47,9 +46,29 @@ class Microblog extends React.Component<Props, State>  {
         super(props)
     }
 
+    getFilter(type = 'Filter'): {[key: string]: string} {
+        let filter = this.props.settings[type];
+        if (!filter && this.props.settings['Filter']) {
+            filter = this.props.settings['Filter']
+        }
+        if (!filter) {
+            filter = {"ParentID": "0"} 
+        }
+        return filter;
+    }
+
+    getFilterString(type = 'FetchFilter'): string {
+        let filter = this.getFilter(type);
+        let items = [];
+        for (var key in filter) {
+            items.push(key + "=" + filter[key]);
+        }
+        return items.join(";");
+    }
+
     componentDidMount(): void {
         // we're not worrying about filters just yet...
-        RemoteSourceDataManager.registerDataSource(MicroPostDataSource("ParentID=0"));
+        RemoteSourceDataManager.registerDataSource(MicroPostDataSource(this.getFilterString()));
 
         // this.componentWillMount
         // wretch("/api/v1/microblog/posts")
@@ -69,20 +88,20 @@ class Microblog extends React.Component<Props, State>  {
     }
 
     componentWillUnmount(): void {
-        RemoteSourceDataManager.removeDataSource("ParentID=0");
+        RemoteSourceDataManager.removeDataSource(this.getFilterString());
     }
-
 
     render(): JSX.Element {
         const {
             posts,
             settings,
-            loading,
-            filter
+            loading
         } = this.props;
 
-        let actualFilter = filter ? filter : { ParentID: "0" };
+        let actualFilter = this.getFilter();
         let orderedPosts: MicroPost[] = [];
+
+        const singleView = settings.SingleView ? true : false;
 
         if (posts) {
             for (let i in posts) {
@@ -102,7 +121,7 @@ class Microblog extends React.Component<Props, State>  {
         const hasMember = settings.Member && settings.Member.ID;
 
         return (<div>
-            {hasMember > 0 && <MicroblogForm />}
+            {hasMember > 0 && !singleView && <MicroblogForm />}
             {loading && <div>Loading...</div>}
             <MicroblogPostList posts={orderedPosts} />
         </div>)

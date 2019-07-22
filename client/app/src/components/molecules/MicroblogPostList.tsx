@@ -21,7 +21,7 @@ const MicroblogPostList = ({ posts, expectedCount, loadChildren }: Props): JSX.E
             {posts.map((post) => {
                 return <MicroBlogPost post={post}  key={post.ID} />
             })}
-            {loadMore && <div className="MicroblogPostList__LoadMore"><a href="#" onClick={(e: React.SyntheticEvent) => loadChildren ? loadChildren() : null }>Show replies...</a></div> }
+            {loadMore && <div className="MicroblogPostList__LoadMore"><a href="#" onClick={(e: React.SyntheticEvent) => { e.preventDefault(); loadChildren ? loadChildren() : null; }}>Show replies...</a></div> }
         </div>
     );
 }

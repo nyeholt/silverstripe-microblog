@@ -42,6 +42,11 @@ Symbiote\ApiWrapper\ApiWrapperController:
     v1:
       microblog: 'MicroBlogServiceController'
 
+SilverStripe\Control\Director:
+  rules:
+    'microblog': 'Symbiote\MicroBlog\Control\MicroBlogController'
+
+
 ---
 Name: notifications_config
 Only:

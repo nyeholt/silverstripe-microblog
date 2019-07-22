@@ -81,6 +81,7 @@ const MicroBlogPost = (props: Props & StateProps & DispatchProps): JSX.Element =
 
 
                 <div className="MicroBlogPost__Actions">
+                    <button onClick={() => { location.href = '/microblog/show/' + post.ID }}>Link</button>
                     {user &&
                         <button onClick={() => { onReply ? onReply(post.ID) : null; }}>Reply</button>
                     }
