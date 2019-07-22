@@ -522,7 +522,12 @@ class MicroPost extends DataObject
     public function canView($member = null)
     {
         $can = parent::canView($member);
-        return $can || $this->PublicAccess || (Security::getCurrentUser() && $this->OwnerID === Security::getCurrentUser()->ID);
+        
+        $config = SiteConfig::current_site_config();
+
+        $public = $this->PublicAccess && $config->canViewPages($member);
+
+        return $can || $public || (Security::getCurrentUser() && $this->OwnerID === Security::getCurrentUser()->ID);
     }
 
     public function canEdit($member = null)
