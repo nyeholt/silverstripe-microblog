@@ -18,6 +18,8 @@ use SilverStripe\View\Parsers\URLSegmentFilter;
 use SilverStripe\Control\Director;
 use SilverStripe\Core\Injector\Injector;
 use Symbiote\MicroBlog\Service\TransactionManager;
+use Symbiote\MicroBlog\Text\Purifier;
+use Symbiote\MicroBlog\Service\SocialGraphService;
 
 /**
  * @author marcus@symbiote.com.au
@@ -250,7 +252,7 @@ class MicroPost extends DataObject
                     $to['members'] = explode(',', $to['members']);
                 }
                 foreach ($to['members'] as $memberId) {
-                    $id = (int)$memberId;
+                    $id = (int) $memberId;
                     $toMember = Member::get()->byID($id);
                     if ($toMember) {
                         $grantTo[] = $toMember;
@@ -263,7 +265,7 @@ class MicroPost extends DataObject
                     $to['groups'] = explode(',', $to['groups']);
                 }
                 foreach ($to['groups'] as $groupId) {
-                    $groupId = (int)$groupId;
+                    $groupId = (int) $groupId;
                     $group = Group::get()->byID($groupId);
                     if ($group) {
                         $grantTo[] = $group;
@@ -391,7 +393,7 @@ class MicroPost extends DataObject
         $members = array();
         if (preg_match_all('/@(.*?):(\d+)/', $this->Content, $matches)) {
             foreach ($matches[2] as $match) {
-                $member = Member::get()->byID((int)$match);
+                $member = Member::get()->byID((int) $match);
                 if ($member && $member->ID) {
                     $members[] = $member;
                 }
@@ -436,6 +438,10 @@ class MicroPost extends DataObject
      */
     public function analyseContent()
     {
+        // run the content analysis
+
+        $content = (new Purifier())->purify($this->Content);
+        $this->Content = $content;
         $this->microBlogService->extractTags($this);
         $this->socialGraphService->convertPostContent($this);
     }
@@ -522,7 +528,7 @@ class MicroPost extends DataObject
     public function canView($member = null)
     {
         $can = parent::canView($member);
-        
+
         $config = SiteConfig::current_site_config();
 
         $public = $this->PublicAccess && $config->canViewPages($member);
@@ -534,7 +540,7 @@ class MicroPost extends DataObject
     {
         $can = parent::canEdit();
         return $can || (Security::getCurrentUser() && $this->OwnerID === Security::getCurrentUser()->ID);
-     }
+    }
 
     /**
      * handles SiteTree::canAddChildren, useful for other types too

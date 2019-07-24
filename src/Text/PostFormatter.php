@@ -25,8 +25,7 @@ class PostFormatter
     public function parse()
     {
         $html = ShortcodeParser::get_active()->parse($this->parseMentions($this->content));
-        // $purifier = new HTMLPurifier($this->buildPurifierConfig());
-        // $html = $purifier->purify($html);
+        
         return $html;
     }
 
@@ -73,40 +72,5 @@ class PostFormatter
                 $name
             );
         }
-    }
-
-    protected function buildPurifierConfig()
-    {
-
-        $config = HTMLPurifier_Config::createDefault();
-        $config->set('HTML.Doctype', 'HTML 4.01 Transitional');
-        $config->set('CSS.AllowTricky', true);
-        $config->set('HTML.DefinitionID', 'html5-definitions'); // unqiue id
-        $config->set('HTML.DefinitionRev', 1);
-        if ($def = $config->maybeGetRawHTMLDefinition()) {
-            $def->addElement('section', 'Block', 'Flow', 'Common');
-            $def->addElement('nav', 'Block', 'Flow', 'Common');
-            $def->addElement('article', 'Block', 'Flow', 'Common');
-            $def->addElement('aside', 'Block', 'Flow', 'Common');
-            $def->addElement('header', 'Block', 'Flow', 'Common');
-            $def->addElement('footer', 'Block', 'Flow', 'Common');
-            $def->addElement('figure', 'Block', 'Optional: (figcaption, Flow) | (Flow, figcaption) | Flow', 'Common');
-            $def->addElement('figcaption', 'Inline', 'Flow', 'Common');
-
-            $def->addElement('video', 'Block', 'Optional: (source, Flow) | (Flow, source) | Flow', 'Common', array(
-                'src' => 'URI',
-                'type' => 'Text',
-                'width' => 'Length',
-                'height' => 'Length',
-                'poster' => 'URI',
-                'preload' => 'Enum#auto,metadata,none',
-                'controls' => 'Bool',
-            ));
-            $def->addElement('source', 'Block', 'Flow', 'Common', array(
-                'src' => 'URI',
-                'type' => 'Text',
-            ));
-        }
-        return $config;
     }
 }
