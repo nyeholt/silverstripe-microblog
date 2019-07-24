@@ -3,7 +3,7 @@
 namespace Symbiote\MicroBlog\Service;
 
 use SilverStripe\ORM\FieldType\DBField;
-use Embed\Providers\OEmbed;
+use Embed\Embed;
 
 /**
  * @author marcus@symbiote.com.au
@@ -12,12 +12,20 @@ use Embed\Providers\OEmbed;
 class SocialGraphService
 {
 
-    public $oembedOptions = array(
-        'maxwidth'        => '600',
-        'maxheight'        => '400',
-    );
+    public $oembedOptions = [
+        'min_image_width' => 100,
+        'min_image_height' => 100,
+        'choose_bigger_image' => false,
+        // 'images_blacklist' => 'example.com/*',
+        // 'url_blacklist' => 'example.com/*',
+        'follow_canonical' => true,
+        'html' => [
+            'max_images' => 10,
+            'external_images' => false
+        ]
+    ];
 
-    public $lookupLinks = true;
+    public $lookupLinks = false;
 
     /**
      * Check whether a given URL is actually an html page 
@@ -86,21 +94,27 @@ class SocialGraphService
      */
     public function convertUrl($url)
     {
-        $oembed = OEmbed::get_oembed_from_url($url, false, $this->oembedOptions);
+        $oembed = Embed::create($url, $this->oembedOptions);
         if ($oembed) {
-            return array('Title' => '', 'Content' => $oembed->forTemplate());
+            $content = $oembed->code;
+            $link = $oembed->url;
+            if (!strlen($content)) {
+                $content = "[{$oembed->title}]($link)";
+            }
+            
+            return array('Title' => $oembed->title, 'Content' => $content);
         }
 
-        $graph = OpenGraph::fetch($url);
+        // $graph = OpenGraph::fetch($url);
 
-        if ($graph) {
-            foreach ($graph as $key => $value) {
-                $data[$key] = Varchar::create_field('Varchar', $value);
-            }
-            if (isset($data['url'])) {
-                return array('Title' => $graph->Title, 'Content' => MicroPost::create()->customise($data)->renderWith('OpenGraphPost'));
-            }
-        }
+        // if ($graph) {
+        //     foreach ($graph as $key => $value) {
+        //         $data[$key] = Varchar::create_field('Varchar', $value);
+        //     }
+        //     if (isset($data['url'])) {
+        //         return array('Title' => $graph->Title, 'Content' => MicroPost::create()->customise($data)->renderWith('OpenGraphPost'));
+        //     }
+        // }
 
         if ($this->lookupLinks) {
             // get the post and take its <title> tag at the very least

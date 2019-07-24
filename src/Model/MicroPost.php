@@ -209,7 +209,7 @@ class MicroPost extends DataObject
     {
         $map = $this->toMap();
 
-        if (!Permission::check('ADMIN')) {
+        if (!$this->canEdit()) {
             unset($map['OriginalContent']);
         }
 
