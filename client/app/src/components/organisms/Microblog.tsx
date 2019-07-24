@@ -47,12 +47,18 @@ class Microblog extends React.Component<Props, State>  {
     }
 
     getFilter(type = 'Filter'): {[key: string]: string} {
-        let filter = this.props.settings[type];
-        if (!filter && this.props.settings['Filter']) {
-            filter = this.props.settings['Filter']
+
+        const { settings } = this.props;
+
+        let filter = settings[type];
+        if (!filter && settings['Filter']) {
+            filter = settings['Filter']
         }
         if (!filter) {
             filter = {"ParentID": "0"} 
+        }
+        if (settings['Target']) {
+            filter['Target'] = settings['Target'];
         }
         return filter;
     }
@@ -107,10 +113,17 @@ class Microblog extends React.Component<Props, State>  {
             for (let i in posts) {
                 const post = posts[i];
                 if (actualFilter) {
+                    let matched = true;
                     for (let field in actualFilter) {
-                        if (post[field] == actualFilter[field]) {
-                            orderedPosts.push(post);
+                        if (post[field] != actualFilter[field]) {
+                            matched = false;
+                            // we only need _one_ field to not match and we can then
+                            // break out
+                            break;
                         }
+                    }
+                    if (matched) {
+                        orderedPosts.push(post);
                     }
                 } else {
                     orderedPosts.push(post);
@@ -119,9 +132,10 @@ class Microblog extends React.Component<Props, State>  {
         }
 
         const hasMember = settings.Member && settings.Member.ID;
+        const target = settings.Target ? settings.Target : null;
 
         return (<div>
-            {hasMember > 0 && !singleView && <MicroblogForm />}
+            {hasMember > 0 && !singleView && <MicroblogForm target={target} />}
             {loading && <div>Loading...</div>}
             <MicroblogPostList posts={orderedPosts} />
         </div>)

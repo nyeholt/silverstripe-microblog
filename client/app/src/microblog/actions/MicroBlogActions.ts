@@ -20,12 +20,15 @@ export function createPost(content: string, properties: {[key: string]: any}, po
             public: "1"
         }
     }
+    const target = properties.target ? properties.target : null;
+
     return (dispatch: Dispatch, getState: () => GlobalStore) => {
         dispatch(savingPost(true));
         wretch("/api/v1/microblog/createPost").post({
             content: content,
             properties: properties,
-            to: postedTo
+            to: postedTo,
+            target: target,
         }).json((json) => {
             dispatch(replyToPost(null));
             let postsToLoad = [json.payload];
@@ -41,6 +44,9 @@ export function createPost(content: string, properties: {[key: string]: any}, po
             }
             return dispatch(loadPostsAction(postsToLoad));
         }).then(() => {
+            dispatch(savingPost(false));
+        }).catch((error) => {
+            console.error(error);
             dispatch(savingPost(false));
         })
     }
@@ -60,6 +66,9 @@ export function updatePost(content: string, properties: {[key: string]: any}, po
             dispatch(editPost(null));
             return dispatch(loadPostsAction([json.payload]));
         }).then(() => {
+            dispatch(savingPost(false));
+        }).catch((error) => {
+            console.error(error);
             dispatch(savingPost(false));
         })
     }

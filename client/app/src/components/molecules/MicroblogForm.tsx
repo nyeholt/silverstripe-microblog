@@ -8,6 +8,7 @@ import * as avatar from "assets/images/marcus.png";
 import { GlobalStore } from 'src/type/GlobalStore';
 
 interface Props {
+    target?: string | null
     editPost?: MicroPost | null
     extraProperties?: { [key: string]: string }    // extra parameters to be sent through
     showTitle?: boolean
@@ -43,9 +44,10 @@ class MicroblogForm extends React.Component<Props & DispatchProps & StateProps, 
 
     newPost = (e: React.SyntheticEvent) => {
         e.preventDefault();
-        const { editPost, extraProperties } = this.props;
+        const { editPost, extraProperties, target } = this.props;
         let properties: any = editPost ? editPost : (extraProperties ? extraProperties : {});
         properties.Title = this.state.title;
+        properties.target = target;
 
         if (this.state.content.length === 0) {
             return;
@@ -65,7 +67,7 @@ class MicroblogForm extends React.Component<Props & DispatchProps & StateProps, 
         if (props.editPost && props.editPost.ID != state.id) {
             return {
                 title: props.editPost.Title,
-                content: props.editPost.Content,
+                content: props.editPost.OriginalContent ? props.editPost.OriginalContent : props.editPost.Content,
                 id: props.editPost.ID,
             }
         }

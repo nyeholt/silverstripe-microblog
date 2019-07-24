@@ -9,6 +9,8 @@ import { deletePost, editPost, replyToPost, loadPosts, votePost } from 'src/micr
 import MicroblogPostList from './MicroblogPostList';
 import { MicroblogMember } from 'src/microblog/type/MicroBlogMember';
 
+import * as ReactMarkdown from 'react-markdown';
+
 interface Props {
     post: MicroPost
     showTitle?: boolean
@@ -51,6 +53,9 @@ const MicroBlogPost = (props: Props & StateProps & DispatchProps): JSX.Element =
         score = 0;
     }
 
+    // note that below we use "escapeHtml=false" because we've run the 
+    // raw content through HTML Purifier
+
     return (
         <div className={post.ID == editId ? "MicroBlogPost MicroBlogPost--edited" : "MicroBlogPost"}>
             <div className="MicroBlogPost__Profile">
@@ -65,7 +70,7 @@ const MicroBlogPost = (props: Props & StateProps & DispatchProps): JSX.Element =
                     <span className="MicroBlogPost__Author__Created">{post.Created}</span>
                 </div>
                 {showTitle && <div className="MicroBlogPost__Title">{post.Title}</div>}
-                <div className="MicroBlogPost__Content">{post.Content}</div>
+                <div className="MicroBlogPost__Content"><ReactMarkdown escapeHtml={false} source={post.Content}></ReactMarkdown></div>
 
                 {post.CanEdit == "1" && editId === post.ID &&
                     <div className="MicroBlogPost__EditPost">
