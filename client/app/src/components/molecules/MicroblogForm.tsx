@@ -4,6 +4,15 @@ import { createPost, updatePost, editPost, replyToPost } from 'src/microblog/act
 import { connect } from 'react-redux';
 import { MicroPost } from 'src/microblog/type/MicroPost';
 
+import Dropzone, {
+    defaultClassNames,
+    // IDropzoneProps,
+    // ILayoutProps,
+    // IPreviewProps,
+    // IInputProps,
+} from 'react-dropzone-uploader'
+
+
 import * as avatar from "assets/images/marcus.png";
 import { GlobalStore } from 'src/type/GlobalStore';
 
@@ -81,6 +90,17 @@ class MicroblogForm extends React.Component<Props & DispatchProps & StateProps, 
         return null;
     }
 
+    getUploadParams = (meta: any) => { console.log(meta); return { url: 'https://httpbin.org/post' } }
+
+    // called every time a file's `status` changes
+    handleChangeStatus = ({ meta, file }: any, status: any) => { console.log(status, meta, file) }
+
+    // receives array of files that are done uploading when submit button is clicked
+    handleSubmit = (files: any, allFiles: any) => {
+        // console.log(files.map(f: any => f.meta))
+        allFiles.forEach((f: any) => f.remove())
+    }
+
     render(): JSX.Element {
         const {
             showTitle,
@@ -95,6 +115,30 @@ class MicroblogForm extends React.Component<Props & DispatchProps & StateProps, 
         const placeholder = extraProperties && extraProperties.ParentID ? "Reply..." : "Say something...";
 
         const buttonLabel = savingPost ? "Saving..." : (this.props.editPost ? "Update" : "Post");
+
+
+        const dropzoneProps = {
+            getUploadParams: this.getUploadParams,
+            onChangeStatus:  this.handleChangeStatus ,
+            onSubmit:  this.handleSubmit ,
+            accept: "image/*,audio/*,video/*",
+            multiple:  false,
+            minSizeBytes:  0,
+            maxSizeBytes:  10000000,
+            maxFiles:  10,
+            autoUpload:  false,
+            disabled:  false,
+            canCancel:  true,
+            canRemove:  true,
+            canRestart:  false,
+            inputContent: null,
+            inputWithFilesContent: null,
+            submitButtonDisabled: false,
+            submitButtonContent: false,
+            styles: { dropzone: { minHeight: 200, maxHeight: 250 } },
+            classNames: { inputLabelWithFiles: defaultClassNames.inputLabel },
+            addClassNames: {},
+        };
 
         return (
             <div className="MicroblogForm">
@@ -141,6 +185,12 @@ class MicroblogForm extends React.Component<Props & DispatchProps & StateProps, 
                         </div>
 
                     </form>
+                </div>
+                <div className="MicroblogForm__Files">
+                    <Dropzone
+                        {...dropzoneProps}
+                    ></Dropzone>
+                    {/* {...dropzoneProps} /> */}
                 </div>
             </div>)
     }

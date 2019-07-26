@@ -31,9 +31,9 @@
         "strictNullChecks": true,
         "noImplicitAny": true,
         // "noImplicitThis": true,
-        "allowSyntheticDefaultImports": false, // https://github.com/Microsoft/TypeScript-React-Starter/issues/8
+        "allowSyntheticDefaultImports": true, // https://github.com/Microsoft/TypeScript-React-Starter/issues/8
         "module": "commonjs",
-        "target": "es6",
+        "target": "ESNext",
         "jsx": "react",
 
         "rootDirs": ["app/src", "app/stories"],
