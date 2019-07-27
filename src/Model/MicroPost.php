@@ -53,7 +53,7 @@ class MicroPost extends DataObject
         'ThreadOwner'    => Member::class,            // owner of the thread this is in
         'Parent'        => MicroPost::class,
         'Thread'        => MicroPost::class,
-        'Attachment'    => File::class,
+
         'Owner'         => Member::class,
     );
 
@@ -63,6 +63,7 @@ class MicroPost extends DataObject
 
     private static $many_many = array(
         'Mentions'      => Member::class,
+        'Attachments'    => File::class,
     );
 
     private static $defaults = array(
@@ -158,22 +159,30 @@ class MicroPost extends DataObject
             $this->Author = Security::getCurrentUser()->getTitle();
         }
 
-        if ($this->AttachmentID && strlen($this->Content) == 0) {
-            $attachment = $this->Attachment();
-            $link = '';
-            if ($attachment instanceof Image) {
-                $scaled = $attachment->MaxWidth(1024);
-                $link = $scaled->Link();
-                $this->Content = '![' . $attachment->Title . '](' . $link . ')';
-            } else {
-                $link = $attachment->Link();
-                $this->Content = '[' . $attachment->Title . '](' . $link . ')';
-            }
-        }
+        $attachment = null;
+        // $attachments = $this->Attachments()->toArray();
+        // 
+        // if (count($attachments)) {
+        //     $attachment = $attachments[0];
+        //     if (strlen($this->Content) == 0) {
+        //         $imageMd = [];
+        //         foreach ($attachments as $attachment) {
+        //             if ($attachment instanceof Image) {
+        //                 $scaled = $attachment->MaxWidth(1024);
+        //                 $link = $scaled->Link();
+        //                 $imageMd[] = '![' . $attachment->Title . '](' . $link . ')';
+        //             } else {
+        //                 $link = $attachment->Link();
+        //                 $imageMd[] = '[' . $attachment->Title . '](' . $link . ')';
+        //             }
+        //         }
+        //         $this->Content = implode(" ", $imageMd);
+        //     }
+        // }
 
         if (!$this->Title) {
-            if ($this->AttachmentID) {
-                $this->Title = basename($this->Attachment()->Filename);
+            if ($attachment) {
+                $this->Title = basename($attachment->Filename);
             } else {
                 $this->Title = str_replace("\n", " ", $this->socialGraphService->extractTitle($this->Content));
             }

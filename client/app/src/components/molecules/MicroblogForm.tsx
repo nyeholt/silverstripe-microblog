@@ -4,13 +4,7 @@ import { createPost, updatePost, editPost, replyToPost } from 'src/microblog/act
 import { connect } from 'react-redux';
 import { MicroPost } from 'src/microblog/type/MicroPost';
 
-import Dropzone, {
-    defaultClassNames,
-    // IDropzoneProps,
-    // ILayoutProps,
-    // IPreviewProps,
-    // IInputProps,
-} from 'react-dropzone-uploader'
+import Dropzone from 'react-dropzone-uploader'
 
 
 import * as avatar from "assets/images/marcus.png";
@@ -90,14 +84,30 @@ class MicroblogForm extends React.Component<Props & DispatchProps & StateProps, 
         return null;
     }
 
-    getUploadParams = (meta: any) => { console.log(meta); return { url: 'https://httpbin.org/post' } }
+    getUploadParams = (meta: any) => {
+        return {
+            url: '/api/v1/microblog/upload',
+        }
+    }
 
     // called every time a file's `status` changes
-    handleChangeStatus = ({ meta, file }: any, status: any) => { console.log(status, meta, file) }
+    handleChangeStatus = (params: any, status: any) => {
+        const { xhr } = params;
+        if (status === 'done') {
+            params.remove();
+            const upload = JSON.parse(xhr.responseText);
+            if (upload && upload.status == 200) {
+                let currentContent = this.state.content;
+                const link = (upload.payload.Type == 'image' ? '!' : '') + '[' + upload.payload.Title + '](' + upload.payload.Link + ')';
+                this.setState({
+                    content: currentContent + (currentContent.length > 0 ? "\n" : "") + link
+                })
+            }
+        }
+    }
 
     // receives array of files that are done uploading when submit button is clicked
     handleSubmit = (files: any, allFiles: any) => {
-        // console.log(files.map(f: any => f.meta))
         allFiles.forEach((f: any) => f.remove())
     }
 
@@ -116,83 +126,83 @@ class MicroblogForm extends React.Component<Props & DispatchProps & StateProps, 
 
         const buttonLabel = savingPost ? "Saving..." : (this.props.editPost ? "Update" : "Post");
 
-
         const dropzoneProps = {
             getUploadParams: this.getUploadParams,
-            onChangeStatus:  this.handleChangeStatus ,
-            onSubmit:  this.handleSubmit ,
+            onChangeStatus: this.handleChangeStatus,
+            // onSubmit: this.handleSubmit,
             accept: "image/*,audio/*,video/*",
-            multiple:  false,
-            minSizeBytes:  0,
-            maxSizeBytes:  10000000,
-            maxFiles:  10,
-            autoUpload:  false,
-            disabled:  false,
-            canCancel:  true,
-            canRemove:  true,
-            canRestart:  false,
-            inputContent: null,
-            inputWithFilesContent: null,
-            submitButtonDisabled: false,
-            submitButtonContent: false,
-            styles: { dropzone: { minHeight: 200, maxHeight: 250 } },
-            classNames: { inputLabelWithFiles: defaultClassNames.inputLabel },
-            addClassNames: {},
+            multiple: true,
+            minSizeBytes: 0,
+            maxSizeBytes: 10000000,
+            maxFiles: 10,
+            canCancel: true,
+            canRemove: true,
+            canRestart: false,
+            styles: {},
+            submitButtonContent: '',
+            submitButtonDisabled: true,
+            inputContent: '⭱ Upload',
+            // classNames: { inputLabelWithFiles: defaultClassNames.inputLabel },
         };
 
         return (
-            <div className="MicroblogForm">
-                <div className="MicroblogForm__Profile">
-                    <span role="img" className="MicroblogForm__Avatar" style={bgImage}>
-                    </span>
-                </div>
-                <div className="MicroblogForm__Fields">
-                    <form onSubmit={(e: React.SyntheticEvent) => {
-                        e.preventDefault();
-                        return false;
-                    }}>
+            <React.Fragment>
+                <div className="MicroblogForm">
+                    <div className="MicroblogForm__Profile">
+                        <span role="img" className="MicroblogForm__Avatar" style={bgImage}>
+                        </span>
+                    </div>
+                    <div className="MicroblogForm__Fields">
+                        <form onSubmit={(e: React.SyntheticEvent) => {
+                            e.preventDefault();
+                            return false;
+                        }}>
 
-                        {showTitle &&
+                            {showTitle &&
+                                <div className="MicroblogForm__Field">
+                                    <input name="title" value={this.state.title} onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                                        const v = e.currentTarget.value;
+                                        this.setState({
+                                            title: v
+                                        })
+                                    }} />
+                                </div>
+                            }
                             <div className="MicroblogForm__Field">
-                                <input name="title" value={this.state.title} onChange={(e: React.FormEvent<HTMLInputElement>) => {
+                                <textarea placeholder={placeholder} name="content" value={this.state.content} onChange={(e: React.FormEvent<HTMLTextAreaElement>) => {
                                     const v = e.currentTarget.value;
                                     this.setState({
-                                        title: v
+                                        content: v
                                     })
-                                }} />
+                                }}></textarea>
                             </div>
-                        }
-                        <div className="MicroblogForm__Field">
-                            <textarea placeholder={placeholder} name="content" value={this.state.content} onChange={(e: React.FormEvent<HTMLTextAreaElement>) => {
-                                const v = e.currentTarget.value;
-                                this.setState({
-                                    content: v
-                                })
-                            }}></textarea>
-                        </div>
-                        <div className="MicroblogForm__Actions">
-                            <button disabled={savingPost} className="MicroblogForm__Action__Default" onClick={this.newPost}>
-                                {buttonLabel}
-                            </button>
-                            <button onClick={() => {
-                                this.setState({
-                                    id: null,
-                                    content: "",
-                                    title: ""
-                                })
-                                this.props.cancel ? this.props.cancel() : null;
-                            }}>Cancel</button>
-                        </div>
+                            <div className="MicroblogForm__Actions">
+                                <button disabled={savingPost} className="MicroblogForm__Action__Default" onClick={this.newPost}>
+                                    {buttonLabel}
+                                </button>
+                                <button onClick={() => {
+                                    this.setState({
+                                        id: null,
+                                        content: "",
+                                        title: ""
+                                    })
+                                    this.props.cancel ? this.props.cancel() : null;
+                                }}>Cancel</button>
+                                <div className="MicroblogForm__Files">
+                                    <span className="sr-only">Select or drag files to upload</span>
+                                    <Dropzone
+                                        {...dropzoneProps}
+                                    ></Dropzone>
+                                    {/* {...dropzoneProps} /> */}
+                                </div>
+                            </div>
 
-                    </form>
+                        </form>
+                    </div>
                 </div>
-                <div className="MicroblogForm__Files">
-                    <Dropzone
-                        {...dropzoneProps}
-                    ></Dropzone>
-                    {/* {...dropzoneProps} /> */}
-                </div>
-            </div>)
+
+            </React.Fragment>
+        )
     }
 }
 

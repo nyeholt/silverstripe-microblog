@@ -16,7 +16,7 @@
 
     &__Field {
         margin-bottom: 1rem;
-        
+
 
         input {
             width: 100%;
@@ -36,6 +36,8 @@
     }
 
     &__Actions {
+        display: flex;
+
         button {
             display: inline-block;
             padding: 0.3rem 2rem;
@@ -46,5 +48,53 @@
                 color: #fff;
             }
         }
+    }
+
+    &__Files {
+        min-width: 80px;
+    }
+
+
+
+    .dzu {
+        &-dropzone {
+            min-height: 26px;
+            border: 1px solid #d9d9d9;
+            overflow: auto;
+        }
+
+        &-inputLabel {
+            font-size: inherit;
+            font-weight: inherit;
+            color: inherit;
+            margin-bottom: 0;
+        }
+
+        &-previewContainer {
+            padding: 0px;
+            min-height: 20px;
+            width: auto;
+
+            .dzu-previewStatusContainer {
+                progress {
+                    max-width: 40px;
+                }
+            }
+        }
+
+        &-inputLabelWithFiles {
+            display: none;
+        }
+    }
+
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
     }
 }

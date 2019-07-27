@@ -17,6 +17,9 @@ use SilverStripe\Assets\File;
 use Symbiote\MicroBlog\Extension\MicroBlogMember;
 use Symbiote\MicroBlog\Extension\TaggableExtension;
 use SilverStripe\ORM\SS_List;
+use SilverStripe\Assets\Upload;
+use SilverStripe\Core\Injector\Injector;
+use SilverStripe\Assets\Image;
 
 /**
  * @author marcus@symbiote.com.au
@@ -112,6 +115,7 @@ class MicroBlogService
         return array(
             // returns top level posts
             'posts'    => ['type' => 'GET', 'call' => 'globalFeed', 'public' => true],
+            'upload' => 'POST',
             'unreadPosts'        => 'GET',
             'createPost'        => 'POST',
             'deletePost'        => 'POST',
@@ -174,7 +178,7 @@ class MicroBlogService
         if (is_string($properties)) {
             $properties = ['Title' => $properties];
         }
-        
+
         if (!is_array($properties)) {
             $properties = [];
         }
@@ -215,7 +219,7 @@ class MicroBlogService
         }
 
         if (isset($to['public'])) {
-            $post->PublicAccess = (bool)$to['public'];
+            $post->PublicAccess = (bool) $to['public'];
         }
 
         $post->write();
@@ -390,7 +394,7 @@ class MicroBlogService
         if (is_string($filter)) {
             $filter = $this->arrayFromString($filter);
         }
-        $number = (int)$number;
+        $number = (int) $number;
 
         // if (!count($filter)) {
         //     $filter = array('ParentID' => 0);
@@ -400,7 +404,7 @@ class MicroBlogService
         $items = MicroPost::get()->filter($filter)->sort($orderBy);
 
         if ($since) {
-            $since = (int)$since;
+            $since = (int) $since;
             $items = $items->filter('ID:GreaterThan', $since);
         }
 
@@ -459,7 +463,7 @@ class MicroBlogService
     {
         $following = $this->friendsList($member);
 
-        $number = (int)$number;
+        $number = (int) $number;
         $userIds = array();
         if ($following) {
             $userIds = $following->map('OtherID', 'OtherID');
@@ -530,7 +534,7 @@ class MicroBlogService
         }
 
         if ($before !== false) {
-            $before = (int)$before;
+            $before = (int) $before;
             $filter['ID:LessThan'] = $before;
         }
 
@@ -558,8 +562,8 @@ class MicroBlogService
             $sort = array('ID' => 'DESC');
         }
 
-        $offset = (int)$offset;
-        $limit = $number ? $offset . ', ' . (int)$number : '';
+        $offset = (int) $offset;
+        $limit = $number ? $offset . ', ' . (int) $number : '';
 
         if (count($tags)) {
             $filter['Tags.Title'] = $tags;
@@ -633,7 +637,7 @@ class MicroBlogService
     public function findMember($searchTerm)
     {
         $term = Convert::raw2sql($searchTerm);
-        $current = (int)Security::getCurrentUser()->ID;
+        $current = (int) Security::getCurrentUser()->ID;
         $filter = '("Username" LIKE \'' . $term . '%\' OR "FirstName" LIKE \'' . $term . '%\' OR "Surname" LIKE \'' . $term . '%\') AND "ID" <> ' . $current;
 
         $items = DataList::create('Member')->where($filter)->filterByCallback(function ($o) {
@@ -849,6 +853,34 @@ class MicroBlogService
         $post->RemainingVotes = $member->VotesToGive;
 
         return $post->toFilteredMap();
+    }
+
+    public function upload($file)
+    {
+        $member = Security::getCurrentUser();
+        if (!$member) {
+            return;
+        }
+
+        // if (!isset($file[]))
+
+        $relationClass = File::get_class_for_file_extension(
+            File::get_file_extension($file['name'])
+        );
+
+        $assetObject = Injector::inst()->create($relationClass ? $relationClass : File::class);
+
+        Upload::create()->loadIntoFile($file, $assetObject, 'user-files/' . $member->ID);
+        if ($assetObject && $assetObject->ID) {
+            return [
+                'Title' => $assetObject->Title,
+                'Type' => $assetObject instanceof Image ? 'image' : 'file',
+                'ID' => $assetObject->ID,
+                'Link'  => $assetObject->getURL()
+            ];
+        }
+
+        return $assetObject;
     }
 
     /**
