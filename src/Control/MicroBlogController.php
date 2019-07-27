@@ -6,11 +6,14 @@ use SilverStripe\Control\Controller;
 use Symbiote\MicroBlog\Model\MicroPost;
 use SilverStripe\Security\Security;
 use PageController;
+use SilverStripe\Assets\File;
+use SilverStripe\Assets\Image;
 
 class MicroBlogController extends PageController
 {
     private static $allowed_actions = [
         'show',
+        'media',
     ];
 
     public function init()
@@ -41,6 +44,37 @@ class MicroBlogController extends PageController
             $settings['Filter'] = ['ID' => $post->ID];
 
             return $this->renderWith(['MicroBlogController_show', 'Page'], ['Settings' => $settings]);
+        }
+    }
+
+    public function media() {
+        $item = $this->getMediaItem();
+
+        if ($item && $item->canView()) {
+            $settings = $this->microblogSettings();
+            $settings['FetchFilter'] = ['Target' => 'File,' . $item->ID];
+            $settings['Filter'] = ['ParentID' => 0, 'Target' => 'File,' . $item->ID];
+            $settings['Target'] = 'File,' . $item->ID;
+
+            return $this->renderWith(
+                ['MicroBlogController_media', 'Page'], 
+                [
+                    'Settings' => $settings, 
+                    'Item' => $item,
+                    'IsImage' => $item instanceof Image ? true : false,
+                ]
+            );
+        }
+    }
+
+    protected function getMediaItem() {
+        $itemId = (int) $this->request->param('ID');
+
+        if ($itemId) {
+            $item = File::get()->byID($itemId);
+            if ($item && $item->canView()) {
+                return $item;
+            }
         }
     }
 

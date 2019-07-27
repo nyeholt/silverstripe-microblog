@@ -98,7 +98,7 @@ class MicroblogForm extends React.Component<Props & DispatchProps & StateProps, 
             const upload = JSON.parse(xhr.responseText);
             if (upload && upload.status == 200) {
                 let currentContent = this.state.content;
-                const link = (upload.payload.Type == 'image' ? '!' : '') + '[' + upload.payload.Title + '](' + upload.payload.Link + ')';
+                const link = upload.payload.MediaLink; // (upload.payload.Type == 'image' ? '!' : '') + '[' + upload.payload.Title + '](' + upload.payload.Link + ')';
                 this.setState({
                     content: currentContent + (currentContent.length > 0 ? "\n" : "") + link
                 })

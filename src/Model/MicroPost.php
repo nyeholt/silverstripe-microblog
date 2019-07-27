@@ -41,8 +41,8 @@ class MicroPost extends DataObject
         'Deleted'            => 'Boolean',
         'Hidden'            => 'Boolean',
         'NumReplies'        => 'Int',
-        'Target'            => 'Varchar',        // ClassName,ID
-        'TargetLink'        => 'Varchar(255)',      // URL where the post was created
+        'Target'            => 'Varchar(255)',        // ClassName,ID
+        'TargetInfo'        => 'Text',                  // title, url
         'PostType'            => 'Varchar',
         'DisableReplies'    => 'Boolean',
         'PublicAccess' => 'Boolean',
@@ -71,6 +71,10 @@ class MicroPost extends DataObject
         'NumChildren'           => 0,
         'InheritPerms'        => true,        // we'll have  default container set soon
     );
+
+    private static $indexes = [
+        'Target' => true,
+    ];
 
     private static $extensions = array(
         ScoredRateable::class,
@@ -376,7 +380,8 @@ class MicroPost extends DataObject
     public function getPostTarget()
     {
         if ($this->Target && strpos($this->Target, ',')) {
-            list($type, $id) = explode(',', $this->Target);
+            list($typeArg, $id) = explode(',', $this->Target);
+            $type = DataObject::getSchema()->tableClass($typeArg);
             $item = DataList::create($type)->byID($id);
             return $item->canView() ? $item : null;
         }

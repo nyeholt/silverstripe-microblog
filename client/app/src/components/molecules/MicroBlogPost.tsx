@@ -53,6 +53,8 @@ const MicroBlogPost = (props: Props & StateProps & DispatchProps): JSX.Element =
         score = 0;
     }
 
+    const target = post.ParentID == "0" && post.TargetInfo ? JSON.parse(post.TargetInfo) : {};
+
     // note that below we use "escapeHtml=false" because we've run the 
     // raw content through HTML Purifier
 
@@ -84,9 +86,14 @@ const MicroBlogPost = (props: Props & StateProps & DispatchProps): JSX.Element =
                     </div>
                 }
 
+                {target.Title &&
+                    <div className="MicroBlogPost__Target">
+                        <span>On <a href={target.Link}>{target.Title}</a></span>
+                    </div>
+                }
 
                 <div className="MicroBlogPost__Actions">
-                    <a href={ '/microblog/show/' + post.ID }>Link</a>
+                    <a href={'/microblog/show/' + post.ID}>Link</a>
                     {user &&
                         <button onClick={() => { onReply ? onReply(post.ID) : null; }}>Reply</button>
                     }

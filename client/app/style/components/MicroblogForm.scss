@@ -1,6 +1,7 @@
 .MicroblogForm {
     display: flex;
     font-size: 14px;
+    height: 100%;
 
     &__Avatar {
         display: block;
@@ -53,7 +54,6 @@
     &__Files {
         min-width: 80px;
     }
-
 
 
     .dzu {

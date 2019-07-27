@@ -15,6 +15,8 @@ class SocialGraphService
     public $oembedOptions = [
         'min_image_width' => 100,
         'min_image_height' => 100,
+        'width' => '',
+        'height' => '',
         'choose_bigger_image' => false,
         // 'images_blacklist' => 'example.com/*',
         // 'url_blacklist' => 'example.com/*',
@@ -96,9 +98,11 @@ class SocialGraphService
     {
         $oembed = Embed::create($url, $this->oembedOptions);
         if ($oembed) {
-            $content = $oembed->code;
+            // @see https://github.com/oscarotero/Embed/issues/65
+            $noAspectClass = !$oembed->aspectRatio ? "MicroBlogPost__Embed__NoAspect" : "";
+            $content = '<div class="MicroBlogPost__Embed ' . $noAspectClass . '" style="padding-bottom: ' . $oembed->aspectRatio. '%">' . $oembed->code . '</div>';
             $link = $oembed->url;
-            if (!strlen($content)) {
+            if (!strlen($oembed->code)) {
                 $content = "[{$oembed->title}]($link)";
             }
             

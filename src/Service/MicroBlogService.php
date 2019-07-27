@@ -203,6 +203,17 @@ class MicroBlogService
         $post->OwnerID = $member->ID;
         $post->Target = $target;
 
+        if ($target) {
+            $targetObject = $post->getPostTarget();
+            if ($targetObject) {
+                $link = $targetObject instanceof File ? 'microblog/media/' . $targetObject->ID : ($targetObject->hasMethod('Link') ? $targetObject->Link() : '');
+                $post->TargetInfo = \json_encode([
+                    'Title' => $targetObject->Title,
+                    'Link' => $link,
+                ]);
+            }
+        }
+
         $parentId = $properties['ParentID'] ?? $parentId;
 
         if ($parentId) {
@@ -211,6 +222,7 @@ class MicroBlogService
                 $post->ParentID = $parentId;
                 $post->ThreadID = $parent->ThreadID;
                 $post->Target = $parent->Target;
+                $post->TargetInfo = $parent->TargetInfo;
                 $this->transactionManager->runAsAdmin(function () use ($parent) {
                     $parent->NumChildren = $parent->NumChildren + 1;
                     $parent->write();
@@ -389,7 +401,7 @@ class MicroBlogService
      *
      * @param type $number 
      */
-    public function globalFeed($filter = array(), $orderBy = 'ID DESC', $since = null, $number = 10, $markViewed = true)
+    public function globalFeed($filter = array(), $orderBy = 'ID DESC', $since = null, $number = 20, $markViewed = true)
     {
         if (is_string($filter)) {
             $filter = $this->arrayFromString($filter);
@@ -872,11 +884,21 @@ class MicroBlogService
 
         Upload::create()->loadIntoFile($file, $assetObject, 'user-files/' . $member->ID);
         if ($assetObject && $assetObject->ID) {
+            $link = $assetObject->getURL();
+            $mediaLink = '';
+            if ($assetObject instanceof Image) {
+                $pageLink = 'microblog/media/' . $assetObject->ID;
+                $mediaLink = '[![](' . $link . ')](' . $pageLink . ')';
+            } else {
+                $mediaLink = '[' . $assetObject->Title .'](' . $link . ')';
+            }
+            
             return [
                 'Title' => $assetObject->Title,
                 'Type' => $assetObject instanceof Image ? 'image' : 'file',
                 'ID' => $assetObject->ID,
-                'Link'  => $assetObject->getURL()
+                'MediaLink' => $mediaLink,
+                'Link'  => $link
             ];
         }
 
