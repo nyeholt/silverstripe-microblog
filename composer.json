@@ -1,7 +1,7 @@
 {
 	"name": "symbiote/silverstripe-microblog",
 	"description": "Provides microblog type functionality for creating interactive sites like Facebook, Twitter and Reddit.",
-	"type": "silverstripe-module",
+	"type": "silverstripe-vendormodule",
 	"keywords": ["silverstripe", "comments", "blog", "microblog"],
 	"license": "BSD-3-Clause",
 	"authors": [
@@ -12,20 +12,21 @@
 	],
 	"require":
 	{
-		"silverstripe/cms": "~3.2",
+		"silverstripe/framework": "~4.0",
 		"symbiote/silverstripe-multivaluefield": "~2.4",
 		"symbiote/silverstripe-queuedjobs": "~2.4",
-		"symbiote/silverstripe-restrictedobjects": "~3.0",
-		"silverstripe/webservices": "~3.1",
-		"silverstripe/select2": "~1.0",
-		"ezyang/htmlpurifier": "dev-master#c67e4c2f7e06f89ca0eb4ce72b191144e40dc3ef",
-		"unclecheese/dropzone": "~1.4"
-	},
+		"symbiote/silverstripe-apiwrapper": "~1.0"
+    },
+    "scripts": {
+        "phpcbf": "phpcbf src/ tests/",
+        "phpcs": "phpcs src/ tests/"
+    },
 	"extra": {
-		"installer-name": "microblog",
+        "expose": [
+            "client/www"
+        ],
 		"branch-alias": {
-			"dev-master": "2.13.x-dev"
-
+			"dev-master": "3.0.x-dev"
 		}
 	}
 }

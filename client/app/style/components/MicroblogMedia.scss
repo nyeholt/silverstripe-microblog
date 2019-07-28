@@ -1,0 +1,12 @@
+.MicroblogMedia {
+    // text-align: center;
+    background-color: #fff;
+
+    &__Item {
+        img {
+            display: block;
+            margin: 0px auto;
+            max-width: 100%;
+        }
+    }
+}

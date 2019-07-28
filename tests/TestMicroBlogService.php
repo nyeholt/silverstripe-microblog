@@ -1,5 +1,12 @@
 <?php
 
+namespace Symbiote\MicroBlog\Test;
+
+use Symbiote\MicroBlog\Service\MicroBlogService;
+use Symbiote\MicroBlog\Model\MicroPost;
+use SilverStripe\Security\Member;
+use SilverStripe\Dev\SapphireTest;
+
 /**
  * @author marcus@silverstripe.com.au
  * @license BSD License http://silverstripe.org/bsd-license/
@@ -20,12 +27,10 @@ being created in this #post
 POST;
 		$post->write();
 		
-		$tags = singleton('MicroBlogService')->extractTags($post);
+		$tags = singleton(MicroBlogService::class)->extractTags($post);
 	}
 	
 	public function testUserFollowing() {
-		
-		Restrictable::set_enabled(false);
 		
 		$memberOne = Member::create();
 		$memberOne->Email = 'one@one.com';
@@ -47,7 +52,6 @@ POST;
 	}
 	
 	public function testCreatePost() {
-		Restrictable::set_enabled(true);
 		$this->logInWithPermission();
 		MicroPost::get()->removeAll();
 		
@@ -57,7 +61,7 @@ POST;
 		
 		$groups = $member->Groups()->toArray();
 		
-		$svc = singleton('MicroBlogService');
+		$svc = singleton(MicroBlogService::class);
 		/* @var $svc MicroBlogService */
 		
 		$post = $svc->createPost($member, "My post content"); // , null, 0, null, array('groups' => $group->ID));
@@ -73,7 +77,7 @@ POST;
 	
 	public function testCreateTypedPost() {
 		MicroPost::get()->removeAll();
-		$svc = singleton('MicroBlogService');
+		$svc = singleton(MicroBlogService::class);
 		$svc->typeAge = array();
 		/* @var $svc MicroBlogService */
 		

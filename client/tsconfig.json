@@ -1,0 +1,48 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./app",
+        "outDir": "./public",
+        "sourceMap": true,
+        //"emitDecoratorMetadata": true,
+        //"experimentalDecorators": true,
+
+        // NOTE(Jake) 2017-22-12
+        //
+        // This will ensure we cleanup our imports/code as we go
+        // and can find accidental variable shadowing issues.
+        //
+        // Whilst this can be slightly annoying when quickly cobbling code together
+        // I've found in practice that it helps minimize unnecessary code.
+        //
+        "noUnusedLocals": true,
+
+        // NOTE(Jake): 2017-22-12
+        //
+        // This has been added to make it obvious when something can or cannot be null.
+        // ie. `stop: Stop` vs `stop: Stop | null`
+        //
+        // The benefit of this is that `string` and `number` primitives become more obvious, you know they
+        // are what they say they are, and not `null` unless the type is `string | null`.
+        //
+        // The compiler will also throw an error if you do not ensure an object is non-null, so this
+        // should lead to less runtime errors and more compile-time errors as developers will need to
+        // write code to handle error / null states.
+        //
+        "strictNullChecks": true,
+        "noImplicitAny": true,
+        // "noImplicitThis": true,
+        "allowSyntheticDefaultImports": true, // https://github.com/Microsoft/TypeScript-React-Starter/issues/8
+        "module": "commonjs",
+        "target": "ESNext",
+        "jsx": "react",
+
+        "rootDirs": ["app/src", "app/stories"],
+    },
+    "include": [
+        "./app/src/**/*"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/*.spec.ts"
+    ]
+}

@@ -1,0 +1,1 @@
+<div class="Microblog" data-microblog-settings='$Settings.JSON'></div>

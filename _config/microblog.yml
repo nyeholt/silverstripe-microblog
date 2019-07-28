@@ -1,85 +1,62 @@
----
-Name: microblog_extensions
----
-SilverStripeAustralia\Profiles\MemberProfile:
-  extensions:
-    - PublicProfile
-Member:
-  extensions:
-    - MicroBlogMember
-  title_format:
-    columns:
-      - FirstName
-      - Surname
-    sep: ' '
-Image: 
-  extensions:
-    - MaximumSizeImageExtension
+# ---
+# Name: microblog_extensions
+# ---
+# SilverStripeAustralia\Profiles\MemberProfile:
+#   extensions:
+#     - PublicProfile
+# Member:
+#   extensions:
+#     - MicroBlogMember
+#   title_format:
+#     columns:
+#       - FirstName
+#       - Surname
+#     sep: ' '
+# Image: 
+#   extensions:
+#     - MaximumSizeImageExtension
 
 ---
 Name: microblog_config
 ---
-Injector:
-  MicroPostActivityFilter:
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\Control\Director:
     properties:
-      microBlogService: %$MicroBlogService
-  RequestProcessor:
+      Middlewares:
+        TokenAuthMiddleware: '%$Symbiote\MicroBlog\Control\RequestTokenAuthenticationMiddleware'
+  Symbiote\MicroBlog\Model\MicroPost:
     properties:
-      filters:
-        - %$MicroPostActivityFilter
-  MicroPostDigestJob:
+      socialGraphService: %$Symbiote\MicroBlog\Service\SocialGraphService
+      microBlogService: %$Symbiote\MicroBlog\Service\MicroBlogService
+  MicroBlogServiceController:
+    class: Symbiote\ApiWrapper\ServiceWrapperController
     properties:
-      microBlogService: %$MicroBlogService
-      transactionManager: %$TransactionManager
-  MicroPost:
-    properties:
-      socialGraphService: %$SocialGraphService
-      microBlogService: %$MicroBlogService
-      securityContext: %$SecurityContext
-      permissionService: %$PermissionService
-  PublishedPageNotice:
-    properties:
-      microBlogService: %$MicroBlogService
+      service: %$Symbiote\MicroBlog\Service\MicroBlogService
 
-BBCodeParser:
-  allow_smilies: 1
-
----
-Name: dashboard_integration
-Only:
-  moduleexists: 'frontend-dashboards'
----
-TimelineController:
-  jquery_lib: 'frontend-dashboards/javascript/jquery-1.10.2.min.js'
-
----
-Name: multisite_settings
-Only:
-  moduleexists: 'multisites'
----
-Site:
+SilverStripe\Security\Member:
   extensions:
-    - MicroBlogSystemSettings
+    - Symbiote\MicroBlog\Extension\MicroBlogMember
 
----
-Name: system_settings
-Except:
-  moduleexists: 'multisites'
----
-SiteConfig:
-  extensions:
-    - MicroBlogSystemSettings
+Symbiote\ApiWrapper\ApiWrapperController:
+  versions:
+    v1:
+      microblog: 'MicroBlogServiceController'
+
+SilverStripe\Control\Director:
+  rules:
+    'microblog': 'Symbiote\MicroBlog\Control\MicroBlogController'
 
 
 ---
 Name: notifications_config
 Only:
-  moduleexists: 'notifications'
+  moduleexists: 'symbiote/silverstripe-notifications'
 ---
-Injector:
-  MicroBlogService:
+SilverStripe\Core\Injector\Injector:
+  Symbiote\MicroBlog\Service\MicroBlogService:
     properties:
-      notificationService: %$NotificationService
+      notificationService: %$Symbiote\Notifications\Service\NotificationService
+
 SystemNotification:
   identifiers:
     - MICRO_POST_CREATED
