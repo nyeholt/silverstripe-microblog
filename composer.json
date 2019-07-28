@@ -13,7 +13,7 @@
 	"require":
 	{
 		"silverstripe/framework": "~4.0",
-		"symbiote/silverstripe-multivaluefield": "~2.4",
+		"symbiote/silverstripe-multivaluefield": "~5.0",
 		"symbiote/silverstripe-queuedjobs": "~4.0",
 		"symbiote/silverstripe-apiwrapper": "~1.0"
     },
