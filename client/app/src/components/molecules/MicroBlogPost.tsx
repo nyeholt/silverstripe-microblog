@@ -58,6 +58,12 @@ const MicroBlogPost = (props: Props & StateProps & DispatchProps): JSX.Element =
     // note that below we use "escapeHtml=false" because we've run the 
     // raw content through HTML Purifier
 
+    const confirmDelete = (e: React.SyntheticEvent) => {
+        if (confirm("Delete this post?")) {
+            onDelete ? onDelete(post.ID) : null;
+        }
+    }
+
     return (
         <div className={post.ID == editId ? "MicroBlogPost MicroBlogPost--edited" : "MicroBlogPost"}>
             <div className="MicroBlogPost__Profile">
@@ -99,7 +105,7 @@ const MicroBlogPost = (props: Props & StateProps & DispatchProps): JSX.Element =
                     }
                     {post.CanEdit == "1" && <React.Fragment>
                         <button onClick={() => { onEdit ? onEdit(post.ID) : null; }}>Edit</button>
-                        <button onClick={() => { onDelete ? onDelete(post.ID) : null; }}>Delete</button>
+                        <button onClick={confirmDelete}>Delete</button>
                     </React.Fragment>
                     }
                 </div>
