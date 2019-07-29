@@ -11,7 +11,8 @@ const MicroBlogData_default : MicroBlogData = {
     posts: {},
     users: {},
     postsLoading: false,
-    savingPost: false
+    savingPost: false,
+    filterCount: {},
 }
 
 const reducers : ReducerMap<MicroBlogData> = {
@@ -83,6 +84,16 @@ const reducers : ReducerMap<MicroBlogData> = {
         return {
             ...state,
             postsLoading: true
+        }
+    },
+    [ActionType.FILTER_COUNT]: (state: MicroBlogData, action: AnyAction) : MicroBlogData => {
+        let filterCount = {
+            ...state.filterCount,
+            [action.filter]: action.total,
+        }
+        return {
+            ...state,
+            filterCount: filterCount
         }
     },
     [ActionType.LOAD_POSTS]: (state: MicroBlogData, action: AnyAction) : MicroBlogData => {

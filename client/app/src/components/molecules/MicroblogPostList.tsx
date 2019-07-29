@@ -6,10 +6,11 @@ interface Props {
     posts: MicroPost[]
     expectedCount?: number
     parentId?: string
+    loadMoreText?: string
     loadChildren?: () => void
 }
 
-const MicroblogPostList = ({ posts, expectedCount, loadChildren }: Props): JSX.Element => {
+const MicroblogPostList = ({ posts, expectedCount, loadChildren, loadMoreText }: Props): JSX.Element => {
     const loadMore = expectedCount && expectedCount > 0 && posts.length < expectedCount;
     posts.sort((a, b) => {
         return (a.ID == b.ID ? 0 : (
@@ -19,9 +20,11 @@ const MicroblogPostList = ({ posts, expectedCount, loadChildren }: Props): JSX.E
     return (
         <div className="MicroblogPostList">
             {posts.map((post) => {
-                return <MicroBlogPost post={post}  key={post.ID} />
+                return <MicroBlogPost post={post} key={post.ID} />
             })}
-            {loadMore && <div className="MicroblogPostList__LoadMore"><a href="#" onClick={(e: React.SyntheticEvent) => { e.preventDefault(); loadChildren ? loadChildren() : null; }}>Show replies...</a></div> }
+            {loadMore && <div className="MicroblogPostList__LoadMore">
+                <a href="#" onClick={(e: React.SyntheticEvent) => { e.preventDefault(); loadChildren ? loadChildren() : null; }}>↳ {loadMoreText || "Show replies"}...</a>
+            </div>}
         </div>
     );
 }

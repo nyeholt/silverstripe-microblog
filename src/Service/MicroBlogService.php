@@ -205,7 +205,7 @@ class MicroBlogService
 
         if ($target) {
             $targetObject = $post->getPostTarget();
-            if ($targetObject) {
+            if ($targetObject && $targetObject->canView()) {
                 $link = $targetObject instanceof File ? 'microblog/media/' . $targetObject->ID : ($targetObject->hasMethod('Link') ? $targetObject->Link() : '');
                 $post->TargetInfo = \json_encode([
                     'Title' => $targetObject->Title,
@@ -363,9 +363,17 @@ class MicroBlogService
         return $arr;
     }
 
-    protected function packagePostList(SS_List $posts, $number = 100)
+    protected function packagePostList(SS_List $posts, $number = 50, $fromNumber = 0)
     {
-        $posts = $posts->limit($number)->filterByCallback(function ($post) {
+        $number = min($number, 50);
+
+        $totalPosts = $posts->count();
+
+        $fromNumber = (int) $fromNumber;
+        $number = (int) $number;
+
+        $limit = "$fromNumber, $number";
+        $posts = $posts->limit($limit)->filterByCallback(function ($post) {
             return $post->canView();
         });
 
@@ -383,6 +391,7 @@ class MicroBlogService
 
         $response = [
             'posts' => [],
+            'remaining' => $totalPosts,
             'members' => [],
         ];
 
@@ -401,7 +410,7 @@ class MicroBlogService
      *
      * @param type $number 
      */
-    public function globalFeed($filter = array(), $orderBy = 'ID DESC', $since = null, $number = 20, $markViewed = true)
+    public function globalFeed($filter = array(), $orderBy = 'ID DESC', $number = 10, $fromNumber = 0, $before = null, $markViewed = true)
     {
         if (is_string($filter)) {
             $filter = $this->arrayFromString($filter);
@@ -415,16 +424,16 @@ class MicroBlogService
 
         $items = MicroPost::get()->filter($filter)->sort($orderBy);
 
-        if ($since) {
-            $since = (int) $since;
-            $items = $items->filter('ID:GreaterThan', $since);
+        if ($before) {
+            $before = (int) $before;
+            $items = $items->filter('ID:LessThan', $before);
         }
 
         if ($markViewed) {
             $this->recordUserAction();
         }
         $items = $this->updatePostList($items);
-        return $this->packagePostList($items, $number);
+        return $this->packagePostList($items, $number, $fromNumber);
     }
 
     /**

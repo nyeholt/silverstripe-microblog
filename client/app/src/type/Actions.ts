@@ -14,6 +14,8 @@ export const ActionType = {
     REPLY_TO_POST: "REPLY_TO_POST",
     EDIT_POST: "EDIT_POST",
     DELETE_POST: "DELETE_POST",
+
+    FILTER_COUNT: "FILTER_COUNT",
 }
 
 export interface BaseAction extends Action {

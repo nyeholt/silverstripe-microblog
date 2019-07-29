@@ -94,7 +94,7 @@ const MicroBlogPost = (props: Props & StateProps & DispatchProps): JSX.Element =
 
                 {target.Title &&
                     <div className="MicroBlogPost__Target">
-                        <span>On <a href={target.Link}>{target.Title}</a></span>
+                        <span>Comment on <a href={target.Link}>{target.Title}</a></span>
                     </div>
                 }
 

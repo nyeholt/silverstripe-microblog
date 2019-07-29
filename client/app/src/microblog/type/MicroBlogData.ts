@@ -7,6 +7,7 @@ export interface MicroBlogData {
     users?: {[id: string] : MicroblogMember},
     editingPostId?: string | null,    
     replyToPostId?: string | null,    
+    filterCount: {[filter: string] : number }
     postsLoading: boolean,
     savingPost: boolean,
     posts: MicroPostMap

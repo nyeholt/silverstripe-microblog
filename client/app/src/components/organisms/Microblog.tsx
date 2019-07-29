@@ -19,11 +19,12 @@ interface OwnProps {
 
 interface StateProps {
     posts?: MicroPostMap
+    filterCount?: { [filter: string]: number }
     loading: boolean
 }
 
 interface DispatchProps {
-    loadPosts?: () => void
+    loadPosts?: (filter: string, from: number) => void
 }
 
 interface MicroblogSettings {
@@ -46,7 +47,7 @@ class Microblog extends React.Component<Props, State>  {
         super(props)
     }
 
-    getFilter(type = 'Filter'): {[key: string]: string} {
+    getFilter(type = 'Filter'): { [key: string]: string } {
 
         const { settings } = this.props;
 
@@ -55,7 +56,7 @@ class Microblog extends React.Component<Props, State>  {
             filter = settings['Filter']
         }
         if (!filter) {
-            filter = {"ParentID": "0"} 
+            filter = { "ParentID": "0" }
         }
         if (settings['Target']) {
             filter['Target'] = settings['Target'];
@@ -75,32 +76,22 @@ class Microblog extends React.Component<Props, State>  {
     componentDidMount(): void {
         // we're not worrying about filters just yet...
         RemoteSourceDataManager.registerDataSource(MicroPostDataSource(this.getFilterString()));
-
-        // this.componentWillMount
-        // wretch("/api/v1/microblog/posts")
-        //     .get()
-        //     .json((data) => {
-        //         if (data && data.payload) {
-        //             const loadedPosts: MicroPost[] = data.payload;
-
-        //             this.setState(() => {
-        //                 return {
-        //                     loading: false,
-        //                     posts: loadedPosts
-        //                 }
-        //             })
-        //         }
-        //     });
     }
 
     componentWillUnmount(): void {
         RemoteSourceDataManager.removeDataSource(this.getFilterString());
     }
 
+    loadChildren = () => {
+
+    }
+
     render(): JSX.Element {
         const {
             posts,
             settings,
+            filterCount,
+            loadPosts,
             loading
         } = this.props;
 
@@ -131,28 +122,43 @@ class Microblog extends React.Component<Props, State>  {
             }
         }
 
+        let expectedCount = 0;
+        let loadFrom = orderedPosts.length;
+        const appliedFilter = this.getFilterString();
+        if (filterCount && filterCount[appliedFilter]) {
+            expectedCount = filterCount[appliedFilter];
+
+        }
+
         const hasMember = settings.Member && settings.Member.ID;
         const target = settings.Target ? settings.Target : null;
 
         return (<div>
             {hasMember > 0 && !singleView && <MicroblogForm target={target} />}
             {loading && <div>Loading...</div>}
-            <MicroblogPostList posts={orderedPosts} />
+            <MicroblogPostList 
+                posts={orderedPosts} 
+                loadChildren={() => {
+                    loadPosts ? loadPosts(appliedFilter, loadFrom) : null
+                }} 
+                expectedCount={expectedCount} 
+                loadMoreText="Load more"
+            />
         </div>)
     }
 }
 
-
 const mapStateToProps = (state: GlobalStore): StateProps => {
     return {
         posts: state.microblog.posts,
-        loading: state.microblog.postsLoading
+        loading: state.microblog.postsLoading,
+        filterCount: state.microblog.filterCount,
     }
 }
 
 const mapDispatchToProps = (dispatch: Dispatch<AnyAction>): DispatchProps => {
     return {
-        loadPosts: () => dispatch(loadPosts() as any),
+        loadPosts: (filter: string, from: number) => dispatch(loadPosts(filter, from) as any),
     };
 }
 

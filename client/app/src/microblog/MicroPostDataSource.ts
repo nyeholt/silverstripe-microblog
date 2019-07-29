@@ -2,7 +2,7 @@
 import { Dispatch } from 'redux';
 
 import wretch from 'wretch';
-import { loadPostsAction } from './actions/MicroBlogActions';
+import { loadPostsAction, setFilterCounts } from './actions/MicroBlogActions';
 import { ActionType } from 'src/type/Actions';
 
 export default (filters: string) => {
@@ -21,6 +21,7 @@ export default (filters: string) => {
             w.get().json((data: any) => {
                 if (data && data.status == 200 && data.payload.posts) {
                     dispatch(loadPostsAction(data.payload.posts));
+                    dispatch(setFilterCounts(filters, data.payload.remaining))
                 }
             });
         }

@@ -86,16 +86,20 @@ export function votePost(postId: string, vote: number): ThunkAction<void, Global
     }
 }
 
-export function loadPosts(filter: string | null = ""): ThunkAction<void, GlobalStore, null, BaseAction> {
-
+export function loadPosts(filter: string | null = "", from: number = 0): ThunkAction<void, GlobalStore, null, BaseAction> {
+    let queryParams: any = {
+        filter: filter,
+    }
+    if (from > 0) {
+        queryParams.fromNumber = from
+    }
     return (dispatch: Dispatch) => {
         wretch("/api/v1/microblog/posts")
-            .query({
-                filter: filter
-            })
+            .query(queryParams)
             .get()
             .json(json => {
                 if (json.payload && json.payload.posts) {
+                    dispatch(setFilterCounts(filter || '', json.payload.remaining))
                     dispatch(loadPostsAction(json.payload.posts));
                     dispatch(setUsers(json.payload.users));
                 }
@@ -149,6 +153,15 @@ export function editPost(postId: string | null) {
         postId: postId,
     };
 }
+
+export function setFilterCounts(filter: string, total: number) {
+    return {
+        type: ActionType.FILTER_COUNT,
+        filter: filter,
+        total: total,
+    }
+}
+
 export function loadPostsAction(posts: MicroPost[]) {
     return {
         type: ActionType.LOAD_POSTS,
