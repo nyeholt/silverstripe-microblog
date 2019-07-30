@@ -42,15 +42,15 @@ class Purifier
             $def->addElement('footer', 'Block', 'Flow', 'Common');
             $def->addElement('figure', 'Block', 'Optional: (figcaption, Flow) | (Flow, figcaption) | Flow', 'Common');
             $def->addElement('figcaption', 'Inline', 'Flow', 'Common');
-            // $def->addElement('iframe', 'Block', 'Optional: (source, Flow) | (Flow, source) | Flow', 'Common', [
-            //     'src' => 'URI',
-            //     'type' => 'Text',
-            //     'width' => 'Length',
-            //     'height' => 'Length',
-            //     'frameborder' => 'Text',
-            //     'allow' => 'Text',
-            //     'allowfullscreen' => 'Bool',
-            // ]);
+            $def->addElement('iframe', 'Block', 'Optional: (source, Flow) | (Flow, source) | Flow', 'Common', [
+                'src' => 'URI',
+                'type' => 'Text',
+                'width' => 'Length',
+                'height' => 'Length',
+                'frameborder' => 'Text',
+                'allow' => 'Text',
+                'allowfullscreen' => 'Bool',
+            ]);
 
             $def->addElement('video', 'Block', 'Optional: (source, Flow) | (Flow, source) | Flow', 'Common', array(
                 'src' => 'URI',

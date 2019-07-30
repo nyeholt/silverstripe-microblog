@@ -15,6 +15,7 @@ use Symbiote\MicroBlog\Model\AuthenticationToken;
 use SilverStripe\Security\SecurityToken;
 use SilverStripe\Security\RandomGenerator;
 use SilverStripe\Forms\ReadonlyField;
+use SilverStripe\Security\Permission;
 
 /**
  *
@@ -253,12 +254,19 @@ class MicroBlogMember extends DataExtension
             $this->owner->$groupTypeID = $group->ID;
             return $group;
         } else {
-            $group = $this->transactionManager->runAsAdmin(function () use ($title) {
+            $createGroup = function () use ($title) {
                 $group = SimpleMemberList::create();
                 $group->Title = $title;
                 $group->write();
                 return $group;
-            });
+            };
+
+            if (Permission::check('ADMIN')) {
+                $group = $createGroup();
+            } else {
+                $group = $this->transactionManager->runAsAdmin($createGroup);
+            }
+            
 
             if ($group) {
                 $this->owner->$groupTypeID = $group->ID;
