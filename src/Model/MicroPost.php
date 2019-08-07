@@ -160,7 +160,7 @@ class MicroPost extends DataObject
         }
 
         if (!$this->Author) {
-            $this->Author = Security::getCurrentUser()->getTitle();
+            $this->Author = $member ? $member->FirstName . ' ' . $member->Surname : 'Unknown';
         }
 
         $attachment = null;
