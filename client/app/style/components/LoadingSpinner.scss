@@ -1,0 +1,56 @@
+.LoadingSpinner {
+    position: relative;
+    margin: 0px auto;
+    width: 64px;
+    height: 24px;
+  }
+  .LoadingSpinner div {
+    position: absolute;
+    top: 5px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #fff;
+    animation-timing-function: cubic-bezier(0, 1, 1, 0);
+  }
+  .LoadingSpinner div:nth-child(1) {
+    left: 6px;
+    animation: LoadingSpinner1 0.6s infinite;
+  }
+  .LoadingSpinner div:nth-child(2) {
+    left: 6px;
+    animation: LoadingSpinner2 0.6s infinite;
+  }
+  .LoadingSpinner div:nth-child(3) {
+    left: 26px;
+    animation: LoadingSpinner2 0.6s infinite;
+  }
+  .LoadingSpinner div:nth-child(4) {
+    left: 45px;
+    animation: LoadingSpinner3 0.6s infinite;
+  }
+  @keyframes LoadingSpinner1 {
+    0% {
+      transform: scale(0);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  @keyframes LoadingSpinner3 {
+    0% {
+      transform: scale(1);
+    }
+    100% {
+      transform: scale(0);
+    }
+  }
+  @keyframes LoadingSpinner2 {
+    0% {
+      transform: translate(0, 0);
+    }
+    100% {
+      transform: translate(19px, 0);
+    }
+  }
+  

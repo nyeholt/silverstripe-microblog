@@ -9,6 +9,7 @@ import { MicroPostMap } from 'src/microblog/type/MicroPostMap';
 import { connect } from 'react-redux';
 import RemoteSourceDataManager from 'src/store/RemoteSourceDataManager';
 import MicroPostDataSource from 'src/microblog/MicroPostDataSource';
+import LoadingSpinner from '../atoms/LoadingSpinner';
 
 
 
@@ -135,7 +136,7 @@ class Microblog extends React.Component<Props, State>  {
 
         return (<div>
             {hasMember > 0 && !singleView && <MicroblogForm target={target} />}
-            {loading && <div>Loading...</div>}
+            { <LoadingSpinner active={loading} colour="#000" />}
             <MicroblogPostList 
                 posts={orderedPosts} 
                 loadChildren={() => {
