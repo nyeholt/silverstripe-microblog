@@ -383,7 +383,7 @@ class MicroPost extends DataObject
             list($typeArg, $id) = explode(',', $this->Target);
             $type = DataObject::getSchema()->tableClass($typeArg);
             $item = DataList::create($type)->byID($id);
-            return $item->canView() ? $item : null;
+            return $item && $item->canView() ? $item : null;
         }
     }
 
