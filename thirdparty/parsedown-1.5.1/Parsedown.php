@@ -1402,7 +1402,8 @@ class Parsedown
 
             if (isset($Element['handler']))
             {
-                $markup .= $this->$Element['handler']($Element['text']);
+                $handlerName = $Element['handler'];
+                $markup .= $this->$handlerName($Element['text']);
             }
             else
             {
